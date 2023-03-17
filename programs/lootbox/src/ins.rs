@@ -19,7 +19,7 @@ pub struct CreateLootbox<'info> {
         bump,        
         payer = authority,
     )]
-    pub lootbox: Account<'info, Lootbox>,
+    pub lootbox: Box<Account<'info, Lootbox>>,
 
     pub system_program: Program<'info, System>,
 }
@@ -37,7 +37,7 @@ pub struct UpdateLootbox<'info> {
         ],
         bump = lootbox.bump
     )]
-    pub lootbox: Account<'info, Lootbox>,
+    pub lootbox: Box<Account<'info, Lootbox>>,
 }
 
 #[derive(Accounts)]
@@ -53,32 +53,24 @@ pub struct Fund<'info> {
         ],
         bump = lootbox.bump
     )]
-    pub lootbox: Account<'info, Lootbox>,
+    pub lootbox: Box<Account<'info, Lootbox>>,
 
-    pub mint: Account<'info, Mint>,
+    pub prize_mint: Box<Account<'info, Mint>>,
 
     #[account(
         mut,
-        associated_token::mint = mint,
+        associated_token::mint = prize_mint,
         associated_token::authority = funder,
     )]
-    pub funder_ata: Account<'info, TokenAccount>,
+    pub funder_ata: Box<Account<'info, TokenAccount>>,
 
     #[account(
-        init_if_needed,
-        payer = funder,
-        associated_token::mint = mint,
+        associated_token::mint = prize_mint,
         associated_token::authority = lootbox,
     )]
-    pub lootbox_ata: Account<'info, TokenAccount>,
+    pub lootbox_ata: Box<Account<'info, TokenAccount>>,
 
     pub token_program: Program<'info, Token>,
-
-    pub associated_token_program: Program<'info, AssociatedToken>,
-
-    pub system_program: Program<'info, System>,
-
-    pub rent: Sysvar<'info, Rent>,
 }
 
 #[derive(Accounts)]
@@ -94,27 +86,25 @@ pub struct Drain<'info> {
         ],
         bump = lootbox.bump
     )]
-    pub lootbox: Account<'info, Lootbox>,
+    pub lootbox: Box<Account<'info, Lootbox>>,
 
-    pub mint: Account<'info, Mint>,
+    pub prize_mint: Box<Account<'info, Mint>>,
 
     #[account(
         mut,
-        associated_token::mint = mint,
+        associated_token::mint = prize_mint,
         associated_token::authority = lootbox,
     )]
-    pub lootbox_ata: Account<'info, TokenAccount>,
+    pub lootbox_ata: Box<Account<'info, TokenAccount>>,
 
     #[account(
         mut,
-        associated_token::mint = mint,
+        associated_token::mint = prize_mint,
         associated_token::authority = drainer,
     )]
-    pub drainer_ata: Account<'info, TokenAccount>,
+    pub drainer_ata: Box<Account<'info, TokenAccount>>,
 
     pub token_program: Program<'info, Token>,
-
-    pub associated_token_program: Program<'info, AssociatedToken>,
 }
 
 #[derive(Accounts)]
@@ -132,7 +122,7 @@ pub struct CreatePlayer<'info> {
         bump,
         space = PlayerBox::LEN + 8,
     )]
-    pub player: Account<'info, Player>,
+    pub player: Box<Account<'info, Player>>,
 
     pub system_program: Program<'info, System>,
 }
@@ -140,7 +130,7 @@ pub struct CreatePlayer<'info> {
 #[derive(Accounts)]
 pub struct Play<'info> {
     #[account(mut, address = player.key)]
-    pub payer: Signer<'info>,
+    pub user: Signer<'info>,
 
     #[account(mut, address = lootbox.fee_wallet)]
     pub fee_wallet: SystemAccount<'info>,
@@ -153,17 +143,31 @@ pub struct Play<'info> {
         ],
         bump = lootbox.bump
     )]
-    pub lootbox: Account<'info, Lootbox>,
+    pub lootbox: Box<Account<'info, Lootbox>>,
 
     #[account(
         mut,
         seeds = [
             b"player".as_ref(),
-            payer.key().as_ref(),
+            user.key().as_ref(),
         ],
         bump = player.bump,
     )]
-    pub player: Account<'info, Player>,
+    pub player: Box<Account<'info, Player>>,
+
+    #[account(
+        mut,
+        associated_token::mint = lootbox.ticket_mint,
+        associated_token::authority = user,
+    )]
+    pub user_ata: Box<Account<'info, TokenAccount>>,
+
+    #[account(
+        mut,
+        associated_token::mint = lootbox.ticket_mint,
+        associated_token::authority = lootbox,
+    )]
+    pub lootbox_ata: Box<Account<'info, TokenAccount>>,
 
     /// CHECK:
     #[account(address = sysvar::instructions::ID)]
@@ -172,6 +176,10 @@ pub struct Play<'info> {
     /// CHECK:
     #[account(address = sysvar::slot_hashes::ID)]
     pub recent_slothashes: AccountInfo<'info>,
+
+    pub token_program: Program<'info, Token>,
+
+    pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]
@@ -187,7 +195,7 @@ pub struct Claim<'info> {
         ],
         bump = lootbox.bump
     )]
-    pub lootbox: Account<'info, Lootbox>,
+    pub lootbox: Box<Account<'info, Lootbox>>,
 
     #[account(
         mut,
@@ -197,24 +205,22 @@ pub struct Claim<'info> {
         ],
         bump = player.bump,
     )]
-    pub player: Account<'info, Player>,
+    pub player: Box<Account<'info, Player>>,
 
-    pub mint: Account<'info, Mint>,
+    pub prize_mint: Box<Account<'info, Mint>>,
 
     #[account(
         mut,
-        associated_token::mint = mint,
+        associated_token::mint = prize_mint,
         associated_token::authority = lootbox,
     )]
-    pub lootbox_ata: Account<'info, TokenAccount>,
+    pub lootbox_ata: Box<Account<'info, TokenAccount>>,
     
     #[account(
-        init_if_needed,
-        payer = claimer,
-        associated_token::mint = mint,
+        associated_token::mint = prize_mint,
         associated_token::authority = claimer,
     )]
-    pub claimer_ata: Account<'info, TokenAccount>,
+    pub claimer_ata: Box<Account<'info, TokenAccount>>,
 
     /// CHECK:
     #[account(address = sysvar::instructions::ID)]
@@ -244,7 +250,7 @@ pub struct SetClaimed<'info> {
         ],
         bump = lootbox.bump
     )]
-    pub lootbox: Account<'info, Lootbox>,
+    pub lootbox: Box<Account<'info, Lootbox>>,
 
     #[account(
         mut,
@@ -254,7 +260,7 @@ pub struct SetClaimed<'info> {
         ],
         bump = player.bump,
     )]
-    pub player: Account<'info, Player>,
+    pub player: Box<Account<'info, Player>>,
 }
 
 #[derive(Accounts)]
@@ -270,7 +276,7 @@ pub struct ConfirmClaimed<'info> {
         ],
         bump = lootbox.bump
     )]
-    pub lootbox: Account<'info, Lootbox>,
+    pub lootbox: Box<Account<'info, Lootbox>>,
 
     #[account(
         mut,
@@ -280,5 +286,5 @@ pub struct ConfirmClaimed<'info> {
         ],
         bump = player.bump,
     )]
-    pub player: Account<'info, Player>,
+    pub player: Box<Account<'info, Player>>,
 }
