@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "@solana/wallet-adapter-react-ui/styles.css";
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [network] = useState(WalletAdapterNetwork.Devnet);
+  const [network] = useState(WalletAdapterNetwork.Mainnet);
   const endpoint = useMemo(() => network === WalletAdapterNetwork.Mainnet ? SOLANA_MAINNET_RPC_URL : SOLANA_DEVNET_RPC_URL, [network]);
   const wallets = useMemo(() => [
     new PhantomWalletAdapter(),

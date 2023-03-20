@@ -42,6 +42,7 @@ pub struct OffChainItem {
     pub item_index: u8,
     pub total_items: u32,
     pub used_items: u32,
+    pub claimed: bool,
 }
 
 #[derive(Debug, AnchorSerialize, AnchorDeserialize, Copy, Clone, PartialEq, Eq)]
@@ -62,11 +63,19 @@ pub struct PlayerBox {
     pub lootbox: Pubkey,
     pub rarity_spins: Vec<u16>,
     pub on_chain_prizes: Vec<OnChainItem>,
-    pub off_chain_prizes: Vec<(u8, bool)>,
+    pub off_chain_prizes: Vec<OffChainItem>,
 }
 
 impl PlayerBox {
     pub const LEN: usize = std::mem::size_of::<PlayerBox>() + 4 * 2 + 100 * SplVault::LEN + 100;
+}
+
+#[event]
+pub struct PlayEvent {
+    pub player: Pubkey,
+    pub lootbox: Pubkey,
+    pub prize_item: PrizeItem,
+    pub timestamp: u64,
 }
 
 #[error_code]

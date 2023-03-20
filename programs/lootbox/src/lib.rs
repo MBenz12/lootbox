@@ -184,6 +184,7 @@ pub mod lootbox {
                     item_index,
                     total_items,
                     used_items: 0,
+                    claimed: false,
                 }),
                 rarity,
             });
@@ -314,10 +315,17 @@ pub mod lootbox {
         if let Some(mut off_chain_item) = prize_item.off_chain_item {
             player.lootboxes[lootbox_index]
                 .off_chain_prizes
-                .push((off_chain_item.item_index, false));
+                .push(off_chain_item);
             off_chain_item.used_items = off_chain_item.used_items.checked_add(1).unwrap();
             lootbox.prize_items[prize_index].off_chain_item = Some(off_chain_item);
         }
+
+        emit!(PlayEvent {
+            player: ctx.accounts.user.key(),
+            lootbox: lootbox_key,
+            prize_item,
+            timestamp: now(),
+        });
 
         Ok(())
     }
@@ -335,14 +343,20 @@ pub mod lootbox {
             .unwrap();
 
         let prize_mint = ctx.accounts.prize_mint.key();
-        let spl_index = lootbox.spl_vaults.iter().position(|x| x.mint == prize_mint).unwrap();
+        let spl_index = lootbox
+            .spl_vaults
+            .iter()
+            .position(|x| x.mint == prize_mint)
+            .unwrap();
 
         let prize_index = player.lootboxes[lootbox_index]
             .on_chain_prizes
             .iter()
             .position(|x| x.spl_index == spl_index as u8)
             .unwrap();
-        let prize_item = player.lootboxes[lootbox_index].on_chain_prizes.remove(prize_index);
+        let prize_item = player.lootboxes[lootbox_index]
+            .on_chain_prizes
+            .remove(prize_index);
 
         let bump = lootbox.bump;
         let name = &lootbox.name;
@@ -361,7 +375,7 @@ pub mod lootbox {
             ),
             prize_item.amount,
         )?;
-        
+
         Ok(())
     }
 
@@ -377,7 +391,7 @@ pub mod lootbox {
         let index = player.lootboxes[lootbox_index]
             .off_chain_prizes
             .iter()
-            .position(|x| x.0 == item_index)
+            .position(|x| x.item_index == item_index)
             .unwrap();
         player.lootboxes[lootbox_index]
             .off_chain_prizes
@@ -398,9 +412,9 @@ pub mod lootbox {
         let index = player.lootboxes[lootbox_index]
             .off_chain_prizes
             .iter()
-            .position(|x| x.0 == item_index)
+            .position(|x| x.item_index == item_index)
             .unwrap();
-        player.lootboxes[lootbox_index].off_chain_prizes[index].1 = true;
+        player.lootboxes[lootbox_index].off_chain_prizes[index].claimed = true;
 
         Ok(())
     }
