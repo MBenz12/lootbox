@@ -1,26 +1,24 @@
-/* eslint-disable @next/next/no-img-element */
 import useFetchNfts from '@/hooks/useFetchNfts';
 import { IDL, Lootbox as LootboxIDL } from '@/idl/lootbox';
 import { createLootbox, createPlayer, fund, updateLootbox } from '@/lootbox-program-libs/methods';
-import { Lootbox, Player, Rarity } from '@/lootbox-program-libs/types';
-import { getLootboxPda, getPlayerPda, programId } from '@/lootbox-program-libs/utils';
+import { Rarity } from '@/lootbox-program-libs/types';
+import { programId } from '@/lootbox-program-libs/utils';
 import { AnchorProvider, BN, Program } from '@project-serum/anchor';
 import { getMint, NATIVE_MINT } from '@solana/spl-token';
 import { useAnchorWallet, useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { WalletConnectButton, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { TOKENS } from '@/config';
-import { NftData } from '@/types';
+import useFetchLootbox from '@/hooks/useFetchLootbox';
 
 export default function Admin() {
   const [program, setProgram] = useState<Program<LootboxIDL>>();
   const anchorWallet = useAnchorWallet();
   const wallet = useWallet();
   const { connection } = useConnection();
-  console.log(anchorWallet);
 
   useEffect(() => {
     if (!connection || !anchorWallet) return;
@@ -48,33 +46,20 @@ export default function Admin() {
   const {nfts} = useFetchNfts(reload);
   const [selectedNfts, setSelectedNfts] = useState<Array<number>>([]);
   const [splToken, setSplToken] = useState(TOKENS[0]);
-  const [lootbox, setLootbox] = useState<Lootbox>();
+  const { lootbox } = useFetchLootbox(program, name, reload);
   const { nfts: lootboxNfts } = useFetchNfts(reload, lootbox ? lootbox.splVaults.map((splVault) => splVault.mint) : []);
 
-  useEffect(() => {
-    fetchData();
-  }, [reload]);
-
-  const fetchData = async () => {
-    if (!program || !wallet.publicKey) return;
+  const fetchData = useCallback(async () => {
     try {
-      const [lootbox] = getLootboxPda("lootbox");
-      const lootboxData = await program.account.lootbox.fetchNullable(lootbox);
-      
-      const [player] = getPlayerPda(wallet.publicKey);
-      const playerData = await program.account.player.fetchNullable(player);
-      console.log(playerData as Player);
-      
-      if (lootboxData) {
-        setLootbox(lootboxData as Lootbox);
-        setFee(lootboxData.fee.toNumber() / LAMPORTS_PER_SOL);
-        setFeeWallet(lootboxData.feeWallet.toString());
-        setTicketMint(lootboxData.ticketMint);
-        let { decimals } = await getMint(connection, lootboxData.ticketMint);
+      if (lootbox) {
+        setFee(lootbox.fee.toNumber() / LAMPORTS_PER_SOL);
+        setFeeWallet(lootbox.feeWallet.toString());
+        setTicketMint(lootbox.ticketMint);
+        let { decimals } = await getMint(connection, lootbox.ticketMint);
         decimals = Math.pow(10, decimals);
         setDecimals(decimals);
-        setTicketPrice(lootboxData.ticketPrice.toNumber() / decimals);
-        setRarities(lootboxData.rarities);
+        setTicketPrice(lootbox.ticketPrice.toNumber() / decimals);
+        setRarities(lootbox.rarities);
       } else {
 
       }
@@ -82,7 +67,11 @@ export default function Admin() {
     } catch (error) {
       console.log(error);
     }
-  }
+  }, [lootbox, connection]);
+
+  useEffect(() => {
+    fetchData();
+  }, [reload, fetchData]);
 
   const handleCreateLootbox = async () => {
     if (!wallet.publicKey || !program) {

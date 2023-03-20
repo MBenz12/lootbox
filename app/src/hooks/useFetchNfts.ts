@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import axios from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
@@ -10,23 +9,24 @@ import { HYPERSPACE_API_KEY } from '@/config';
 
 const hsClient = new HyperspaceClient(HYPERSPACE_API_KEY);
 
-const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftData> } => {
+const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftData>, loading: boolean } => {
   const wallet = useWallet();
   const { connection } = useConnection();
 
   const metaplex = useMemo(() => new Metaplex(connection), [connection]);
 
   const [nfts, setNfts] = useState<Array<NftData>>([]);
+  const [loading, setLoading] = useState(false);
 
-  const fetch = useCallback(async () => {
+  const fetch = useCallback(async (mints: Array<PublicKey> | undefined) => {
     if (!wallet.publicKey) {
       return;
     }
+    setLoading(true);
     try {
       let allNfts;
       if (!mints) {
         allNfts = await metaplex.nfts().findAllByOwner({ owner: wallet.publicKey });
-
       } else {
         allNfts = (await metaplex.nfts().findAllByMintList({ mints })).filter(nft => nft);
       }
@@ -58,7 +58,6 @@ const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftDa
       );
 
       const res = await hsClient.getProjects({ condition: { projectIds: Object.keys(creators) } });
-      let index = 0;
       for (const project of res.getProjectStats.project_stats || []) {
         const creator = project.project_id;
         creators[creator] = project.floor_price || 0;
@@ -77,13 +76,15 @@ const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftDa
     } catch (error) {
       console.log(error);
     }
+
+    setLoading(false);
   }, [metaplex, wallet.publicKey]);
 
   useEffect(() => {
-    fetch();
-  }, [wallet.publicKey, metaplex, fetch, reload]);
+    fetch(mints);
+  }, [wallet.publicKey, metaplex, fetch, reload, mints]);
 
-  return { nfts };
+  return { nfts, loading };
 };
 
 export default useFetchNfts;
