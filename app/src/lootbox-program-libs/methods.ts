@@ -85,7 +85,7 @@ export const fund = async (
       )
     );
   }
-  return sendTransactions(wallet, program.provider.connection, instructions);
+  return await sendTransactions(wallet, program.provider.connection, instructions);
 }
 
 export const drain = async (

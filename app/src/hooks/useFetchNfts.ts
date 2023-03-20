@@ -30,15 +30,19 @@ const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftDa
       } else {
         allNfts = (await metaplex.nfts().findAllByMintList({ mints })).filter(nft => nft);
       }
-
-      const nfts: Array<NftData> = allNfts.map(nft => ({
-        // @ts-ignore
-        mint: nft.mintAddress as PublicKey,
-        name: nft?.name || '',
-        image: "",
-        floorPrice: 0,
-        creator: nft?.creators[0].address || PublicKey.default,
-      }));
+      const creators: { [key: string]: number } = {};
+      const nfts: Array<NftData> = allNfts.map(nft => {
+        const creator = nft?.creators.length ? nft?.creators[0].address : PublicKey.default;
+        creators[creator.toString()] = 0;
+        return {
+          // @ts-ignore
+          mint: nft.mintAddress as PublicKey,
+          name: nft?.name || '',
+          image: "",
+          floorPrice: 0,
+          creator,
+        };
+      });
 
       await Promise.all(
         allNfts.map(async (nft, index) => {
@@ -53,10 +57,15 @@ const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftDa
         })
       );
 
-      const res = await hsClient.getProjects({ condition: { projectIds: nfts.map(nft => nft.creator.toString()) } });
+      const res = await hsClient.getProjects({ condition: { projectIds: Object.keys(creators) } });
       let index = 0;
       for (const project of res.getProjectStats.project_stats || []) {
-        nfts[index++].floorPrice = project.floor_price || 0;
+        const creator = project.project_id;
+        creators[creator] = project.floor_price || 0;
+      }
+
+      for (const nft of nfts) {
+        nft.floorPrice = creators[nft.creator.toString()];
       }
 
       nfts.sort((a: NftData, b: NftData) => {

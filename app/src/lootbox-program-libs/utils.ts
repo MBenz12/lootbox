@@ -66,6 +66,7 @@ export const sendTransactions = async (
         transaction.instructions = [];
       }
     }
+    if (transaction.instructions.length) transactions.push(transaction);
     const recentBlockhash = await getRecentBlockhash(connection);
     for (const transaction of transactions) {
       transaction.recentBlockhash = recentBlockhash;
