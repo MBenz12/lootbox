@@ -12,7 +12,7 @@ import "@solana/wallet-adapter-react-ui/styles.css";
 import 'react-lazy-load-image-component/src/effects/blur.css';
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [network] = useState(WalletAdapterNetwork.Mainnet);
+  const [network] = useState(WalletAdapterNetwork.Devnet);
   const endpoint = useMemo(() => network === WalletAdapterNetwork.Mainnet ? SOLANA_MAINNET_RPC_URL : SOLANA_DEVNET_RPC_URL, [network]);
   const wallets = useMemo(() => [
     new PhantomWalletAdapter(),

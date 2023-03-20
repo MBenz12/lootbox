@@ -1,8 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 import useFetchNfts from '@/hooks/useFetchNfts';
-import { IDL, Lootbox } from '@/idl/lootbox';
+import { IDL, Lootbox as LootboxIDL } from '@/idl/lootbox';
 import { createLootbox, createPlayer, fund, updateLootbox } from '@/lootbox-program-libs/methods';
-import { Lootobx, Player, Rarity } from '@/lootbox-program-libs/types';
+import { Lootbox, Player, Rarity } from '@/lootbox-program-libs/types';
 import { getLootboxPda, getPlayerPda, programId } from '@/lootbox-program-libs/utils';
 import { AnchorProvider, BN, Program } from '@project-serum/anchor';
 import { getMint, NATIVE_MINT } from '@solana/spl-token';
@@ -13,9 +13,10 @@ import { toast } from 'react-toastify';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { WalletConnectButton, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { TOKENS } from '@/config';
+import { NftData } from '@/types';
 
 export default function Admin() {
-  const [program, setProgram] = useState<Program<Lootbox>>();
+  const [program, setProgram] = useState<Program<LootboxIDL>>();
   const anchorWallet = useAnchorWallet();
   const wallet = useWallet();
   const { connection } = useConnection();
@@ -47,6 +48,8 @@ export default function Admin() {
   const {nfts} = useFetchNfts(reload);
   const [selectedNfts, setSelectedNfts] = useState<Array<number>>([]);
   const [splToken, setSplToken] = useState(TOKENS[0]);
+  const [lootbox, setLootbox] = useState<Lootbox>();
+  const { nfts: lootboxNfts } = useFetchNfts(reload, lootbox ? lootbox.splVaults.map((splVault) => splVault.mint) : []);
 
   useEffect(() => {
     fetchData();
@@ -57,13 +60,13 @@ export default function Admin() {
     try {
       const [lootbox] = getLootboxPda("lootbox");
       const lootboxData = await program.account.lootbox.fetchNullable(lootbox);
-      console.log(lootboxData as Lootobx);
-
+      
       const [player] = getPlayerPda(wallet.publicKey);
       const playerData = await program.account.player.fetchNullable(player);
       console.log(playerData as Player);
-
+      
       if (lootboxData) {
+        setLootbox(lootboxData as Lootbox);
         setFee(lootboxData.fee.toNumber() / LAMPORTS_PER_SOL);
         setFeeWallet(lootboxData.feeWallet.toString());
         setTicketMint(lootboxData.ticketMint);
@@ -192,6 +195,10 @@ export default function Admin() {
       toast.error('Failed to fund token');
     }
   }
+
+  const handleDrainNfts = async () => {
+
+  }
   return (
     <div className='flex flex-col'>
       <div className='flex justify-center'>
@@ -219,6 +226,36 @@ export default function Admin() {
             >
               <div className='relative'>
                 {selectedNfts.includes(index) && <div className='absolute top-2 right-2 rounded-full w-2 h-2 bg-[#9945FF] z-10'></div>}
+                <LazyLoadImage 
+                  src={nft.image}
+                  className='rounded-md w-full'
+                  effect='blur'
+                />
+              </div>
+              {/* <img src={nft.image} alt="" className='rounded-md w-full' /> */}
+              {/* <p>{nft.name}</p> */}
+              <p>{nft.floorPrice.toLocaleString('en-us', { maximumFractionDigits: 2 })}sol</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <div className='grid grid-cols-6 gap-5'>
+      {
+          lootboxNfts.map((nft, index) => (
+            <div 
+              key={nft.mint.toString()} 
+              className="flex flex-col justify-between" 
+              onClick={() => {
+                // if (selectedNfts.includes(index)) {
+                //   setSelectedNfts(selectedNfts.filter((val) => val !== index));
+                // } else {
+                //   setSelectedNfts([...selectedNfts, index]);
+                // }
+              }}
+            >
+              <div className='relative'>
+                {/* {<div className='absolute top-2 right-2 rounded-full w-2 h-2 bg-[#9945FF] z-10'></div>} */}
                 <LazyLoadImage 
                   src={nft.image}
                   className='rounded-md w-full'
