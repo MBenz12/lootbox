@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
 
-export type Lootobx = {
+export type Lootbox = {
   name: string;
   authority: PublicKey;
   fee: BN;
