@@ -1,0 +1,1423 @@
+export type Lootbox = {
+  "version": "0.1.0",
+  "name": "lootbox",
+  "instructions": [
+    {
+      "name": "createLootbox",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "fee",
+          "type": "u64"
+        },
+        {
+          "name": "feeWallet",
+          "type": "publicKey"
+        },
+        {
+          "name": "ticketMint",
+          "type": "publicKey"
+        },
+        {
+          "name": "ticketPrice",
+          "type": "u64"
+        },
+        {
+          "name": "rarities",
+          "type": {
+            "vec": {
+              "defined": "Rarity"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "updateLootbox",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "fee",
+          "type": "u64"
+        },
+        {
+          "name": "feeWallet",
+          "type": "publicKey"
+        },
+        {
+          "name": "ticketPrice",
+          "type": "u64"
+        },
+        {
+          "name": "rarities",
+          "type": {
+            "vec": {
+              "defined": "Rarity"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "fund",
+      "accounts": [
+        {
+          "name": "funder",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "prizeMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "funderAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lootboxAta",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "drain",
+      "accounts": [
+        {
+          "name": "drainer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "prizeMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "lootboxAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "drainerAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "addOnChainItem",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "prizeMint",
+          "type": "publicKey"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "rarity",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "updateOnChainItem",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "index",
+          "type": "u8"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "addOffChainItem",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "itemIndex",
+          "type": "u8"
+        },
+        {
+          "name": "totalItems",
+          "type": "u32"
+        },
+        {
+          "name": "rarity",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "createPlayer",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "player",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "play",
+      "accounts": [
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "feeWallet",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "player",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lootboxAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "instructionSysvarAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "recentSlothashes",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "claim",
+      "accounts": [
+        {
+          "name": "claimer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "player",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "prizeMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "lootboxAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "claimerAta",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "instructionSysvarAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "confirmClaimed",
+      "accounts": [
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "player",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "itemIndex",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "setClaimed",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "user",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "player",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "itemIndex",
+          "type": "u8"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "lootbox",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "fee",
+            "type": "u64"
+          },
+          {
+            "name": "feeWallet",
+            "type": "publicKey"
+          },
+          {
+            "name": "ticketMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "ticketPrice",
+            "type": "u64"
+          },
+          {
+            "name": "rarities",
+            "type": {
+              "vec": {
+                "defined": "Rarity"
+              }
+            }
+          },
+          {
+            "name": "splVaults",
+            "type": {
+              "vec": {
+                "defined": "SplVault"
+              }
+            }
+          },
+          {
+            "name": "prizeItems",
+            "type": {
+              "vec": {
+                "defined": "PrizeItem"
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "player",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "key",
+            "type": "publicKey"
+          },
+          {
+            "name": "lootboxes",
+            "type": {
+              "vec": {
+                "defined": "PlayerBox"
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "SplVault",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "publicKey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PrizeItem",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "onChainItem",
+            "type": {
+              "option": {
+                "defined": "OnChainItem"
+              }
+            }
+          },
+          {
+            "name": "offChainItem",
+            "type": {
+              "option": {
+                "defined": "OffChainItem"
+              }
+            }
+          },
+          {
+            "name": "rarity",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OnChainItem",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "splIndex",
+            "type": "u8"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OffChainItem",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "itemIndex",
+            "type": "u8"
+          },
+          {
+            "name": "totalItems",
+            "type": "u32"
+          },
+          {
+            "name": "usedItems",
+            "type": "u32"
+          },
+          {
+            "name": "claimed",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Rarity",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "dropPercent",
+            "type": "u32"
+          },
+          {
+            "name": "minSpins",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PlayerBox",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lootbox",
+            "type": "publicKey"
+          },
+          {
+            "name": "raritySpins",
+            "type": {
+              "vec": "u16"
+            }
+          },
+          {
+            "name": "onChainPrizes",
+            "type": {
+              "vec": {
+                "defined": "OnChainItem"
+              }
+            }
+          },
+          {
+            "name": "offChainPrizes",
+            "type": {
+              "vec": {
+                "defined": "OffChainItem"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "PlayEvent",
+      "fields": [
+        {
+          "name": "player",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "lootbox",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "prizeItem",
+          "type": {
+            "defined": "PrizeItem"
+          },
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidInstructionAdded",
+      "msg": "Invalid Instruction Added"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidProgramId",
+      "msg": "Invalid Program"
+    },
+    {
+      "code": 6002,
+      "name": "NoPrize",
+      "msg": "No Prize"
+    }
+  ]
+};
+
+export const IDL: Lootbox = {
+  "version": "0.1.0",
+  "name": "lootbox",
+  "instructions": [
+    {
+      "name": "createLootbox",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "fee",
+          "type": "u64"
+        },
+        {
+          "name": "feeWallet",
+          "type": "publicKey"
+        },
+        {
+          "name": "ticketMint",
+          "type": "publicKey"
+        },
+        {
+          "name": "ticketPrice",
+          "type": "u64"
+        },
+        {
+          "name": "rarities",
+          "type": {
+            "vec": {
+              "defined": "Rarity"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "updateLootbox",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "fee",
+          "type": "u64"
+        },
+        {
+          "name": "feeWallet",
+          "type": "publicKey"
+        },
+        {
+          "name": "ticketPrice",
+          "type": "u64"
+        },
+        {
+          "name": "rarities",
+          "type": {
+            "vec": {
+              "defined": "Rarity"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "fund",
+      "accounts": [
+        {
+          "name": "funder",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "prizeMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "funderAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lootboxAta",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "drain",
+      "accounts": [
+        {
+          "name": "drainer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "prizeMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "lootboxAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "drainerAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "addOnChainItem",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "prizeMint",
+          "type": "publicKey"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "rarity",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "updateOnChainItem",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "index",
+          "type": "u8"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "addOffChainItem",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "itemIndex",
+          "type": "u8"
+        },
+        {
+          "name": "totalItems",
+          "type": "u32"
+        },
+        {
+          "name": "rarity",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "createPlayer",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "player",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "play",
+      "accounts": [
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "feeWallet",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "player",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lootboxAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "instructionSysvarAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "recentSlothashes",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "claim",
+      "accounts": [
+        {
+          "name": "claimer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "player",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "prizeMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "lootboxAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "claimerAta",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "instructionSysvarAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "confirmClaimed",
+      "accounts": [
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "player",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "itemIndex",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "setClaimed",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "user",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "lootbox",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "player",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "itemIndex",
+          "type": "u8"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "lootbox",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "fee",
+            "type": "u64"
+          },
+          {
+            "name": "feeWallet",
+            "type": "publicKey"
+          },
+          {
+            "name": "ticketMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "ticketPrice",
+            "type": "u64"
+          },
+          {
+            "name": "rarities",
+            "type": {
+              "vec": {
+                "defined": "Rarity"
+              }
+            }
+          },
+          {
+            "name": "splVaults",
+            "type": {
+              "vec": {
+                "defined": "SplVault"
+              }
+            }
+          },
+          {
+            "name": "prizeItems",
+            "type": {
+              "vec": {
+                "defined": "PrizeItem"
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "player",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "key",
+            "type": "publicKey"
+          },
+          {
+            "name": "lootboxes",
+            "type": {
+              "vec": {
+                "defined": "PlayerBox"
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "SplVault",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "publicKey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PrizeItem",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "onChainItem",
+            "type": {
+              "option": {
+                "defined": "OnChainItem"
+              }
+            }
+          },
+          {
+            "name": "offChainItem",
+            "type": {
+              "option": {
+                "defined": "OffChainItem"
+              }
+            }
+          },
+          {
+            "name": "rarity",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OnChainItem",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "splIndex",
+            "type": "u8"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OffChainItem",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "itemIndex",
+            "type": "u8"
+          },
+          {
+            "name": "totalItems",
+            "type": "u32"
+          },
+          {
+            "name": "usedItems",
+            "type": "u32"
+          },
+          {
+            "name": "claimed",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Rarity",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "dropPercent",
+            "type": "u32"
+          },
+          {
+            "name": "minSpins",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PlayerBox",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lootbox",
+            "type": "publicKey"
+          },
+          {
+            "name": "raritySpins",
+            "type": {
+              "vec": "u16"
+            }
+          },
+          {
+            "name": "onChainPrizes",
+            "type": {
+              "vec": {
+                "defined": "OnChainItem"
+              }
+            }
+          },
+          {
+            "name": "offChainPrizes",
+            "type": {
+              "vec": {
+                "defined": "OffChainItem"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "PlayEvent",
+      "fields": [
+        {
+          "name": "player",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "lootbox",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "prizeItem",
+          "type": {
+            "defined": "PrizeItem"
+          },
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidInstructionAdded",
+      "msg": "Invalid Instruction Added"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidProgramId",
+      "msg": "Invalid Program"
+    },
+    {
+      "code": 6002,
+      "name": "NoPrize",
+      "msg": "No Prize"
+    }
+  ]
+};

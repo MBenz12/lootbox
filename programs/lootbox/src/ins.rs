@@ -1,5 +1,5 @@
 use anchor_lang::{prelude::*, solana_program::sysvar};
-use anchor_spl::{token::{Mint, TokenAccount, Token}, associated_token::AssociatedToken};
+use anchor_spl::token::{Mint, TokenAccount, Token};
 
 use crate::state::*;
 
@@ -11,7 +11,7 @@ pub struct CreateLootbox<'info> {
 
     #[account(
         init,
-        space =  16000,
+        space =  10240,
         seeds = [
             b"lootbox".as_ref(),
             name.as_ref(),
@@ -227,12 +227,6 @@ pub struct Claim<'info> {
     pub instruction_sysvar_account: AccountInfo<'info>,
 
     pub token_program: Program<'info, Token>,
-
-    pub associated_token_program: Program<'info, AssociatedToken>,
-
-    pub system_program: Program<'info, System>,
-
-    pub rent: Sysvar<'info, Rent>,
 }
 
 #[derive(Accounts)]
