@@ -6,10 +6,11 @@ import { Metaplex } from "@metaplex-foundation/js";
 import { PublicKey } from "@solana/web3.js";
 import { HyperspaceClient } from "hyperspace-client-js";
 import { HYPERSPACE_API_KEY } from '@/config';
+import { Lootbox } from '@/lootbox-program-libs/types';
 
 const hsClient = new HyperspaceClient(HYPERSPACE_API_KEY);
 
-const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftData>, loading: boolean } => {
+const useFetchNfts = (reload: {}, lootbox?: Lootbox): { nfts: Array<NftData>, loading: boolean } => {
   const wallet = useWallet();
   const { connection } = useConnection();
 
@@ -18,17 +19,19 @@ const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftDa
   const [nfts, setNfts] = useState<Array<NftData>>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetch = useCallback(async (mints: Array<PublicKey> | undefined) => {
+  const fetch = useCallback(async (lootbox?: Lootbox) => {
     if (!wallet.publicKey) {
       return;
     }
     setLoading(true);
     try {
       let allNfts;
-      if (!mints) {
+      if (!lootbox) {
         allNfts = await metaplex.nfts().findAllByOwner({ owner: wallet.publicKey });
       } else {
+        const mints = lootbox.splVaults.map((splVault) => splVault.mint);
         allNfts = (await metaplex.nfts().findAllByMintList({ mints })).filter(nft => nft);
+        console.log(allNfts);
       }
       const creators: { [key: string]: number } = {};
       const nfts: Array<NftData> = allNfts.map(nft => {
@@ -81,8 +84,8 @@ const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftDa
   }, [metaplex, wallet.publicKey]);
 
   useEffect(() => {
-    fetch(mints);
-  }, [wallet.publicKey, metaplex, fetch, reload, mints]);
+    fetch(lootbox);
+  }, [wallet.publicKey, metaplex, fetch, reload, lootbox]);
 
   return { nfts, loading };
 };

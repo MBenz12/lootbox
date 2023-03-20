@@ -47,7 +47,8 @@ export default function Admin() {
   const [selectedNfts, setSelectedNfts] = useState<Array<number>>([]);
   const [splToken, setSplToken] = useState(TOKENS[0]);
   const { lootbox } = useFetchLootbox(program, name, reload);
-  const { nfts: lootboxNfts } = useFetchNfts(reload, lootbox ? lootbox.splVaults.map((splVault) => splVault.mint) : []);
+  
+  const { nfts: lootboxNfts } = useFetchNfts(reload, lootbox);
 
   const fetchData = useCallback(async () => {
     try {
