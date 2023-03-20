@@ -9,6 +9,7 @@ import { useMemo, useState } from 'react'
 import { ToastContainer } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css";
 import "@solana/wallet-adapter-react-ui/styles.css";
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [network] = useState(WalletAdapterNetwork.Mainnet);

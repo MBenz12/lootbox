@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import useFetchNfts from '@/hooks/useFetchNfts';
 import { IDL, Lootbox } from '@/idl/lootbox';
-import { createLootbox, createPlayer, updateLootbox } from '@/lootbox-program-libs/methods';
+import { createLootbox, createPlayer, fund, updateLootbox } from '@/lootbox-program-libs/methods';
 import { Lootobx, Player, Rarity } from '@/lootbox-program-libs/types';
 import { getLootboxPda, getPlayerPda, programId } from '@/lootbox-program-libs/utils';
 import { AnchorProvider, BN, Program } from '@project-serum/anchor';
@@ -10,12 +10,16 @@ import { useAnchorWallet, useConnection, useWallet } from '@solana/wallet-adapte
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { WalletConnectButton, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { TOKENS } from '@/config';
 
 export default function Admin() {
   const [program, setProgram] = useState<Program<Lootbox>>();
   const anchorWallet = useAnchorWallet();
   const wallet = useWallet();
   const { connection } = useConnection();
+  console.log(anchorWallet);
 
   useEffect(() => {
     if (!connection || !anchorWallet) return;
@@ -37,9 +41,12 @@ export default function Admin() {
     { dropPercent: 100, minSpins: 10 },
     { dropPercent: 2, minSpins: 50 },
   ]);
+  
 
   const [reload, setReload] = useState({});
   const {nfts} = useFetchNfts(reload);
+  const [selectedNfts, setSelectedNfts] = useState<Array<number>>([]);
+  const [splToken, setSplToken] = useState(TOKENS[0]);
 
   useEffect(() => {
     fetchData();
@@ -138,18 +145,89 @@ export default function Admin() {
       toast.error('Failed to create player account');
     }
   }
+
+  const handleFundNfts = async () => {
+    if (!wallet.publicKey || !program) {
+      return;
+    }
+
+    const mints = selectedNfts.map(index => nfts[index].mint);
+    const amounts = Array(selectedNfts.length).fill(new BN(1));
+    const txn = await fund(
+      program, 
+      name,
+      wallet,
+      mints,
+      amounts,
+    );
+    console.log(txn)
+    if (txn) {
+      toast.success('Funded Nfts successfully');
+      setReload({});
+    } else {
+      toast.error('Failed to fund Nfts');
+    }
+  }
+
+  const handleFundSpl = async () => {
+    if (!wallet.publicKey || !program) {
+      return;
+    }
+
+    let { decimals } = await getMint(connection, splToken.mint);
+    decimals = Math.pow(10, decimals);
+    const amount = 1;
+    const txn = await fund(
+      program, 
+      name,
+      wallet,
+      [splToken.mint],
+      [new BN(amount * decimals)],
+    );
+    console.log(txn)
+    if (txn) {
+      toast.success(`Funded ${amount} ${splToken.symbol}  successfully`);
+      setReload({});
+    } else {
+      toast.error('Failed to fund token');
+    }
+  }
   return (
     <div className='flex flex-col'>
+      <div className='flex justify-center'>
+        {!wallet.publicKey ? <WalletConnectButton /> : <WalletMultiButton /> }
+      </div>
       <button onClick={handleCreateLootbox}>Create Lootbox</button>
       <button onClick={handleUpdateLootbox}>Update Lootbox</button>
       <button onClick={handleCreatePlayer}>Create Player</button>
-      <div className='flex gap-1'>
+      <button onClick={handleFundNfts}>Fund NFTs</button>
+      <button onClick={handleFundSpl}>Fund Spl</button>
+
+      <div className='grid grid-cols-6 gap-5'>
         {
-          nfts.map((nft) => (
-            <div key={nft.mint.toString()} className="w-[150px] h-[150px] rounded-md">
-              <img src={nft.image} alt="" className='rounded-md' />
-              <p>{nft.name}</p>
-              <p>{nft.floorPrice}sol</p>
+          nfts.map((nft, index) => (
+            <div 
+              key={nft.mint.toString()} 
+              className="flex flex-col justify-between" 
+              onClick={() => {
+                if (selectedNfts.includes(index)) {
+                  setSelectedNfts(selectedNfts.filter((val) => val !== index));
+                } else {
+                  setSelectedNfts([...selectedNfts, index]);
+                }
+              }}
+            >
+              <div className='relative'>
+                {selectedNfts.includes(index) && <div className='absolute top-2 right-2 rounded-full w-2 h-2 bg-[#9945FF] z-10'></div>}
+                <LazyLoadImage 
+                  src={nft.image}
+                  className='rounded-md w-full'
+                  effect='blur'
+                />
+              </div>
+              {/* <img src={nft.image} alt="" className='rounded-md w-full' /> */}
+              {/* <p>{nft.name}</p> */}
+              <p>{nft.floorPrice.toLocaleString('en-us', { maximumFractionDigits: 2 })}sol</p>
             </div>
           ))
         }
