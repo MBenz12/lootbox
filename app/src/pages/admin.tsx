@@ -56,7 +56,7 @@ export default function Admin() {
   const { nfts: lootboxNfts } = useFetchNfts(reload, lootbox);
   const [selectedLootboxNfts, setSelectedLootboxNfts] = useState<Array<number>>([]);
 
-  useEffect(() => {
+  const fetchSplTokens = useCallback(() => {
     if (lootbox) {
       let splMints = TOKENS.map(token => token.mint.toString());
       const newTokens = [...tokens.map(token => ({ ...token }))];
@@ -68,11 +68,15 @@ export default function Admin() {
       });
       setTokens(newTokens);
     }
-  }, [lootbox, tokens]);
+  }, [tokens, lootbox]);
+
+  useEffect(() => {
+    fetchSplTokens();
+  }, [lootbox, fetchSplTokens]);
 
   const fetchData = useCallback(async () => {
     try {
-      if (lootbox) {
+      if (lootbox && connection) {
         setFee(lootbox.fee.toNumber() / LAMPORTS_PER_SOL);
         setFeeWallet(lootbox.feeWallet.toString());
         setTicketMint(lootbox.ticketMint);
