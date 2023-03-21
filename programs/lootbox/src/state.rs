@@ -86,4 +86,6 @@ pub enum LootboxError {
     InvalidProgramId,
     #[msg("No Prize")]
     NoPrize,
+    #[msg("Invalid Drain Prize Item")]
+    InvalidDrain,
 }

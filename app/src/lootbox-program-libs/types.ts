@@ -26,7 +26,8 @@ export type SplVault = {
 
 export type PrizeItem = {
   onChainItem?: OnChainItem;
-  offChainItem: OffChainItem;
+  offChainItem?: OffChainItem;
+  rarity: number;
 }
 
 export type OnChainItem = {

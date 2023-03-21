@@ -1,7 +1,7 @@
 import useFetchNfts from '@/hooks/useFetchNfts';
 import { IDL, Lootbox as LootboxIDL } from '@/idl/lootbox';
-import { createLootbox, createPlayer, drain, fund, updateLootbox } from '@/lootbox-program-libs/methods';
-import { Rarity } from '@/lootbox-program-libs/types';
+import { addItems, createLootbox, createPlayer, drain, fund, updateLootbox } from '@/lootbox-program-libs/methods';
+import { OffChainItem, Rarity } from '@/lootbox-program-libs/types';
 import { programId } from '@/lootbox-program-libs/utils';
 import { AnchorProvider, BN, Program } from '@project-serum/anchor';
 import { getMint, NATIVE_MINT } from '@solana/spl-token';
@@ -13,7 +13,6 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { WalletConnectButton, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { TOKENS } from '@/config';
 import useFetchLootbox from '@/hooks/useFetchLootbox';
-import { getTokenSymbol } from '@/utils';
 import { TOKEN } from '@/types';
 
 export default function Admin() {
@@ -56,25 +55,13 @@ export default function Admin() {
   const { nfts: lootboxNfts } = useFetchNfts(reload, lootbox);
   const [selectedLootboxNfts, setSelectedLootboxNfts] = useState<Array<number>>([]);
 
-  const fetchSplTokens = useCallback(() => {
-    if (lootbox) {
-      let splMints = TOKENS.map(token => token.mint.toString());
-      const newTokens = [...tokens.map(token => ({ ...token }))];
-      lootbox.splVaults.filter(splVault => splMints.includes(splVault.amount.toString())).map(splVault => {
-        let index = splMints.indexOf(splVault.mint.toString());
-        if (index !== -1) {
-          newTokens[index].balance = splVault.amount.toNumber() / TOKENS[index].decimals;
-        }
-      });
-      setTokens(newTokens);
-    }
-  }, [tokens, lootbox]);
+  const [nftPrizes, setNftPrizes] = useState<Array<Array<{ index: number, lootbox: boolean }>>>(new Array(4).fill([]));
+  const [splPrizes, setSplPrizes] = useState<Array<Array<{ index: number, amount: number, lootbox: boolean }>>>(new Array(4).fill([]));
+  const [currentSplRarity, setCurrentSplRarity] = useState(0);
+  const [offChainPrizes, setOffChainPrizes] = useState<Array<OffChainItem>>([]);
+  const [offChainItems, setOffChainItems] = useState<Array<{ index: number, name: string, image: string }>>([]);
 
-  useEffect(() => {
-    fetchSplTokens();
-  }, [lootbox, fetchSplTokens]);
-
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (tokens: Array<TOKEN>) => {
     try {
       if (lootbox && connection) {
         setFee(lootbox.fee.toNumber() / LAMPORTS_PER_SOL);
@@ -85,6 +72,34 @@ export default function Admin() {
         setDecimals(decimals);
         setTicketPrice(lootbox.ticketPrice.toNumber() / decimals);
         setRarities(lootbox.rarities);
+
+        let splMints = TOKENS.map(token => token.mint.toString());
+        const newTokens = [...tokens.map(token => ({ ...token }))];
+        lootbox.splVaults.filter(splVault => splMints.includes(splVault.mint.toString())).map(splVault => {
+          let index = splMints.indexOf(splVault.mint.toString());
+          if (index !== -1) {
+            newTokens[index].balance = splVault.amount.toNumber() / TOKENS[index].decimals;
+          }
+          console.log(splVault.amount.toNumber());
+        });
+        setTokens(newTokens);
+
+        const nftPrizes = new Array(4).fill([]);
+        const splPrizes = new Array(4).fill([]);
+        lootbox.prizeItems.forEach((prizeItem) => {
+          const { rarity } = prizeItem;
+          if (prizeItem.onChainItem) {
+            const { splIndex, amount: prizeAmount } = prizeItem.onChainItem;
+            const { mint, amount } = lootbox.splVaults[splIndex];
+            if (amount.toNumber() === 1) {
+              nftPrizes[rarity].push({ index: splIndex, lootbox: true });
+            } else {
+              splPrizes[rarity].push({ index: splIndex, lootbox: true, amount: prizeAmount });
+            }
+          }
+        })
+        setNftPrizes(nftPrizes);
+        setSplPrizes(splPrizes);
       } else {
 
       }
@@ -95,7 +110,8 @@ export default function Admin() {
   }, [lootbox, connection]);
 
   useEffect(() => {
-    fetchData();
+    fetchData(tokens);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reload, fetchData]);
 
   const handleCreateLootbox = async () => {
@@ -193,6 +209,7 @@ export default function Admin() {
 
     const { decimals, symbol, mint } = token;
     const amount = tokenAmounts[index];
+    if (!amount) return;
     const txn = await fund(
       program,
       name,
@@ -237,7 +254,7 @@ export default function Admin() {
       return;
     }
 
-    const mints = selectedLootboxNfts.map(index => nfts[index].mint);
+    const mints = selectedLootboxNfts.map(index => lootboxNfts[index].mint);
     const amounts = Array(selectedLootboxNfts.length).fill(new BN(1));
     const txn = await drain(
       program,
@@ -254,6 +271,55 @@ export default function Admin() {
       toast.error('Failed to drain Nfts');
     }
   }
+
+  const handleAddPrizes = async () => {
+    if (!wallet.publicKey || !program) {
+      return;
+    }
+
+    const mints: Array<PublicKey> = [];
+    const amounts: Array<BN> = [];
+    const rarities: Array<number> = [];
+    for (let rarity = 0; rarity < 4; rarity++) {
+      nftPrizes[rarity].forEach((item) => {
+        if (!item.lootbox) {
+          mints.push(lootboxNfts[item.index].mint);
+          amounts.push(new BN(1));
+          rarities.push(rarity);
+        }
+      })
+      splPrizes[rarity].forEach(splItem => {
+        if (!splItem.lootbox) {
+          mints.push(tokens[splItem.index].mint);
+          amounts.push(new BN(splItem.amount * tokens[splItem.index].decimals));
+          rarities.push(rarity);
+        }
+      })
+    }
+    const txn = await addItems(
+      program,
+      name,
+      wallet,
+      mints,
+      amounts,
+      rarities,
+      []
+    )
+
+    console.log(txn)
+    if (txn) {
+      toast.success('Drained Nfts successfully');
+      setReload({});
+    } else {
+      toast.error('Failed to drain Nfts');
+    }
+  }
+
+  const handleAddNftPrizes = (prizes: Array<number>, rarity: number) => {
+    const newNftPrizes = nftPrizes.map((prizes) => [...prizes]);
+    newNftPrizes[rarity] = prizes.map((index) => ({ index, lootbox: false }));
+    setNftPrizes(newNftPrizes);
+  }
   return (
     <div className='flex flex-col'>
       <div className='flex justify-center'>
@@ -265,11 +331,68 @@ export default function Admin() {
       <button onClick={handleFundNfts}>Fund NFTs</button>
       <button onClick={handleDrainNfts}>Drain NFTs</button>
 
+      <div>
+        <div className='flex gap-2 flex-row-reverse w-fit'>
+          {['Common', 'Uncommon', 'Rare', 'Legend'].map((category, index) => (
+            <button
+              className={`border ${index === currentSplRarity ? 'border-black' : ''}`}
+              key={'spl-button-' + category}
+              onClick={() => setCurrentSplRarity(index)}
+            >{category}</button>
+          ))}
+        </div>
+      </div>
+      <div className='flex flex-col gap-1'>
+        {splPrizes[currentSplRarity].map((splItem: { index: number, amount: number }, index: number) => (
+          <div key={`splItem-${index}`} className='flex gap-1 items-center'>
+            <input
+              className='border border-black'
+              type='number'
+              value={splItem.amount}
+              onChange={(e) => {
+                const newSplPrizes = splPrizes.map(prizes => prizes.map(prize => ({ ...prize })));
+                newSplPrizes[currentSplRarity][index].amount = parseFloat(e.target.value) || 0.0;
+                setSplPrizes(newSplPrizes);
+              }}
+            />
+            <select
+              className='border border-black'
+              value={splItem.index}
+              onChange={(e) => {
+                const newSplPrizes = splPrizes.map(prizes => prizes.map(prize => ({ ...prize })));
+                newSplPrizes[currentSplRarity][index].index = parseInt(e.target.value);
+                setSplPrizes(newSplPrizes);
+              }}
+            >
+              {tokens.map((token, tokenIndex) => (
+                <option key={`${index}-${token.symbol}`} value={tokenIndex}>{token.symbol}</option>
+              ))}
+            </select>
+            <button
+              className='border border-black'
+              onClick={() => {
+                const newSplPrizes = splPrizes.map(prizes => prizes.map(prize => ({ ...prize })));
+                newSplPrizes[currentSplRarity].splice(index, 1);
+                setSplPrizes(newSplPrizes);
+              }}>Remove</button>
+          </div>
+        ))}
+        <button
+          className='border border-black w-fit'
+          onClick={() => {
+            const newSplPrizes = splPrizes.map(prizes => prizes.map(prize => ({ ...prize })));
+            newSplPrizes[currentSplRarity].push({ index: 0, amount: 0, lootbox: false });
+            setSplPrizes(newSplPrizes);
+          }}>Add</button>
+      </div>
+
+
       <div className='flex flex-col'>
         {tokens.map((token, index) => (
           <div key={token.mint.toString()} className='flex gap-2'>
             <p>{token.symbol}: {token.balance}</p>
             <input
+              className='border border-black'
               value={tokenAmounts[index]}
               onChange={(e) => {
                 const amounts = [...tokenAmounts];
