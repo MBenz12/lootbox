@@ -10,6 +10,10 @@ import { ToastContainer } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css";
 import "@solana/wallet-adapter-react-ui/styles.css";
 import 'react-lazy-load-image-component/src/effects/blur.css';
+import ModalProvider from '@/contexts/modal-context'
+import "swiper/css";
+import "swiper/css/free-mode";
+import Layout from '@/components/Layout'
 
 export default function App({ Component, pageProps }: AppProps) {
   const [network] = useState(WalletAdapterNetwork.Devnet);
@@ -32,7 +36,11 @@ export default function App({ Component, pageProps }: AppProps) {
             pauseOnFocusLoss={false}
             toastClassName={() => "bg-black text-white relative flex p-1 min-h-[50px] rounded-md justify-between overflow-hidden cursor-pointer shadow-2xl"}
           />
-          <Component {...pageProps} />
+          <ModalProvider>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </ModalProvider>
         </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
