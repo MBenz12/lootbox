@@ -1,4 +1,5 @@
 import { NATIVE_MINT } from '@solana/spl-token';
+import { PublicKey } from '@solana/web3.js';
 
 export const SOLANA_MAINNET_RPC_URL = "https://patient-empty-rain.solana-mainnet.quiknode.pro/dfba1e28dfc6728a18eef1b0e51e5f4c2db4cc05/";
 export const SOLANA_DEVNET_RPC_URL = "https://rough-nameless-reel.solana-devnet.quiknode.pro/bc8f88008d8deb00685aa1610e258fda9bf9ddab/";
@@ -12,4 +13,13 @@ export const DEBUG = true;
 
 export const TOKENS = [
   { symbol: 'SOL', mint: NATIVE_MINT, decimals: 1e9 },
+  { symbol: 'DUST', mint: new PublicKey("DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ"), decimals: 1e9 },
+  { symbol: 'ZEN', mint: new PublicKey("ZEN5PLn2YpFCGVZobQGUocpdzS7PuZRAN4MARaX8qAz"), decimals: 1e9 },
 ];
+
+export const RARITY = [
+  'Common',
+  'Uncommon',
+  'Rare',
+  'Legendary',
+]
