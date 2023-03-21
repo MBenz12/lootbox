@@ -29,9 +29,8 @@ const useFetchNfts = (reload: {}, lootbox?: Lootbox): { nfts: Array<NftData>, lo
       if (!lootbox) {
         allNfts = await metaplex.nfts().findAllByOwner({ owner: wallet.publicKey });
       } else {
-        const mints = lootbox.splVaults.map((splVault) => splVault.mint);
+        const mints = lootbox.splVaults.filter(splVault => splVault.amount.toNumber() === 1).map((splVault) => splVault.mint);
         allNfts = (await metaplex.nfts().findAllByMintList({ mints })).filter(nft => nft);
-        console.log(allNfts);
       }
       const creators: { [key: string]: number } = {};
       const nfts: Array<NftData> = allNfts.map(nft => {
