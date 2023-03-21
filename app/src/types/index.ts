@@ -7,3 +7,10 @@ export type NftData = {
   creator: PublicKey;
   floorPrice: number;
 }
+
+export type TOKEN = {
+  mint: PublicKey;
+  symbol: string;
+  balance: number;
+  decimals: number;
+}

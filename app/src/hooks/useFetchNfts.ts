@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import axios from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
@@ -7,27 +6,30 @@ import { Metaplex } from "@metaplex-foundation/js";
 import { PublicKey } from "@solana/web3.js";
 import { HyperspaceClient } from "hyperspace-client-js";
 import { HYPERSPACE_API_KEY } from '@/config';
+import { Lootbox } from '@/lootbox-program-libs/types';
 
 const hsClient = new HyperspaceClient(HYPERSPACE_API_KEY);
 
-const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftData> } => {
+const useFetchNfts = (reload: {}, lootbox?: Lootbox): { nfts: Array<NftData>, loading: boolean } => {
   const wallet = useWallet();
   const { connection } = useConnection();
 
   const metaplex = useMemo(() => new Metaplex(connection), [connection]);
 
   const [nfts, setNfts] = useState<Array<NftData>>([]);
+  const [loading, setLoading] = useState(false);
 
-  const fetch = useCallback(async () => {
+  const fetch = useCallback(async (lootbox?: Lootbox) => {
     if (!wallet.publicKey) {
       return;
     }
+    setLoading(true);
     try {
       let allNfts;
-      if (!mints) {
+      if (!lootbox) {
         allNfts = await metaplex.nfts().findAllByOwner({ owner: wallet.publicKey });
-
       } else {
+        const mints = lootbox.splVaults.filter(splVault => splVault.amount.toNumber() === 1).map((splVault) => splVault.mint);
         allNfts = (await metaplex.nfts().findAllByMintList({ mints })).filter(nft => nft);
       }
       const creators: { [key: string]: number } = {};
@@ -58,7 +60,6 @@ const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftDa
       );
 
       const res = await hsClient.getProjects({ condition: { projectIds: Object.keys(creators) } });
-      let index = 0;
       for (const project of res.getProjectStats.project_stats || []) {
         const creator = project.project_id;
         creators[creator] = project.floor_price || 0;
@@ -77,13 +78,15 @@ const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftDa
     } catch (error) {
       console.log(error);
     }
+
+    setLoading(false);
   }, [metaplex, wallet.publicKey]);
 
   useEffect(() => {
-    fetch();
-  }, [wallet.publicKey, metaplex, fetch, reload]);
+    fetch(lootbox);
+  }, [wallet.publicKey, metaplex, fetch, reload, lootbox]);
 
-  return { nfts };
+  return { nfts, loading };
 };
 
 export default useFetchNfts;

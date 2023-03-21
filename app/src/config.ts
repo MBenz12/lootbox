@@ -11,5 +11,5 @@ export const SKIP_PREFLIGHT = true;
 export const DEBUG = true;
 
 export const TOKENS = [
-  { symbol: 'SOL', mint: NATIVE_MINT },
+  { symbol: 'SOL', mint: NATIVE_MINT, decimals: 1e9 },
 ];
