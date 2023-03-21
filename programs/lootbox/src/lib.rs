@@ -118,6 +118,15 @@ pub mod lootbox {
             .checked_sub(amount)
             .unwrap();
 
+        require!(
+            lootbox
+                .prize_items
+                .iter()
+                .any(|x| x.on_chain_item.is_some() && x.on_chain_item.unwrap().spl_index == index as u8)
+                == true,
+            LootboxError::InvalidDrain
+        );
+
         Ok(())
     }
 
