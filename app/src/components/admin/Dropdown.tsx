@@ -19,7 +19,7 @@ const Dropdown: React.FC<DropdownProps> = ({options, onChange, value, name}) => 
         {
           options.map((option, index) => {
             return (
-              <option value={option} key={index}>{option}</option>
+              <option className={"text-black"} value={option} key={index}>{option}</option>
             )
           })
         }
