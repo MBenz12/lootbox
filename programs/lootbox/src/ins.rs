@@ -26,7 +26,7 @@ pub struct CreateLootbox<'info> {
 
 #[derive(Accounts)]
 pub struct UpdateLootbox<'info> {
-    #[account(mut)]
+    #[account(mut, address = lootbox.authority)]
     pub authority: Signer<'info>,
 
     #[account(
