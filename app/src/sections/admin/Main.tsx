@@ -121,7 +121,8 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
             } else {
               let tokenMints = TOKENS.map(token => token.mint.toString());
               let tokenIndex = tokenMints.indexOf(mint.toString());
-              splPrizes[rarity].push({ index: tokenIndex, lootbox: true, amount: prizeAmount });
+              let decimals = tokens[tokenIndex].decimals;
+              splPrizes[rarity].push({ index: tokenIndex, lootbox: true, amount: prizeAmount.toNumber() / decimals });
             }
           }
         })
