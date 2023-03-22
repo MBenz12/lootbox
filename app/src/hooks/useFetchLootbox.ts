@@ -17,8 +17,11 @@ const useFetchLootbox = (program: Program<LootboxIDL> | undefined, name: string,
       const lootboxData = await program.account.lootbox.fetchNullable(lootbox);
       if (lootboxData) {
         setLootbox(lootboxData as Lootbox);
+      } else {
+        setLootbox(undefined);
       }
     } catch (error) {
+      setLootbox(undefined);
       console.log(error);
     }
     setLoading(false);

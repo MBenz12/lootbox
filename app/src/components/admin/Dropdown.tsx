@@ -11,7 +11,7 @@ const Dropdown: React.FC<DropdownProps> = ({options, onChange, value, name}) => 
   return (
     <div>
       <select
-        className="block w-fit bg-white p-1 text-sm text-black rounded-[8px]"
+        className="block w-fit bg-white p-1.5 text-sm text-black rounded-[8px]"
         name={name}
         value={value}
         onChange={onChange}

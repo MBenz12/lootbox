@@ -119,7 +119,7 @@ export type Lootbox = {
         },
         {
           "name": "lootboxAta",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -366,7 +366,7 @@ export type Lootbox = {
         },
         {
           "name": "claimerAta",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -706,6 +706,11 @@ export type Lootbox = {
       "code": 6002,
       "name": "NoPrize",
       "msg": "No Prize"
+    },
+    {
+      "code": 6003,
+      "name": "InvalidDrain",
+      "msg": "Invalid Drain Prize Item"
     }
   ]
 };
@@ -831,7 +836,7 @@ export const IDL: Lootbox = {
         },
         {
           "name": "lootboxAta",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1078,7 +1083,7 @@ export const IDL: Lootbox = {
         },
         {
           "name": "claimerAta",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1418,6 +1423,11 @@ export const IDL: Lootbox = {
       "code": 6002,
       "name": "NoPrize",
       "msg": "No Prize"
+    },
+    {
+      "code": 6003,
+      "name": "InvalidDrain",
+      "msg": "Invalid Drain Prize Item"
     }
   ]
 };

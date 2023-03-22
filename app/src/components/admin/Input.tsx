@@ -5,6 +5,7 @@ interface InputProps {
   desc?: string;
   name: string;
   value: string | number;
+  step?: number;
   type?: "text" | "number";
   size?: "sm" | "md" | "lg";
   placeholder?: string;
@@ -21,6 +22,7 @@ const Input: React.FC<InputProps> = ({
                                        placeholder,
                                        required,
                                        value,
+                                       step,
                                        onChange,
                                        fullWidth = false,
                                        name
@@ -33,11 +35,11 @@ const Input: React.FC<InputProps> = ({
   else
     inputClassName += " w-[80px]";
   if (size === "sm") {
-    inputClassName += " text-sm px-1 py-0.5";
+    inputClassName += " text-sm px-2 py-1";
     labelClassName += " text-[12px]";
   }
   if (size === "md") {
-    inputClassName += " text-md px-2 py-1";
+    inputClassName += " text-md px-3 py-1.5";
     labelClassName += " text-md";
   }
   if (size === "lg") {
@@ -58,6 +60,7 @@ const Input: React.FC<InputProps> = ({
           required={required}
           name={name}
           value={value}
+          step={step}
           onChange={onChange}
         />
         {

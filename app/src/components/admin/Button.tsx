@@ -19,7 +19,7 @@ const Button: React.FC<AdminButtonProps> = ({text, size = "md", onClick, type = 
   if (disabled)
     className += " opacity-50 cursor-not-allowed";
   if (size === "sm")
-    className += " text-[12px] px-2 py-1";
+    className += " text-[12px] px-3 py-1.5";
   if (size === "md")
     className += " text-md px-5 py-1.5";
   if (size === "lg")
