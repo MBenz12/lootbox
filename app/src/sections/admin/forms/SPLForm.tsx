@@ -54,9 +54,23 @@ const SPLForm = ({
             splPrizes[currentSplRarity].map((splItem: SplPrize, index: number) => {
               return (
                 <div key={index} className={"flex gap-2 my-2 items-center"}>
-                  <Input size={"sm"} type={"number"} onChange={() => { }} value={splItem.amount} name={`prizes[${index}].amount`} />
+                  <Input
+                    size={"sm"}
+                    type={"number"}
+                    onChange={(e) => {
+                      const newSplPrizes = splPrizes.map(prizes => prizes.map(prize => ({ ...prize })));
+                      newSplPrizes[currentSplRarity][index].amount = parseFloat(e.target.value) || 0.0;
+                      setSplPrizes(newSplPrizes);
+                    }}
+                    value={splItem.amount}
+                    name={`prizes[${index}].amount`}
+                  />
                   <Dropdown
-                    onChange={() => { }}
+                    onChange={(e) => {
+                      const newSplPrizes = splPrizes.map(prizes => prizes.map(prize => ({ ...prize })));
+                      newSplPrizes[currentSplRarity][index].index = tokens.map(token => token.symbol).indexOf(e.target.value);
+                      setSplPrizes(newSplPrizes);
+                    }}
                     value={tokens[splItem.index].symbol}
                     name={`prizes[${index}].wallet`}
                     options={tokens.map(token => token.symbol)}
@@ -76,6 +90,7 @@ const SPLForm = ({
         <div className={"flex mt-auto justify-center"}>
           <p className={"opacity-50 text-[14px] cursor-pointer w-fit"} onClick={() => {
             const newSplPrizes = splPrizes.map(prizes => prizes.map(prize => ({ ...prize })));
+
             newSplPrizes[currentSplRarity].push({ index: 0, amount: 0, lootbox: false });
             setSplPrizes(newSplPrizes);
           }}>+ Add SPL Prize</p>
