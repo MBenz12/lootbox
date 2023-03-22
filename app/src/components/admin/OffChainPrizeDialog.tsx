@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Button from './Button';
 import Input from './Input';
 import UploadImageInput from './UploadImageInput';
