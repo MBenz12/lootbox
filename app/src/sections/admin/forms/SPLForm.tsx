@@ -17,6 +17,7 @@ const SPLForm = ({
   setCurrentSplRarity,
   handleFundSpl,
   handleDrainSpl,
+  handleRemoveSplPrize,
 }: {
   tokens: Array<TOKEN>,
   splPrizes: Array<Array<SplPrize>>,
@@ -29,6 +30,7 @@ const SPLForm = ({
   setCurrentSplRarity: (rarity: number) => void,
   handleFundSpl: (token: TOKEN, index: number) => void,
   handleDrainSpl: (token: TOKEN, index: number) => void,
+  handleRemoveSplPrize: (rarity: number, prizeIndex: number) => void,
 }) => {
   return (
     <div className={"grid grid-cols-2 border-2 rounded-2xl border-[rgba(255,255,255,.5)] p-1"}>
@@ -76,9 +78,14 @@ const SPLForm = ({
                     options={tokens.map(token => token.symbol)}
                   />
                   <div className={"cursor-pointer"} onClick={() => {
-                    const newSplPrizes = splPrizes.map(prizes => prizes.map(prize => ({ ...prize })));
-                    newSplPrizes[currentSplRarity].splice(index, 1);
-                    setSplPrizes(newSplPrizes);
+                    let prize = splPrizes[currentSplRarity][index];
+                    if (prize.lootbox) {
+                      handleRemoveSplPrize(currentSplRarity, index);
+                    } else {
+                      const newSplPrizes = splPrizes.map(prizes => prizes.map(prize => ({ ...prize })));
+                      newSplPrizes[currentSplRarity].splice(index, 1);
+                      setSplPrizes(newSplPrizes);
+                    }
                   }}>
                     <Image width={17} height={17} className="w-[17px] h-[17px] mt-0.5" src="/images/remove_icon.svg" alt="remove" />
                   </div>
