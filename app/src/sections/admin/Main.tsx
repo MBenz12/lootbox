@@ -23,18 +23,24 @@ import { toast } from 'react-toastify';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { TOKENS } from '@/config';
 import useFetchLootbox from '@/hooks/useFetchLootbox';
-import { NftData, TOKEN } from '@/types';
+import { NftData, NftPrize, OffChainPrize, SplPrize, TOKEN } from '@/types';
+import { getUnselectedPrizes } from '@/utils';
 
 interface MainProps {
   name: string;
   setName: (name: string) => void;
+  reload: {};
+  setReload: (reload: {}) => void;
 }
 
 const rarityCategories = ["Common", "Uncommon", "Rare", "Legendary"];
 
-const Main: React.FC<MainProps> = ({ name, setName }) => {
+const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const [fundDialogOpen, setFundDialogOpen] = useState(false);
   const [drainDialogOpen, setDrainDialogOpen] = useState(false);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [currentNftRarity, setCurrentNftRarity] = useState(3);
+  const [selectedPrizes, setSelectedPrizes] = useState<Array<number>>([]);
 
   const [program, setProgram] = useState<Program<LootboxIDL>>();
   const anchorWallet = useAnchorWallet();
@@ -65,8 +71,6 @@ const Main: React.FC<MainProps> = ({ name, setName }) => {
     { dropPercent: 100, minSpins: 10 },
     { dropPercent: 2, minSpins: 50 },
   ]);
-
-  const [reload, setReload] = useState({});
   const { nfts } = useFetchNfts(reload);
   const [selectedNfts, setSelectedNfts] = useState<Array<number>>([]);
 
@@ -76,11 +80,11 @@ const Main: React.FC<MainProps> = ({ name, setName }) => {
   const { nfts: lootboxNfts } = useFetchNfts(reload, lootbox);
   const [selectedLootboxNfts, setSelectedLootboxNfts] = useState<Array<number>>([]);
 
-  const [nftPrizes, setNftPrizes] = useState<Array<Array<{ index: number, lootbox: boolean }>>>(new Array(4).fill([]));
-  const [splPrizes, setSplPrizes] = useState<Array<Array<{ index: number, amount: number, lootbox: boolean }>>>(new Array(4).fill([]));
+  const [nftPrizes, setNftPrizes] = useState<Array<Array<NftPrize>>>(new Array(4).fill([]));
+  const [splPrizes, setSplPrizes] = useState<Array<Array<SplPrize>>>(new Array(4).fill([]));
   const [currentSplRarity, setCurrentSplRarity] = useState(3);
-  const [offChainPrizes, setOffChainPrizes] = useState<Array<OffChainItem>>([]);
-  const [offChainItems, setOffChainItems] = useState<Array<{ index: number, name: string, image: string }>>([]);
+  // const [offChainPrizes, setOffChainPrizes] = useState<Array<OffChainItem>>([]);
+  // const [offChainItems, setOffChainItems] = useState<Array<OffChainPrize>>([]);
 
   const fetchData = useCallback(async (tokens: Array<TOKEN>) => {
     try {
@@ -340,6 +344,7 @@ const Main: React.FC<MainProps> = ({ name, setName }) => {
     const newNftPrizes = nftPrizes.map((prizes) => [...prizes]);
     newNftPrizes[rarity] = prizes.map((index) => ({ index, lootbox: false }));
     setNftPrizes(newNftPrizes);
+    setAddDialogOpen(false);
   }
 
   return (
@@ -350,7 +355,8 @@ const Main: React.FC<MainProps> = ({ name, setName }) => {
           nfts={nfts}
           selectedNfts={selectedNfts}
           setSelectedNfts={setSelectedNfts}
-          label="Fund"
+          label="Fund NFTs"
+          buttonName="Fund"
           handleClick={handleFundNfts}
         />
       }
@@ -360,7 +366,8 @@ const Main: React.FC<MainProps> = ({ name, setName }) => {
           nfts={lootboxNfts}
           selectedNfts={selectedLootboxNfts}
           setSelectedNfts={setSelectedLootboxNfts}
-          label="Drain"
+          label="Drain NFTs"
+          buttonName="Drain"
           handleClick={handleDrainNfts}
         />
       }
@@ -405,6 +412,17 @@ const Main: React.FC<MainProps> = ({ name, setName }) => {
         rarities.map((rarity: Rarity, index) => {
           return (
             <div key={rarityCategories[index]} className={"mx-24 w-full mt-10"}>
+              {(addDialogOpen && currentNftRarity === index) &&
+                <SelectNftsDialog
+                  setOpen={() => setAddDialogOpen(false)}
+                  nfts={getUnselectedPrizes(lootbox, lootboxNfts, nftPrizes)}
+                  selectedNfts={selectedPrizes}
+                  setSelectedNfts={setSelectedPrizes}
+                  label={`Add NFTs as ${rarityCategories[index]}`}
+                  buttonName="Add"
+                  handleClick={() => handleAddNftPrizes(selectedPrizes, index)}
+                />
+              }
               <div className={"flex place-items-center gap-4 mb-5"}>
                 <p className={"text-[32px] w-[200px]"}>{rarityCategories[index]}</p>
                 <div className={"flex gap-5"}>
@@ -442,15 +460,23 @@ const Main: React.FC<MainProps> = ({ name, setName }) => {
                   />
                 </div>
                 <div className={"ml-auto"}>
-                  <Button text={"Add NFTs"} onClick={() => { }} />
+                  <Button text={"Add NFTs"} onClick={() => {
+                    setCurrentNftRarity(index);
+                    setAddDialogOpen(true);
+                  }} />
                 </div>
               </div>
               <NftsSection>
-                {/* {
-                  box.nfts.map((nft: any, index: number) => {
-                    return <NftCard image={nft.image} price={nft.price} key={index}/>
+                {
+                  nftPrizes[index].map((nftItem: NftPrize, index: number) => {
+                    return <NftCard image={lootboxNfts[nftItem.index].image} price={lootboxNfts[nftItem.index].floorPrice} key={"nft-" + index} />
                   })
-                } */}
+                }
+                {
+                  splPrizes[index].map((splItem: SplPrize, index: number) => {
+                    return <NftCard price={splItem.amount} key={"spl-" + index} symbol={tokens[splItem.index].symbol} />
+                  })
+                }
               </NftsSection>
             </div>
           )

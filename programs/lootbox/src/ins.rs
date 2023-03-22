@@ -65,6 +65,7 @@ pub struct Fund<'info> {
     pub funder_ata: Box<Account<'info, TokenAccount>>,
 
     #[account(
+        mut,
         associated_token::mint = prize_mint,
         associated_token::authority = lootbox,
     )]
@@ -217,6 +218,7 @@ pub struct Claim<'info> {
     pub lootbox_ata: Box<Account<'info, TokenAccount>>,
     
     #[account(
+        mut,
         associated_token::mint = prize_mint,
         associated_token::authority = claimer,
     )]

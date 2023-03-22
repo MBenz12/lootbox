@@ -58,7 +58,7 @@ export default function Admin() {
       </Head>
       <div className={"flex admin-page py-16 px-5"}>
         <Sidebar boxes={boxes} currentBox={name} setCurrentBox={setName} createNewBox={createNewBox} />
-        <Main name={name} setName={setName} />
+        <Main name={name} setName={setName} setReload={setReload} reload={reload} />
       </div>
     </>
   );
