@@ -23,6 +23,8 @@ import { TOKENS } from '@/config';
 import useFetchLootbox from '@/hooks/useFetchLootbox';
 import { NftData, NftPrize, SplPrize, TOKEN } from '@/types';
 import { getTotalPrizeIndex, getUnselectedPrizes } from '@/utils';
+import OffChainPrizeDialog from '../../components/admin/OffChainPrizeDialog';
+import useFetchPrizes from '@/hooks/useFetchPrizes';
 
 interface MainProps {
   name: string;
@@ -37,8 +39,11 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const [fundDialogOpen, setFundDialogOpen] = useState(false);
   const [drainDialogOpen, setDrainDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const [currentNftRarity, setCurrentNftRarity] = useState(3);
+  const [currentNftRarity, setCurrentNftRarity] = useState(0);
   const [selectedPrizes, setSelectedPrizes] = useState<Array<number>>([]);
+
+  const [currentOffRarity, setCurrentOffRarity] = useState(3);
+
 
   const [program, setProgram] = useState<Program<LootboxIDL>>();
   const anchorWallet = useAnchorWallet();
@@ -56,7 +61,6 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const [tokens, setTokens] = useState(
     TOKENS.map(token => ({ ...token, balance: 0 } as TOKEN))
   );
-  const [newToken, setNewToken] = useState('');
 
   const [fee, setFee] = useState(0);
   const [feeWallet, setFeeWallet] = useState("3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd");
@@ -81,8 +85,12 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const [nftPrizes, setNftPrizes] = useState<Array<Array<NftPrize>>>(new Array(4).fill([]).map(() => []));
   const [splPrizes, setSplPrizes] = useState<Array<Array<SplPrize>>>(new Array(4).fill([]).map(() => []));
   const [currentSplRarity, setCurrentSplRarity] = useState(3);
+
+  const { prizes: offChainPrizes } = useFetchPrizes(reload);
   // const [offChainPrizes, setOffChainPrizes] = useState<Array<OffChainItem>>([]);
   // const [offChainItems, setOffChainItems] = useState<Array<OffChainPrize>>([]);
+
+  const [offPrizeDialogOpen, setOffPrizeDialogOpen] = useState(false);
 
   const fetchData = useCallback(async (tokens: Array<TOKEN>) => {
     try {
@@ -128,7 +136,9 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
         setNftPrizes(nftPrizes);
         setSplPrizes(splPrizes);
       } else {
-
+        setNftPrizes(new Array(4).fill([]).map(() => []));
+        setSplPrizes(new Array(4).fill([]).map(() => []));
+        setTokens(TOKENS.map(token => ({ ...token, balance: 0 } as TOKEN)))
       }
 
     } catch (error) {
@@ -445,11 +455,9 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
 
       <SPLForm
         tokens={tokens}
-        newToken={newToken}
         splPrizes={splPrizes}
         currentSplRarity={currentSplRarity}
         tokenAmounts={tokenAmounts}
-        setNewToken={setNewToken}
         setTokenAmounts={setTokenAmounts}
         setSplPrizes={setSplPrizes}
         setCurrentSplRarity={setCurrentSplRarity}
@@ -458,7 +466,14 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
         handleRemoveSplPrize={handleRemoveSplPrize}
       />
 
-      <OffChainForm rarities={rarityCategories} />
+      <OffChainForm currentRarity={currentOffRarity} setCurrentRarity={setCurrentOffRarity} prizes={[]} handleOpenDialog={setOffPrizeDialogOpen} />
+      {offPrizeDialogOpen && 
+        <OffChainPrizeDialog 
+          setOpen={setOffPrizeDialogOpen} 
+          setReload={setReload}
+          prizes={offChainPrizes}
+        />
+      }
 
       <div className={"w-full flex justify-center my-5 gap-4"}>
         <Button onClick={() => setFundDialogOpen(true)} text={"Fund NFTs"} />

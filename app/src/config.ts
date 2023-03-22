@@ -23,3 +23,5 @@ export const RARITY = [
   'Rare',
   'Legendary',
 ]
+
+export const NFT_STORAGE_TOKEN = process.env.NEXT_PUBLIC_NFT_STORAGE_TOKEN || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGMzMTRkNjcyYjgxM0E4NzEwRUQzMTBiNDU4YTIzNEQ4YmMwQzczOTQiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY3NjkwMDkyMjg2NiwibmFtZSI6Im1iZW56MTIifQ.CeXVQjKNbOkxrkCGspDnBVwqb8FXQI984OC_yQ5dglo';
