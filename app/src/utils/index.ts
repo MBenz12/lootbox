@@ -1,6 +1,6 @@
 import { TOKENS } from '@/config'
 import { Lootbox } from '@/lootbox-program-libs/types';
-import { NftData, NftPrize } from '@/types';
+import { NftData, NftPrize, SplPrize, TOKEN } from '@/types';
 import { PublicKey } from '@solana/web3.js'
 
 export const getTokenSymbol = (mint: PublicKey) => {
@@ -13,7 +13,7 @@ export const getUnselectedPrizes = (lootbox: Lootbox | undefined, lootboxNfts: A
   return lootboxNfts.filter((nft) => {
     const allPrizes: Array<NftPrize> = [];
     nftPrizes.forEach(prizes => {
-      allPrizes.concat(prizes.filter(prize => !prize.lootbox));
+      allPrizes.push(...prizes.filter(prize => !prize.lootbox));
     });
     const splMints = lootbox ? lootbox.splVaults.map(splVault => splVault.mint.toString()) : [];
     let index = splMints.indexOf(nft.mint.toString());
