@@ -10,8 +10,6 @@ const SPLForm = ({
   splPrizes,
   currentSplRarity,
   tokenAmounts,
-  newToken,
-  setNewToken,
   setTokenAmounts,
   setSplPrizes,
   setCurrentSplRarity,
@@ -23,8 +21,6 @@ const SPLForm = ({
   splPrizes: Array<Array<SplPrize>>,
   currentSplRarity: number,
   tokenAmounts: Array<number>,
-  newToken: string,
-  setNewToken: (token: string) => void,
   setTokenAmounts: (amounts: Array<number>) => void,
   setSplPrizes: (prizes: Array<Array<SplPrize>>) => void,
   setCurrentSplRarity: (rarity: number) => void,
@@ -60,6 +56,9 @@ const SPLForm = ({
                     size={"sm"}
                     type={"number"}
                     onChange={(e) => {
+                      if (splPrizes[currentSplRarity][index].lootbox) {
+                        return;
+                      }
                       const newSplPrizes = splPrizes.map(prizes => prizes.map(prize => ({ ...prize })));
                       newSplPrizes[currentSplRarity][index].amount = parseFloat(e.target.value) || 0.0;
                       setSplPrizes(newSplPrizes);
@@ -95,7 +94,7 @@ const SPLForm = ({
           }
         </div>
         <div className={"flex mt-auto justify-center"}>
-          <p className={"opacity-50 text-[14px] cursor-pointer w-fit"} onClick={() => {
+          <p className={"opacity-50 text-[14px] cursor-pointer w-fit mb-5"} onClick={() => {
             const newSplPrizes = splPrizes.map(prizes => prizes.map(prize => ({ ...prize })));
 
             newSplPrizes[currentSplRarity].push({ index: 0, amount: 0, lootbox: false });
@@ -136,19 +135,7 @@ const SPLForm = ({
             )
             )
           }
-        </div>
-        <div className='my-5 flex gap-2 items-center justify-center'>
-          <Input
-            size='sm'
-            fullWidth
-            onChange={(e) => {
-              setNewToken(e.target.value)
-            }}
-            value={newToken}
-            name={'mint'}
-          />
-          <Button onClick={() => { }} size={"sm"} text={"New"} />
-        </div>
+        </div>        
       </div>
     </div>
   );
