@@ -123,7 +123,7 @@ pub mod lootbox {
                 .prize_items
                 .iter()
                 .any(|x| x.on_chain_item.is_some() && x.on_chain_item.unwrap().spl_index == index as u8)
-                == true,
+                == false,
             LootboxError::InvalidDrain
         );
 

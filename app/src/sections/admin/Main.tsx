@@ -477,12 +477,12 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
               <NftsSection>
                 {
                   nftPrizes[index].map((nftItem: NftPrize, index: number) => {
-                    return <NftCard image={lootboxNfts[nftItem.index]?.image} price={lootboxNfts[nftItem.index].floorPrice} key={"nft-" + index} />
+                    return <NftCard image={lootboxNfts[nftItem.index]?.image} price={lootboxNfts[nftItem.index]?.floorPrice} key={"nft-" + index} />
                   })
                 }
                 {
                   splPrizes[index].map((splItem: SplPrize, index: number) => {
-                    return <NftCard price={splItem.amount} key={"spl-" + index} symbol={tokens[splItem.index].symbol} />
+                    return <NftCard price={splItem.amount} key={"spl-" + index} symbol={tokens[splItem.index]?.symbol} />
                   })
                 }
               </NftsSection>
