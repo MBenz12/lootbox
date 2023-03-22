@@ -14,3 +14,7 @@ export type TOKEN = {
   balance: number;
   decimals: number;
 }
+
+export type SplPrize = { index: number, amount: number, lootbox: boolean };
+
+export type NftPrize = { index: number, lootbox: boolean };

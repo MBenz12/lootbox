@@ -16,10 +16,10 @@ const Admin1 = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className={"flex admin-page py-16 px-5"}>
-        <Sidebar boxes={boxes} currentBox={currentBox} setCurrentBox={setCurrentBox} />
+        {/* <Sidebar boxes={boxes} currentBox={currentBox} setCurrentBox={setCurrentBox} />
         {
           boxes.length > 0 && <Main box={currentBox} />
-        }
+        } */}
       </div>
     </>
   );

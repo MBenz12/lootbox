@@ -1,142 +1,131 @@
-import React from "react";
 import Button from "../../../components/admin/Button";
 import Input from "../../../components/admin/Input";
 import Dropdown from "../../../components/admin/Dropdown";
-import {useFormik} from "formik";
 import Image from "next/image";
+import { SplPrize, TOKEN } from '@/types';
 
-interface SPLFormProps {
-  options: string[]
-  rarities: string[]
-}
 
-type InitialValues = {
-  rarity: string,
-  prizes: {
-    amount: number,
-    wallet: string,
-  }[],
-  spl_vault: {
-    [key: string]: number
-  }
-}
-
-const SPLForm: React.FC<SPLFormProps> = ({rarities, options}) => {
-  const initialValues: InitialValues = {
-    rarity: rarities[0],
-    prizes: [
-      {
-        amount: 0,
-        wallet: '',
-      }
-    ],
-    spl_vault: {
-      sol: 0,
-      zen: 0,
-      dust: 0
-    }
-  }
-
-  const splForm = useFormik({
-    initialValues,
-    onSubmit: values => {
-      alert(JSON.stringify(values, null, 2));
-    }
-  });
-
-  const splVault = useFormik({
-    initialValues: initialValues.spl_vault,
-    onSubmit: values => {
-      alert(JSON.stringify(values, null, 2));
-    }
-  })
-
-  const handleUpdateSplValues = (wallet: string, operation: "inc" | "dec") => {
-    const value = splVault.values[wallet];
-    if (value <= 0) return;
-    if (operation === "inc") {
-      splForm.setFieldValue(`spl_vault.${wallet}`, splForm.values.spl_vault[wallet] + value);
-    }
-    if (operation === "dec") {
-      splForm.setFieldValue(`spl_vault.${wallet}`, splForm.values.spl_vault[wallet] - value);
-    }
-  }
-
-  React.useEffect(() => {
-    console.log(splForm.values)
-  }, [splForm.values]);
-
+const SPLForm = ({
+  tokens,
+  splPrizes,
+  currentSplRarity,
+  tokenAmounts,
+  newToken,
+  setNewToken,
+  setTokenAmounts,
+  setSplPrizes,
+  setCurrentSplRarity,
+  handleFundSpl,
+  handleDrainSpl,
+}: {
+  tokens: Array<TOKEN>,
+  splPrizes: Array<Array<SplPrize>>,
+  currentSplRarity: number,
+  tokenAmounts: Array<number>,
+  newToken: string,
+  setNewToken: (token: string) => void,
+  setTokenAmounts: (amounts: Array<number>) => void,
+  setSplPrizes: (prizes: Array<Array<SplPrize>>) => void,
+  setCurrentSplRarity: (rarity: number) => void,
+  handleFundSpl: (token: TOKEN, index: number) => void,
+  handleDrainSpl: (token: TOKEN, index: number) => void,
+}) => {
   return (
-    <div className={"grid grid-cols-2 border border-2 rounded-2xl border-[rgba(255,255,255,.5)] p-1"}>
-      <div className={"flex flex-col border-r-2 border-[rgba(255,255,255,.5)] px-2.5"}>
+    <div className={"grid grid-cols-2 border-2 rounded-2xl border-[rgba(255,255,255,.5)] p-1"}>
+      <div className={"flex flex-col border-r-2 border-[rgba(255,255,255,.5)] px-2.5 items-center"}>
         <p className={"text-center text-[30px] font-bold mb-1"}>SPL Prize</p>
         <div className={"flex gap-1"}>
           {
-            rarities.map((item, index) => {
+            ['Common', 'Uncommon', 'Rare', 'Legend'].map((category, index) => {
               return (
-                <Button key={item + index} size={"sm"} text={item}
-                        type={splForm.values.rarity === item ? "outline" : "ghost"}
-                        onClick={() => {
-                               splForm.setValues({...splForm.values, rarity: rarities[index]})
-                             }}/>
+                <Button
+                  key={category + index}
+                  size={"sm"}
+                  text={category}
+                  type={currentSplRarity === index ? "outline" : "ghost"}
+                  onClick={() => setCurrentSplRarity(index)}
+                />
               )
-            })
+            }).reverse()
           }
         </div>
         <div className={"mt-4"}>
-          <p className={"text-[12px]"}>Amount</p>
-        </div>
-        {
-          splForm.values.prizes.map((item, index) => {
-            return (
-              <div key={index} className={"flex gap-2 my-2"}>
-                <Input size={"sm"} type={"number"} onChange={splForm.handleChange} value={item.amount} name={`prizes[${index}].amount`}/>
-                <Dropdown onChange={splForm.handleChange} value={item.wallet} name={`prizes[${index}].wallet`}
-                          options={options}/>
-                <div className={"cursor-pointer"} onClick={() => {
-                  const prizes = [...splForm.values.prizes];
-                  prizes.splice(index, 1);
-                  splForm.setValues({...splForm.values, prizes});
-                }}>
-                  <Image width={17} height={17} className="w-[17px] h-[17px] mt-0.5" src="/images/remove_icon.svg" alt="remove"/>
-                </div>
-              </div>
-            )
-          })
-        }
-        <div className={"flex mt-auto justify-center"}>
-          <p className={"opacity-50 text-[14px] cursor-pointer w-fit"} onClick={() => {
-            splForm.setFieldValue(`prizes[${splForm.values.prizes.length}]`, initialValues.prizes[0]);
-          }}>+ Add SPL Prize</p>
-        </div>
-      </div>
-      <div className={"px-5"}>
-        <p className={"text-center text-[30px] font-bold"}>SPL Vault</p>
-        <div className={"grid gap-5"}>
-
           {
-            options.map((item, index) => {
-              const wallet = item.toLowerCase();
+            splPrizes[currentSplRarity].map((splItem: SplPrize, index: number) => {
               return (
-                <div key={item+index} className={"flex place-items-end gap-2"}>
-                  <div>
-                    <div className={"flex justify-between"}>
-                      <p>{item}</p>
-                      <p>{splForm.values.spl_vault[wallet]}</p>
-                    </div>
-                    <div className={"flex gap-2 place-items-center"}>
-                      <p className={"mt-[6px] text-[14px]"}>Fund</p>
-                      <Input size={"sm"} type={"number"} onChange={splVault.handleChange} value={splVault.values[wallet]} name={wallet}/>
-                    </div>
-                  </div>
-                  <div className={"flex gap-1"}>
-                    <Button onClick={() => handleUpdateSplValues(wallet, "inc")} size={"sm"} text={"Fund"}/>
-                    <Button onClick={() => handleUpdateSplValues(wallet, "dec")} size={"sm"} text={"Drain"}/>
+                <div key={index} className={"flex gap-2 my-2 items-center"}>
+                  <Input size={"sm"} type={"number"} onChange={() => { }} value={splItem.amount} name={`prizes[${index}].amount`} />
+                  <Dropdown
+                    onChange={() => { }}
+                    value={tokens[splItem.index].symbol}
+                    name={`prizes[${index}].wallet`}
+                    options={tokens.map(token => token.symbol)}
+                  />
+                  <div className={"cursor-pointer"} onClick={() => {
+                    const newSplPrizes = splPrizes.map(prizes => prizes.map(prize => ({ ...prize })));
+                    newSplPrizes[currentSplRarity].splice(index, 1);
+                    setSplPrizes(newSplPrizes);
+                  }}>
+                    <Image width={17} height={17} className="w-[17px] h-[17px] mt-0.5" src="/images/remove_icon.svg" alt="remove" />
                   </div>
                 </div>
               )
             })
           }
+        </div>
+        <div className={"flex mt-auto justify-center"}>
+          <p className={"opacity-50 text-[14px] cursor-pointer w-fit"} onClick={() => {
+            const newSplPrizes = splPrizes.map(prizes => prizes.map(prize => ({ ...prize })));
+            newSplPrizes[currentSplRarity].push({ index: 0, amount: 0, lootbox: false });
+            setSplPrizes(newSplPrizes);
+          }}>+ Add SPL Prize</p>
+        </div>
+      </div>
+      <div className={"px-2"}>
+        <p className={"text-center text-[30px] font-bold"}>SPL Vault</p>
+        <div className={"flex flex-col gap-2 items-center"}>
+          {
+            tokens.map((token, index) => (
+              <div key={token.mint.toString()} className={"flex flex-col"}>
+                <div className={"flex"}>
+                  <p className='w-10'>{token.symbol}</p>
+                  <p>{token.balance}</p>
+                </div>
+                <div className='flex gap-2'>
+                  <div className={"flex gap-2 place-items-center"}>
+                    <Input
+                      size={"sm"}
+                      type={"number"}
+                      onChange={(e) => {
+                        const amounts = [...tokenAmounts];
+                        amounts[index] = parseFloat(e.target.value) || 0;
+                        setTokenAmounts(amounts);
+                      }}
+                      value={tokenAmounts[index]}
+                      name={token.symbol}
+                    />
+                  </div>
+                  <div className={"flex gap-1"}>
+                    <Button onClick={() => handleFundSpl(token, index)} size={"sm"} text={"Fund"} />
+                    <Button onClick={() => handleDrainSpl(token, index)} size={"sm"} text={"Drain"} />
+                  </div>
+                </div>
+              </div>
+            )
+            )
+          }
+        </div>
+        <div className='my-5 flex gap-2 items-center justify-center'>
+          <Input
+            size='sm'
+            fullWidth
+            onChange={(e) => {
+              setNewToken(e.target.value)
+            }}
+            value={newToken}
+            name={'mint'}
+          />
+          <Button onClick={() => { }} size={"sm"} text={"New"} />
         </div>
       </div>
     </div>

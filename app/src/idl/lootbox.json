@@ -119,7 +119,7 @@
         },
         {
           "name": "lootboxAta",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -366,7 +366,7 @@
         },
         {
           "name": "claimerAta",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -706,6 +706,11 @@
       "code": 6002,
       "name": "NoPrize",
       "msg": "No Prize"
+    },
+    {
+      "code": 6003,
+      "name": "InvalidDrain",
+      "msg": "Invalid Drain Prize Item"
     }
   ],
   "metadata": {

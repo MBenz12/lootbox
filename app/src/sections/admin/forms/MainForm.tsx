@@ -2,61 +2,70 @@ import React from "react";
 import Input from "../../../components/admin/Input";
 import Dropdown from "../../../components/admin/Dropdown";
 import Button from "../../../components/admin/Button";
-import {useFormik} from "formik";
+import { TOKEN } from '@/types';
+import { Lootbox } from '@/lootbox-program-libs/types';
 
-interface Form1Props {
-  boxName: string,
-  options: string[]
-}
-
-type InitialValues = {
-  box_name: string,
-  txn_fee: number,
-  box_cost: number,
-  fee_wallet: string,
-  wallet: string,
-}
-
-const MainForm: React.FC<Form1Props> = ({boxName,options}) => {
-  // You can add form as a prop and handle form values in the parent component
-  const initialValues: InitialValues = {
-    box_name: '',
-    txn_fee: 0,
-    box_cost: 0,
-    fee_wallet: '',
-    wallet: options[0],
-  }
-  const mainForm = useFormik({
-    initialValues,
-    onSubmit: values => {
-      alert(JSON.stringify(values, null, 2));
-    },
-  });
-
+const MainForm = ({
+  name,
+  lootbox,
+  fee,
+  feeWallet,
+  ticketPrice,
+  ticketToken,
+  tokens,
+  setName,
+  setFee,
+  setFeeWallet,
+  setTicketPrice,
+  setTicketToken,
+  handleClickCreate,
+}: {
+  name: string,
+  lootbox: Lootbox | undefined,
+  fee: number,
+  feeWallet: string,
+  ticketPrice: number,
+  ticketToken: TOKEN,
+  tokens: Array<TOKEN>
+  setName: (name: string) => void,
+  setFee: (fee: number) => void,
+  setFeeWallet: (feeWallet: string) => void,
+  setTicketPrice: (price: number) => void,
+  setTicketToken: (token: TOKEN) => void,
+  handleClickCreate: () => void,
+}) => {
   return (
-    <form onSubmit={mainForm.handleSubmit} className={"flex flex-col gap-5"}>
-      <p className={"text-[46px] font-bold"}>{boxName} BOX</p>
+    <div className={"flex flex-col gap-5"}>
+      <p className={"text-[46px] font-bold"}>{name}</p>
       <div className={"flex gap-10"}>
         <div className={"flex flex-col gap-5"}>
-          <Input size={"sm"} onChange={mainForm.handleChange} name={"box_name"} value={mainForm.values.box_name} label={"Box Name"}/>
-          <Input size={"sm"} type={"number"} onChange={mainForm.handleChange} name={"txn_fee"} value={mainForm.values.txn_fee} label={"Txn Fee"}
-                 desc={"SOL"}/>
+          {<Input size={"sm"} fullWidth onChange={(e) => setName(e.target.value)} name={"box_name"} value={name} label={"Box Name"} />}
+          <Input size={"sm"} step={0.01} type={"number"} onChange={(e) => setFee(parseFloat(e.target.value))} name={"txn_fee"} value={fee} label={"Txn Fee"}
+            desc={"SOL"} />
         </div>
         <div className={"flex flex-col gap-5"}>
           <div className={"flex gap-2"}>
-            <Input size={"sm"} type={"number"} onChange={mainForm.handleChange} value={mainForm.values.box_cost} name={"box_cost"} label={"Box Cost"}/>
+            <Input size={"sm"} step={0.1} type={"number"} onChange={(e) => setTicketPrice(parseFloat(e.target.value))} value={ticketPrice} name={"box_cost"} label={"Box Cost"} />
             <div className={"mt-[18px]"}>
-              <Dropdown onChange={mainForm.handleChange} value={mainForm.values.wallet} name={"wallet"} options={options}/>
+              <Dropdown
+                onChange={(e) => {
+                  const index = tokens.map(token => token.symbol).indexOf(e.target.value);
+                  setTicketToken(tokens[index]);
+                }}
+                value={ticketToken.symbol}
+                name={"token"}
+                options={tokens.map(token => token.symbol)}
+              />
             </div>
           </div>
-          <Input size={"sm"} onChange={mainForm.handleChange} value={mainForm.values.fee_wallet} name={"fee_wallet"}
-                 label={"Fee Wallet"}/>
+          <Input size={"sm"} fullWidth onChange={(e) => setFeeWallet(e.target.value)} value={feeWallet} name={"fee_wallet"}
+            label={"Fee Wallet"} />
         </div>
       </div>
       <div>
-        <Button size={"md"} onClick={() => mainForm.handleSubmit} text={"Save"}/>
+        <Button size={"md"} onClick={handleClickCreate} text={!lootbox ? "Create" : "Update"} />
       </div>
-    </form>
+    </div>
   );
 };
 
