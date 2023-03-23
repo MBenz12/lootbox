@@ -19,10 +19,13 @@ export const getUnselectedPrizes = (lootboxNfts: Array<NftData>, nftPrizes: Arra
   });
 }
 
-export const getTotalPrizeIndex = (lootbox: Lootbox, mint: PublicKey) => {
+export const getTotalPrizeIndex = (lootbox: Lootbox, mint: PublicKey | null, itemIndex?: number) => {
   let totalIndex = 0;
   for (const prizeItem of lootbox.prizeItems) {
-    if (prizeItem.onChainItem && lootbox.splVaults[prizeItem.onChainItem.splIndex].mint.toString() === mint.toString()) {
+    if (mint && prizeItem.onChainItem && lootbox.splVaults[prizeItem.onChainItem.splIndex].mint.toString() === mint.toString()) {
+      return totalIndex;
+    }
+    if (itemIndex && prizeItem.offChainItem && prizeItem.offChainItem.itemIndex === itemIndex) {
       return totalIndex;
     }
     totalIndex++;

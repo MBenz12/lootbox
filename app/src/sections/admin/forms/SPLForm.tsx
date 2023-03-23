@@ -68,6 +68,9 @@ const SPLForm = ({
                   />
                   <Dropdown
                     onChange={(e) => {
+                      if (splPrizes[currentSplRarity][index].lootbox) {
+                        return;
+                      }
                       const newSplPrizes = splPrizes.map(prizes => prizes.map(prize => ({ ...prize })));
                       newSplPrizes[currentSplRarity][index].index = tokens.map(token => token.symbol).indexOf(e.target.value);
                       setSplPrizes(newSplPrizes);

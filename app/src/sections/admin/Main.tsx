@@ -10,7 +10,7 @@ import SelectNftsDialog from "../../components/admin/SelectNftsDialog";
 
 import useFetchNfts from '@/hooks/useFetchNfts';
 import { IDL, Lootbox as LootboxIDL } from '@/idl/lootbox';
-import { addItems, createLootbox, createPlayer, drain, fund, updateLootbox, updateOnChainItem } from '@/lootbox-program-libs/methods';
+import { addItems, createLootbox, createPlayer, drain, fund, updateLootbox, updateOffChainItem, updateOnChainItem } from '@/lootbox-program-libs/methods';
 import { OffChainItem, Rarity } from '@/lootbox-program-libs/types';
 import { programId } from '@/lootbox-program-libs/utils';
 import { AnchorProvider, BN, Program } from '@project-serum/anchor';
@@ -21,7 +21,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { TOKENS } from '@/config';
 import useFetchLootbox from '@/hooks/useFetchLootbox';
-import { NftData, NftPrize, SplPrize, TOKEN } from '@/types';
+import { NftData, NftPrize, OffChainPrize, SplPrize, TOKEN } from '@/types';
 import { getTotalPrizeIndex, getUnselectedPrizes } from '@/utils';
 import OffChainPrizeDialog from '../../components/admin/OffChainPrizeDialog';
 import useFetchPrizes from '@/hooks/useFetchPrizes';
@@ -86,9 +86,8 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const [splPrizes, setSplPrizes] = useState<Array<Array<SplPrize>>>(new Array(4).fill([]).map(() => []));
   const [currentSplRarity, setCurrentSplRarity] = useState(3);
 
-  const { prizes: offChainPrizes } = useFetchPrizes(reload);
-  // const [offChainPrizes, setOffChainPrizes] = useState<Array<OffChainItem>>([]);
-  // const [offChainItems, setOffChainItems] = useState<Array<OffChainPrize>>([]);
+  const { prizes: prizeItems } = useFetchPrizes(reload);
+  const [offChainPrizes, setOffChainPrizes] = useState<Array<Array<OffChainPrize>>>(new Array(4).fill([]).map(() => []));
 
   const [offPrizeDialogOpen, setOffPrizeDialogOpen] = useState(false);
 
@@ -117,6 +116,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
 
         const nftPrizes: Array<Array<NftPrize>> = new Array(4).fill([]).map(() => []);
         const splPrizes: Array<Array<SplPrize>> = new Array(4).fill([]).map(() => []);
+        const offChainPrizes: Array<Array<OffChainPrize>> = new Array(4).fill([]).map(() => []);
         lootbox.prizeItems.forEach((prizeItem) => {
           const { rarity } = prizeItem;
           if (prizeItem.onChainItem) {
@@ -131,13 +131,25 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
               let decimals = tokens[tokenIndex].decimals;
               splPrizes[rarity].push({ index: tokenIndex, lootbox: true, amount: prizeAmount.toNumber() / decimals });
             }
+          } else if (prizeItem.offChainItem) {
+            const { itemIndex, totalItems, usedItems } = prizeItem.offChainItem;
+            const { name, image } = prizeItems[itemIndex];
+            offChainPrizes[rarity].push({
+              index: itemIndex,
+              name,
+              image,
+              totalItems,
+              remainigItems: totalItems - usedItems,
+            });
           }
         })
         setNftPrizes(nftPrizes);
         setSplPrizes(splPrizes);
+        setOffChainPrizes(offChainPrizes);
       } else {
         setNftPrizes(new Array(4).fill([]).map(() => []));
         setSplPrizes(new Array(4).fill([]).map(() => []));
+        setOffChainPrizes(new Array(4).fill([]).map(() => []));
         setTokens(TOKENS.map(token => ({ ...token, balance: 0 } as TOKEN)))
       }
 
@@ -317,6 +329,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     const mints: Array<PublicKey> = [];
     const amounts: Array<BN> = [];
     const rarities: Array<number> = [];
+    const offChainItems: Array<OffChainItem> = [];
     for (let rarity = 0; rarity < 4; rarity++) {
       nftPrizes[rarity].forEach((item) => {
         if (!item.lootbox) {
@@ -329,6 +342,19 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
         if (!splItem.lootbox) {
           mints.push(tokens[splItem.index].mint);
           amounts.push(new BN(splItem.amount * tokens[splItem.index].decimals));
+          rarities.push(rarity);
+        }
+      })
+      offChainPrizes[rarity].forEach(prizeItem => {
+        if (!prizeItem.lootbox) {
+          const { index, totalItems } = prizeItem;
+          if (!totalItems) return;
+          offChainItems.push({
+            itemIndex: index,
+            totalItems: totalItems,
+            usedItems: 0,
+            claimed: false,
+          })
           rarities.push(rarity);
         }
       })
@@ -352,7 +378,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     }
   }
 
-  const handleRemoveOnChainPrize = async (index: number) => {
+  const removeOnChainPrize = async (index: number) => {
     if (!wallet.publicKey || !program) {
       return;
     }
@@ -363,6 +389,27 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
       wallet,
       index,
       new BN(0),
+    );
+    console.log(txn)
+    if (txn) {
+      toast.success('Removed item successfully');
+      setReload({});
+    } else {
+      toast.error('Failed to remove item');
+    }
+  }
+
+  const removeOffChainPrize = async (index: number) => {
+    if (!wallet.publicKey || !program) {
+      return;
+    }
+
+    const txn = await updateOffChainItem(
+      program,
+      name,
+      wallet,
+      index,
+      0,
     );
     console.log(txn)
     if (txn) {
@@ -391,7 +438,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     if (prize.lootbox) {
       let nft = lootboxNfts[prize.index];
       let totalIndex = getTotalPrizeIndex(lootbox, nft.mint);
-      handleRemoveOnChainPrize(totalIndex);
+      removeOnChainPrize(totalIndex);
     } else {
       const newNftPrizes = nftPrizes.map((prizes) => [...prizes]);
       newNftPrizes[rarity].splice(prizeIndex, 1);
@@ -405,11 +452,24 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     if (prize.lootbox) {
       let mint = tokens[prize.index].mint;
       let totalIndex = getTotalPrizeIndex(lootbox, mint);
-      handleRemoveOnChainPrize(totalIndex);
+      removeOnChainPrize(totalIndex);
     } else {
       const newSplPrizes = splPrizes.map((prizes) => [...prizes]);
       newSplPrizes[rarity].splice(prizeIndex, 1);
       setSplPrizes(newSplPrizes);
+    }
+  }
+
+  const handleRemoveOffChainPrize = (rarity: number, prizeIndex: number) => {
+    if (!lootbox) return;
+    let prize = offChainPrizes[rarity][prizeIndex];
+    if (prize.lootbox) {
+      let totalIndex = getTotalPrizeIndex(lootbox, null, prize.index);
+      removeOffChainPrize(totalIndex);
+    } else {
+      const newOffChainPrizes = offChainPrizes.map((prizes) => [...prizes]);
+      newOffChainPrizes[rarity].splice(prizeIndex, 1);
+      setOffChainPrizes(newOffChainPrizes);
     }
   }
 
@@ -466,12 +526,20 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
         handleRemoveSplPrize={handleRemoveSplPrize}
       />
 
-      <OffChainForm currentRarity={currentOffRarity} setCurrentRarity={setCurrentOffRarity} prizes={[]} handleOpenDialog={setOffPrizeDialogOpen} />
-      {offPrizeDialogOpen && 
-        <OffChainPrizeDialog 
-          setOpen={setOffPrizeDialogOpen} 
+      <OffChainForm
+        currentRarity={currentOffRarity}
+        setCurrentRarity={setCurrentOffRarity}
+        prizeItems={prizeItems}
+        handleOpenDialog={setOffPrizeDialogOpen}
+        prizes={offChainPrizes}
+        setPrizes={setOffChainPrizes}
+        handleRemovePrize={handleRemoveOffChainPrize}
+      />
+      {offPrizeDialogOpen &&
+        <OffChainPrizeDialog
+          setOpen={setOffPrizeDialogOpen}
           setReload={setReload}
-          prizes={offChainPrizes}
+          prizes={prizeItems}
         />
       }
 
@@ -557,9 +625,20 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
                     return (
                       <NftCard
                         price={splItem.amount}
-                        key={"spl-" + index}
+                        key={"spl-" + prizeIndex}
                         symbol={tokens[splItem.index]?.symbol}
                         handleDelete={() => handleRemoveSplPrize(index, prizeIndex)}
+                      />
+                    )
+                  })
+                }
+                {
+                  offChainPrizes[index].map((prizeItem: OffChainPrize, prizeIndex: number) => {
+                    return (
+                      <NftCard
+                        key={"off-chain-item" + prizeIndex}
+                        image={prizeItem.image}
+                        handleDelete={() => handleRemoveOffChainPrize(index, prizeIndex)}
                       />
                     )
                   })

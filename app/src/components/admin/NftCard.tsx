@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 interface NftCardProps {
   image?: string;
-  price: number;
+  price?: number;
   symbol?: string;
   handleDelete: () => void;
 }

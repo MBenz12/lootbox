@@ -19,4 +19,11 @@ export type SplPrize = { index: number, amount: number, lootbox: boolean };
 
 export type NftPrize = { index: number, lootbox: boolean };
 
-export type OffChainPrize = { index: number, name: string, image: string };
+export type OffChainPrize = { 
+  index: number, 
+  name: string, 
+  image: string, 
+  totalItems?: number, 
+  remainigItems?: number,
+  lootbox?: boolean,
+};
