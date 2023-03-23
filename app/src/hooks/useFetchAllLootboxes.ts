@@ -1,13 +1,13 @@
-import { Lootbox as LootboxIDL } from '@/idl/lootbox';
 import { Lootbox } from '@/lootbox-program-libs/types';
-import { Program } from '@project-serum/anchor';
 import { useCallback, useEffect, useState } from 'react';
+import useProgram from './useProgram';
 
-const useFetchAllLootboxes = (program: Program<LootboxIDL> | undefined, reload: {}): { lootboxes: Array<Lootbox>, loading: boolean } => {
+const useFetchAllLootboxes = (reload: {}): { lootboxes: Array<Lootbox>, loading: boolean } => {
+  const program = useProgram();
   const [lootboxes, setLootboxes] = useState<Array<Lootbox>>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchLootboxes = useCallback(async (program: Program<LootboxIDL> | undefined) => {
+  const fetchLootboxes = useCallback(async () => {
     if (!program) return;
 
     setLoading(true);
@@ -18,10 +18,10 @@ const useFetchAllLootboxes = (program: Program<LootboxIDL> | undefined, reload: 
       console.log(error);
     }
     setLoading(false);
-  }, []);
+  }, [program]);
 
   useEffect(() => {
-    fetchLootboxes(program);
+    fetchLootboxes();
   }, [reload, program, fetchLootboxes]);
 
   return { lootboxes, loading };

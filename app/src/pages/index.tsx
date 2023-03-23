@@ -10,7 +10,7 @@ import useFetchAllLootboxes from '@/hooks/useFetchAllLootboxes';
 export default function Home() {
   const program = useProgram();
   const [reload, setReload] = useState({});
-  const { lootboxes } = useFetchAllLootboxes(program, reload);
+  const { lootboxes } = useFetchAllLootboxes(reload);
   return (
     <>
       <Head>

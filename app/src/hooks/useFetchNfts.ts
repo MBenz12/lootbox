@@ -6,7 +6,6 @@ import { Metaplex } from "@metaplex-foundation/js";
 import { PublicKey } from "@solana/web3.js";
 import { HyperspaceClient } from "hyperspace-client-js";
 import { HYPERSPACE_API_KEY } from '@/config';
-import { Lootbox } from '@/lootbox-program-libs/types';
 
 const hsClient = new HyperspaceClient(HYPERSPACE_API_KEY);
 

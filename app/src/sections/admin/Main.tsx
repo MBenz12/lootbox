@@ -58,7 +58,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const [selectedNfts, setSelectedNfts] = useState<Array<number>>([]);
 
   const [tokenAmounts, setTokenAmounts] = useState(Array(TOKENS.length).fill(0));
-  const { lootbox } = useFetchLootbox(program, name, reload);
+  const { lootbox } = useFetchLootbox(name, reload);
 
   const mints: Array<PublicKey> | undefined = useMemo(() => lootbox ? lootbox.splVaults.filter(splVault => splVault.amount.toNumber() === 1).map((splVault) => splVault.mint) : undefined, [lootbox]);
 

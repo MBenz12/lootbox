@@ -3,12 +3,14 @@ import { Lootbox } from '@/lootbox-program-libs/types';
 import { getLootboxPda } from '@/lootbox-program-libs/utils';
 import { Program } from '@project-serum/anchor';
 import { useCallback, useEffect, useState } from 'react';
+import useProgram from './useProgram';
 
-const useFetchLootbox = (program: Program<LootboxIDL> | undefined, name: string, reload: {}): { lootbox: Lootbox | undefined, loading: boolean } => {
+const useFetchLootbox = (name: string, reload: {}): { lootbox: Lootbox | undefined, loading: boolean } => {
+  const program = useProgram();
   const [lootbox, setLootbox] = useState<Lootbox>();
   const [loading, setLoading] = useState(false);
 
-  const fetchLootbox = useCallback(async (program: Program<LootboxIDL> | undefined, name: string) => {
+  const fetchLootbox = useCallback(async (name: string) => {
     if (!program) return;
 
     setLoading(true);
@@ -25,10 +27,10 @@ const useFetchLootbox = (program: Program<LootboxIDL> | undefined, name: string,
       console.log(error);
     }
     setLoading(false);
-  }, []);
+  }, [program]);
 
   useEffect(() => {
-    fetchLootbox(program, name);
+    fetchLootbox(name);
   }, [reload, program, name, fetchLootbox]);
 
   return { lootbox, loading };
