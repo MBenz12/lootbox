@@ -3,6 +3,9 @@ import { motion } from "framer-motion"
 import {useRouter} from "next/router";
 import Link from 'next/link';
 import Image from 'next/image';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { getSliceAddress } from '@/utils';
+
 
 const NavbarAnchor = ({active}: {active: boolean}) => {
   return (
@@ -18,6 +21,7 @@ const NavbarAnchor = ({active}: {active: boolean}) => {
 export const Navbar: React.FC = () => {
   const location = useRouter();
   const isCurrentPath = (path: string) => location.pathname === path;
+  const wallet = useWallet();
 
   return (
     <>
@@ -41,7 +45,7 @@ export const Navbar: React.FC = () => {
         </div>
         <div className="flex justify-end gap-3">
           <div className="flex flex-col justify-center text-right">
-            <p className="opacity-50 text-[13px]">1234...4321</p>
+            {wallet.publicKey && <p className="opacity-50 text-[13px]">{getSliceAddress(wallet.publicKey.toString())}</p>}
             <p className="text-[17px]">Pablo</p>
           </div>
           <Image width={46} height={46} src="/images/avatar.png" alt=""/>

@@ -29,3 +29,7 @@ export const getTotalPrizeIndex = (lootbox: Lootbox, mint: PublicKey) => {
   }
   return -1;
 }
+
+export const getSliceAddress = (str: string) => {
+  return str.slice(0, 4) + '...' + str.slice(-4);
+}
