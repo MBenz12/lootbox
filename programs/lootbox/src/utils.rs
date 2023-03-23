@@ -64,8 +64,18 @@ pub fn valid_program(instruction_sysvar_account: &AccountInfo, program_id: Pubke
     Ok(())
 }
 
-pub fn prevent_prefix_instruction(instruction_sysvar_account: &AccountInfo) -> Result<()> {
-    let invalid = match get_instruction_relative(-1, &instruction_sysvar_account) {
+// pub fn prevent_prefix_instruction(instruction_sysvar_account: &AccountInfo) -> Result<()> {
+//     let invalid = match get_instruction_relative(-1, &instruction_sysvar_account) {
+//         Ok(_) => true,
+//         Err(_) => false,
+//     };
+//     require!(invalid == false, LootboxError::InvalidInstructionAdded);
+
+//     Ok(())
+// }
+
+pub fn prevent_suffix_instruction(instruction_sysvar_account: &AccountInfo) -> Result<()> {
+    let invalid = match get_instruction_relative(1, &instruction_sysvar_account) {
         Ok(_) => true,
         Err(_) => false,
     };
