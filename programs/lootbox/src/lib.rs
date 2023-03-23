@@ -307,6 +307,7 @@ pub mod lootbox {
             {
                 if rand_index == 0 {
                     prize_index = i;
+                    break;
                 }
                 rand_index = rand_index.checked_sub(1).unwrap();
             }
