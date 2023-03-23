@@ -256,7 +256,7 @@ pub mod lootbox {
                 off_chain_prizes: vec![],
             };
             player.lootboxes.push(player_box);
-            player.lootboxes.len()
+            player.lootboxes.len() - 1
         };
         let mut index: usize = 0;
         let mut chance: u32 = 0;
