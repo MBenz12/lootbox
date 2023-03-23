@@ -1,24 +1,124 @@
-import React from 'react';
+/* eslint-disable @next/next/no-img-element */
+import React, { useMemo, useState } from 'react';
 import Heading from "../sections/claim/Heading";
 import NFTCard from "../components/claim/NFTCard";
 import CardsSection from "../sections/claim/CardsSection";
-import {ModalContext} from "@/contexts/modal-context";
+import { ModalContext } from "@/contexts/modal-context";
 import Head from "next/head";
 import LiveFeed from "@/components/LiveFeed";
 import Image from "next/image";
+import useFetchPlayer from '@/hooks/useFetchPlayer';
+import { NftPrize, OffChainPrize, SplPrize } from '@/types';
+import useFetchPrizes from '@/hooks/useFetchPrizes';
+import { PublicKey } from '@solana/web3.js';
+import useFetchNfts from '@/hooks/useFetchNfts';
+import { getLootboxPda } from '@/lootbox-program-libs/utils';
+import { TOKENS } from '@/config';
+import useFetchAllLootboxes from '@/hooks/useFetchAllLootboxes';
+import { Button } from '@/components/lootboxes/Button';
+
+type PrizeCard = { name: string, image: string, lootbox: string, value: number };
 
 const Claim = () => {
-  const {showModal} = React.useContext(ModalContext)
-  const [cards, setCards] = React.useState<{ name: string, box: string, image: string }[]>([])
-  React.useEffect(() => {
-    for (let i = 0; i < 4; i++) {
-      setCards(prevState => [...prevState, {
-        name: `NFT Name ${i}`,
-        box: `Box Name ${i}`,
-        image: '/images/002.jpg'
-      }])
+  const [reload] = useState({});
+  const { lootboxes } = useFetchAllLootboxes(reload);
+  const { player } = useFetchPlayer(reload);
+
+  const { prizes: prizeItems } = useFetchPrizes(reload);
+  const mints = useMemo(() => {
+    const mints: Array<PublicKey> = [];
+    lootboxes.forEach(lootbox => {
+      mints.push(...lootbox.splVaults.filter(splVault => splVault.amount.toNumber() === 1).map((splVault) => splVault.mint));
+    });
+    return mints;
+  }, [lootboxes]);
+  const { nfts: lootboxNfts } = useFetchNfts(reload, mints);
+
+  const { nftPrizes, splPrizes, offChainPrizes } = useMemo(() => {
+    const nftPrizes: Array<NftPrize> = new Array(4).fill([]);
+    const splPrizes: Array<SplPrize> = new Array(4).fill([]);
+    const offChainPrizes: Array<OffChainPrize> = new Array(4).fill([]);
+
+    if (player) {
+      for (const playerBox of player.lootboxes) {
+        let index = lootboxes.map(lootbox => getLootboxPda(lootbox.name)[0].toString()).indexOf(playerBox.lootbox.toString());
+        const lootbox = lootboxes[index];
+        for (const onChainPrize of playerBox.onChainPrizes) {
+          const { splIndex, amount: prizeAmount } = onChainPrize;
+          const { mint, amount } = lootbox.splVaults[splIndex];
+          if (amount.toNumber() === 1) {
+            let index = lootboxNfts.map(nft => nft.mint.toString()).indexOf(mint.toString());
+            nftPrizes.push({ index, lootbox: true, lootboxName: lootbox.name });
+          } else {
+            let tokenMints = TOKENS.map(token => token.mint.toString());
+            let tokenIndex = tokenMints.indexOf(mint.toString());
+            let decimals = TOKENS[tokenIndex].decimals;
+            let index = splPrizes.map(prize => prize.index).indexOf(tokenIndex);
+            if (index === -1) {
+              splPrizes.push({ index: tokenIndex, lootbox: true, amount: prizeAmount.toNumber() / decimals, lootboxName: lootbox.name });
+            } else {
+              splPrizes[index].amount += prizeAmount.toNumber() / decimals;
+            }
+          }
+        }
+        for (const offChainPrize of playerBox.offChainPrizes) {
+          const { itemIndex, totalItems, usedItems, claimed } = offChainPrize;
+          const { name, image } = prizeItems[itemIndex] || { name: '', image: '' };
+          offChainPrizes.push({
+            index: itemIndex,
+            name,
+            image,
+            totalItems,
+            remainigItems: totalItems - usedItems,
+            lootbox: true,
+            lootboxName: lootbox.name,
+          });
+        }
+      }
     }
-  }, [])
+
+    return { nftPrizes, splPrizes, offChainPrizes };
+  }, [player, lootboxNfts, lootboxes, prizeItems]);
+
+  const { showModal } = React.useContext(ModalContext)
+
+  const { splCards, nftCards, offChainCards } = useMemo(() => {
+    const splCards: Array<PrizeCard> = [];
+    const nftCards: Array<PrizeCard> = [];
+    const offChainCards: Array<PrizeCard> = [];
+    for (const prize of nftPrizes) {
+      if (!lootboxNfts[prize.index]) continue;
+      const { name, image, floorPrice } = lootboxNfts[prize.index];
+      nftCards.push({
+        name,
+        image,
+        lootbox: prize.lootboxName || '',
+        value: floorPrice
+      });
+    }
+    for (const prize of splPrizes) {
+      if (!TOKENS[prize.index]) continue;
+      const { symbol, image } = TOKENS[prize.index];
+      splCards.push({
+        name: symbol,
+        lootbox: prize.lootboxName || '',
+        image,
+        value: prize.amount,
+      })
+    }
+    for (const prize of offChainPrizes) {
+      if (!prizeItems[prize.index]) continue;
+      const { name, image } = prizeItems[prize.index];
+      offChainCards.push({
+        name,
+        image,
+        value: 0,
+        lootbox: prize.lootboxName || '',
+      })
+    }
+    return { splCards, nftCards, offChainCards };
+
+  }, [nftPrizes, splPrizes, offChainPrizes, lootboxNfts, prizeItems]);
 
   return (
     <>
@@ -29,42 +129,39 @@ const Claim = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="px-5 lg:px-32">
-        <Heading/>
+        <Heading />
         <div className={"my-5"}>
           <p className={"font-bold font-space-mono text-[18px] my-5"}>TOKENS</p>
-          <div className={"flex place-items-center gap-2"}>
-            <Image width={16} height={16} className={"w-[16px] h-[16px]"} src="/images/solana.svg" alt=""/>
-            <p className={"font-space-mono"}>1,000 SOL</p>
-          </div>
-          <div className={"flex place-items-center gap-2"}>
-            <Image width={16} height={16} className={"w-[16px] h-[16px]"} src="/images/coin.png" alt=""/>
-            <p className={"font-space-mono"}>1,000 ZEN</p>
-          </div>
+          {splCards.map((card, index) => (
+            <div className={"flex place-items-center gap-2"} key={"token" + index}>
+              <img width={16} height={16} className={"w-[16px] h-[16px]"} src={card.image} alt="" />
+              <p className={"font-space-mono"}>{card.value} {card.name}</p>
+              <Button handler={() => {}} text={"CLAIM"}/>
+            </div>
+          ))}
         </div>
         <CardsSection sectionName={'NFTs'}>
           {
-            cards.map((card, index) => {
+            nftCards.map((card, index) => {
               return (
-                <NFTCard key={index} name={card.name} box={card.box} image={card.image} handler={() => {
-                  alert(`Claiming handler for ${card.name}`)
+                <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} handler={() => {
                   showModal(
-                    <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming/>
+                    <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming />
                   )
-                }}/>
+                }} />
               )
             })
           }
         </CardsSection>
         <CardsSection sectionName={'Other Prizes'}>
           {
-            cards.map((card, index) => {
+            offChainCards.map((card, index) => {
               return (
-                <NFTCard key={index} name={card.name} box={card.box} image={card.image} handler={() => {
-                  alert(`Claiming handler for ${card.name}`)
+                <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} handler={() => {
                   showModal(
-                    <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming/>
+                    <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming />
                   )
-                }}/>
+                }} />
               )
             })
           }
