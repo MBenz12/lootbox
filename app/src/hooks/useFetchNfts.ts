@@ -59,15 +59,20 @@ const useFetchNfts = (reload: {}, lootbox?: Lootbox): { nfts: Array<NftData>, lo
         })
       );
 
-      const res = await hsClient.getProjects({ condition: { projectIds: Object.keys(creators) } });
-      for (const project of res.getProjectStats.project_stats || []) {
-        const creator = project.project_id;
-        creators[creator] = project.floor_price || 0;
+      try {
+        const res = await hsClient.getProjects({ condition: { projectIds: Object.keys(creators) } });
+        for (const project of res.getProjectStats.project_stats || []) {
+          const creator = project.project_id;
+          creators[creator] = project.floor_price || 0;
+        }
+  
+        for (const nft of nfts) {
+          nft.floorPrice = creators[nft.creator.toString()];
+        }        
+      } catch (error) {
+        console.log(error);
       }
 
-      for (const nft of nfts) {
-        nft.floorPrice = creators[nft.creator.toString()];
-      }
 
       nfts.sort((a: NftData, b: NftData) => {
         if (a.name === b.name) return 0;
