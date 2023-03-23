@@ -225,21 +225,23 @@ export const claim = async (
 
 export const claimAll = async (
   program: Program<Lootbox>,
-  name: string,
+  names: Array<string>,
   wallet: WalletContextState,
   prizeMints: Array<PublicKey>,
 ) => {
   if (!wallet.publicKey) return;
   const instructions = [];
+  let i = 0;
   for (const prizeMint of prizeMints) {
     instructions.push(
       ...await getClaimInstructions(
         program,
-        name,
+        names[i],
         wallet.publicKey,
         prizeMint,
       )
     );
+    i++;
   }
   return await sendTransactions(wallet, program.provider.connection, instructions);
 }

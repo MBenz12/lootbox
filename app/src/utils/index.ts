@@ -1,5 +1,6 @@
 import { TOKENS } from '@/config'
-import { Lootbox, PrizeItem } from '@/lootbox-program-libs/types';
+import { Lootbox, PlayerBox, PrizeItem } from '@/lootbox-program-libs/types';
+import { getLootboxPda } from '@/lootbox-program-libs/utils';
 import { NftData, NftPrize, SplPrize, TOKEN } from '@/types';
 import { PublicKey } from '@solana/web3.js'
 
@@ -28,6 +29,12 @@ export const getTotalPrizeIndex = (lootbox: Lootbox, mint: PublicKey) => {
     totalIndex++;
   }
   return -1;
+}
+
+export const getLootbox = (lootboxKey: PublicKey, lootboxes: Array<Lootbox>) => {
+  let index = lootboxes.map(lootbox => getLootboxPda(lootbox.name)[0].toString()).indexOf(lootboxKey.toString());
+  const lootbox = lootboxes[index];
+  return lootbox;
 }
 
 export const getSliceAddress = (str: string) => {
