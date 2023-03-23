@@ -15,6 +15,7 @@ import useFetchNfts from '@/hooks/useFetchNfts';
 import { getLootboxPda } from '@/lootbox-program-libs/utils';
 import { TOKENS } from '@/config';
 import useFetchAllLootboxes from '@/hooks/useFetchAllLootboxes';
+import { Button } from '@/components/lootboxes/Button';
 
 type PrizeCard = { name: string, image: string, lootbox: string, value: number };
 
@@ -135,6 +136,7 @@ const Claim = () => {
             <div className={"flex place-items-center gap-2"} key={"token" + index}>
               <img width={16} height={16} className={"w-[16px] h-[16px]"} src={card.image} alt="" />
               <p className={"font-space-mono"}>{card.value} {card.name}</p>
+              <Button handler={() => {}} text={"CLAIM"}/>
             </div>
           ))}
         </div>
@@ -143,7 +145,6 @@ const Claim = () => {
             nftCards.map((card, index) => {
               return (
                 <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} handler={() => {
-                  alert(`Claiming handler for ${card.name}`)
                   showModal(
                     <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming />
                   )
@@ -157,7 +158,6 @@ const Claim = () => {
             offChainCards.map((card, index) => {
               return (
                 <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} handler={() => {
-                  alert(`Claiming handler for ${card.name}`)
                   showModal(
                     <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming />
                   )
