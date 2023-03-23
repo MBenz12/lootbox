@@ -3,12 +3,10 @@ import Head from 'next/head';
 import Sidebar from '@/sections/admin/Sidebar';
 import Main from '@/sections/admin/Main';
 import useFetchAllLootboxes from '@/hooks/useFetchAllLootboxes';
-import useProgram from '@/hooks/useProgram';
 
 export default function Admin() {
-  const program = useProgram();
   const [reload, setReload] = useState({});
-  const { lootboxes } = useFetchAllLootboxes(program, reload);
+  const { lootboxes } = useFetchAllLootboxes(reload);
   const [name, setName] = useState('Lootbox 1');
   const boxes = useMemo(() => { 
     const names = lootboxes.map(lootbox => lootbox.name);
