@@ -62,7 +62,7 @@ const OffChainForm = ({
                   setPrizes(newPrizes);
                 }}
               />
-              <div className='flex flex-col'>
+              <div className='relative'>
                 <Input
                   size={"sm"}
                   type={"number"}
@@ -75,6 +75,9 @@ const OffChainForm = ({
                   value={prize.totalItems || 0}
                   name={`prizes[${index}].total_quantity`}
                 />
+                {prize.remainigItems && <div className='absolute right-0 top-[100%]'>
+                  <p className='text-[8px]'>{prize.remainigItems} Remaining</p>
+                </div>}
               </div>
 
               <div className={"cursor-pointer"} onClick={() => {

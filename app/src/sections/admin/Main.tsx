@@ -133,13 +133,14 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
             }
           } else if (prizeItem.offChainItem) {
             const { itemIndex, totalItems, usedItems } = prizeItem.offChainItem;
-            const { name, image } = prizeItems[itemIndex];
+            const { name, image } = prizeItems[itemIndex] || { name: '', image: '' };
             offChainPrizes[rarity].push({
               index: itemIndex,
               name,
               image,
               totalItems,
               remainigItems: totalItems - usedItems,
+              lootbox: true,
             });
           }
         })
@@ -366,15 +367,15 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
       mints,
       amounts,
       rarities,
-      []
+      offChainItems,
     )
 
     console.log(txn)
     if (txn) {
-      toast.success('Drained Nfts successfully');
+      toast.success('Add items successfully');
       setReload({});
     } else {
-      toast.error('Failed to drain Nfts');
+      toast.error('Failed to add items');
     }
   }
 
@@ -465,7 +466,9 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     let prize = offChainPrizes[rarity][prizeIndex];
     if (prize.lootbox) {
       let totalIndex = getTotalPrizeIndex(lootbox, null, prize.index);
-      removeOffChainPrize(totalIndex);
+      if (totalIndex !== -1) {
+        removeOffChainPrize(totalIndex);
+      }
     } else {
       const newOffChainPrizes = offChainPrizes.map((prizes) => [...prizes]);
       newOffChainPrizes[rarity].splice(prizeIndex, 1);

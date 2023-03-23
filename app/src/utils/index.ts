@@ -25,7 +25,7 @@ export const getTotalPrizeIndex = (lootbox: Lootbox, mint: PublicKey | null, ite
     if (mint && prizeItem.onChainItem && lootbox.splVaults[prizeItem.onChainItem.splIndex].mint.toString() === mint.toString()) {
       return totalIndex;
     }
-    if (itemIndex && prizeItem.offChainItem && prizeItem.offChainItem.itemIndex === itemIndex) {
+    if (prizeItem.offChainItem && prizeItem.offChainItem.itemIndex === itemIndex) {
       return totalIndex;
     }
     totalIndex++;
