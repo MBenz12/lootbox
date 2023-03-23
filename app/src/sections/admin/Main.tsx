@@ -6,25 +6,23 @@ import Input from "../../components/admin/Input";
 import Button from "../../components/admin/Button";
 import NftCard from "../../components/admin/NftCard";
 import SelectNftsDialog from "../../components/admin/SelectNftsDialog";
-
+import OffChainPrizeDialog from '../../components/admin/OffChainPrizeDialog';
 
 import useFetchNfts from '@/hooks/useFetchNfts';
-import { IDL, Lootbox as LootboxIDL } from '@/idl/lootbox';
-import { addItems, createLootbox, createPlayer, drain, fund, updateLootbox, updateOffChainItem, updateOnChainItem } from '@/lootbox-program-libs/methods';
+import { addItems, createLootbox, drain, fund, updateLootbox, updateOffChainItem, updateOnChainItem } from '@/lootbox-program-libs/methods';
 import { OffChainItem, Rarity } from '@/lootbox-program-libs/types';
-import { programId } from '@/lootbox-program-libs/utils';
-import { AnchorProvider, BN, Program } from '@project-serum/anchor';
-import { getMint, NATIVE_MINT } from '@solana/spl-token';
-import { useAnchorWallet, useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { BN } from '@project-serum/anchor';
+import { getMint } from '@solana/spl-token';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { TOKENS } from '@/config';
 import useFetchLootbox from '@/hooks/useFetchLootbox';
 import { NftData, NftPrize, OffChainPrize, SplPrize, TOKEN } from '@/types';
 import { getTotalPrizeIndex, getUnselectedPrizes } from '@/utils';
-import OffChainPrizeDialog from '../../components/admin/OffChainPrizeDialog';
 import useFetchPrizes from '@/hooks/useFetchPrizes';
+import useProgram from '@/hooks/useProgram';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 
 interface MainProps {
   name: string;
@@ -36,27 +34,9 @@ interface MainProps {
 const rarityCategories = ["Common", "Uncommon", "Rare", "Legendary"];
 
 const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
-  const [fundDialogOpen, setFundDialogOpen] = useState(false);
-  const [drainDialogOpen, setDrainDialogOpen] = useState(false);
-  const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const [currentNftRarity, setCurrentNftRarity] = useState(0);
-  const [selectedPrizes, setSelectedPrizes] = useState<Array<number>>([]);
-
-  const [currentOffRarity, setCurrentOffRarity] = useState(3);
-
-
-  const [program, setProgram] = useState<Program<LootboxIDL>>();
-  const anchorWallet = useAnchorWallet();
-  const wallet = useWallet();
+  const program = useProgram();
   const { connection } = useConnection();
-
-  useEffect(() => {
-    if (!connection || !anchorWallet) return;
-
-    const provider = new AnchorProvider(connection, anchorWallet, AnchorProvider.defaultOptions());
-    const program = new Program(IDL, programId.toString(), provider);
-    setProgram(program);
-  }, [connection, anchorWallet]);
+  const wallet = useWallet();
 
   const [tokens, setTokens] = useState(
     TOKENS.map(token => ({ ...token, balance: 0 } as TOKEN))
@@ -73,23 +53,33 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     { dropPercent: 100, minSpins: 10 },
     { dropPercent: 2, minSpins: 50 },
   ]);
+
   const { nfts } = useFetchNfts(reload);
   const [selectedNfts, setSelectedNfts] = useState<Array<number>>([]);
 
   const [tokenAmounts, setTokenAmounts] = useState(Array(TOKENS.length).fill(0));
   const { lootbox } = useFetchLootbox(program, name, reload);
 
-  const { nfts: lootboxNfts } = useFetchNfts(reload, lootbox);
+  const mints: Array<PublicKey> | undefined = useMemo(() => lootbox ? lootbox.splVaults.filter(splVault => splVault.amount.toNumber() === 1).map((splVault) => splVault.mint) : undefined, [lootbox]);
+
+  const { nfts: lootboxNfts } = useFetchNfts(reload, mints);
   const [selectedLootboxNfts, setSelectedLootboxNfts] = useState<Array<number>>([]);
 
   const [nftPrizes, setNftPrizes] = useState<Array<Array<NftPrize>>>(new Array(4).fill([]).map(() => []));
+  const [currentNftRarity, setCurrentNftRarity] = useState(3);
+
   const [splPrizes, setSplPrizes] = useState<Array<Array<SplPrize>>>(new Array(4).fill([]).map(() => []));
   const [currentSplRarity, setCurrentSplRarity] = useState(3);
 
   const { prizes: prizeItems } = useFetchPrizes(reload);
   const [offChainPrizes, setOffChainPrizes] = useState<Array<Array<OffChainPrize>>>(new Array(4).fill([]).map(() => []));
+  const [currentOffRarity, setCurrentOffRarity] = useState(3);
+  const [selectedPrizes, setSelectedPrizes] = useState<Array<number>>([]);
 
   const [offPrizeDialogOpen, setOffPrizeDialogOpen] = useState(false);
+  const [fundDialogOpen, setFundDialogOpen] = useState(false);
+  const [drainDialogOpen, setDrainDialogOpen] = useState(false);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
 
   const fetchData = useCallback(async (tokens: Array<TOKEN>) => {
     try {
@@ -157,7 +147,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     } catch (error) {
       console.log(error);
     }
-  }, [lootbox, connection, lootboxNfts]);
+  }, [lootbox, connection, lootboxNfts, prizeItems]);
 
   useEffect(() => {
     fetchData(tokens);
@@ -211,23 +201,23 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     }
   }
 
-  const handleCreatePlayer = async () => {
-    if (!wallet.publicKey || !program) {
-      return;
-    }
+  // const handleCreatePlayer = async () => {
+  //   if (!wallet.publicKey || !program) {
+  //     return;
+  //   }
 
-    const txn = await createPlayer(
-      program,
-      wallet,
-    );
+  //   const txn = await createPlayer(
+  //     program,
+  //     wallet,
+  //   );
 
-    if (txn) {
-      toast.success('Created player account successfully');
-      setReload({});
-    } else {
-      toast.error('Failed to create player account');
-    }
-  }
+  //   if (txn) {
+  //     toast.success('Created player account successfully');
+  //     setReload({});
+  //   } else {
+  //     toast.error('Failed to create player account');
+  //   }
+  // }
 
   const handleFundNfts = async () => {
     if (!wallet.publicKey || !program) {

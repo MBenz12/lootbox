@@ -5,24 +5,18 @@ interface PrizeItemProps {
   icon: string;
   title: string;
   box: string;
-  value: number;
-  rarity?: string | "legendary" | "rare" | "uncommon" | "common";
+  value?: number;
+  rarity: number;
 }
 
 export const PrizeItem: React.FC<PrizeItemProps> = ({icon, title, box, value, rarity}) => {
   const getRarityShadowClass = () => {
-    switch (rarity) {
-      case "legendary":
-        return "drop-shadow-legendary-card";
-      case "rare":
-        return "drop-shadow-rare-card";
-      case "uncommon":
-        return "drop-shadow-uncommon-card";
-      case "common":
-        return "drop-shadow-common-card";
-      default:
-        return "";
-    }
+    return [
+      "drop-shadow-common-card",
+      "drop-shadow-uncommon-card",
+      "drop-shadow-rare-card",
+      "drop-shadow-legendary-card"
+    ][rarity];
   }
 
   return (
@@ -33,7 +27,7 @@ export const PrizeItem: React.FC<PrizeItemProps> = ({icon, title, box, value, ra
         <p className="opacity-50 text-[11px]">{box}</p>
         <div className="mt-auto flex place-items-center gap-1.5">
           <Image width={12} height={11} className="w-[12px] h-[11px] mt-[-3px]" src="/images/solana.svg" alt="solana"/>
-          <p className="text-[12px]">{value} SOL Value</p>
+          <p className="text-[12px]">{value ? `${value} SOL Value` : '-'}</p>
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 * {
-    font-family: "Aber Mono", monospace;
+    font-family: "Space Mono", monospace;
     color: white;
     box-sizing: border-box;
     margin: 0;

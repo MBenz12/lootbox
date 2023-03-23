@@ -3,9 +3,14 @@ import { Boxes } from '@/sections/lootboxes/Boxes'
 import { Prizes } from '@/sections/lootboxes/Prizes'
 import Head from 'next/head'
 import LiveFeed from "@/components/LiveFeed";
-import React from "react";
+import React, { useState } from "react";
+import useProgram from '@/hooks/useProgram';
+import useFetchAllLootboxes from '@/hooks/useFetchAllLootboxes';
 
 export default function Home() {
+  const program = useProgram();
+  const [reload, setReload] = useState({});
+  const { lootboxes } = useFetchAllLootboxes(program, reload);
   return (
     <>
       <Head>
@@ -16,8 +21,8 @@ export default function Home() {
       </Head>
       <div className="px-5 lg:px-32">
         <Banner/>
-        <Prizes/>
-        <Boxes/>
+        <Prizes lootboxes={lootboxes}/>
+        <Boxes lootboxes={lootboxes} setReload={setReload} />
         <LiveFeed />
       </div>
     </>

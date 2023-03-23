@@ -221,6 +221,10 @@ export const getPlayInstructions = async (
 
   const instructions = [];
 
+  if (!(await program.provider.connection.getAccountInfo(player))) {
+    instructions.push(await getCreatePlayerInstruction(program, user));
+  }
+
   let instruction = await getCreateAtaInstruction(program.provider.connection, user, userAta, ticketMint, user);
   if (instruction) instructions.push(instruction);
 

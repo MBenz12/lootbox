@@ -36,7 +36,7 @@ export const Navbar: React.FC = () => {
           <NavbarAnchor active={isCurrentPath("/claim")} />
         </Link>
       </div>
-      <div className="flex flex-col gap-20 md:flex-row">
+      <div className="flex flex-col gap-5 md:flex-row">
         <div className="flex justify-end gap-3">
           <div className="flex flex-col justify-center text-right">
             <p className="opacity-50 text-[13px]">BALANCE</p>
@@ -45,11 +45,11 @@ export const Navbar: React.FC = () => {
           <Image width={46} height={46} src="/images/coin.png" alt="" />
         </div>
         <div className="flex justify-end gap-3">
-          <div className="flex flex-col justify-center text-right">
+          {/* <div className="flex flex-col justify-center text-right">
             {wallet.publicKey && <p className="opacity-50 text-[13px]">{getSliceAddress(wallet.publicKey.toString())}</p>}
             <p className="text-[17px]">Pablo</p>
-          </div>
-          <Image width={46} height={46} src="/images/avatar.png" alt="" />
+          </div> */}
+          {/* <Image width={46} height={46} src="/images/avatar.png" alt="" /> */}
           <WalletMultiButton />
         </div>
       </div>

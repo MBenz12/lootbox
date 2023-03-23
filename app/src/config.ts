@@ -12,9 +12,24 @@ export const SKIP_PREFLIGHT = true;
 export const DEBUG = true;
 
 export const TOKENS = [
-  { symbol: 'SOL', mint: NATIVE_MINT, decimals: 1e9 },
-  { symbol: 'DUST', mint: new PublicKey("DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ"), decimals: 1e9 },
-  { symbol: 'ZEN', mint: new PublicKey("ZEN5PLn2YpFCGVZobQGUocpdzS7PuZRAN4MARaX8qAz"), decimals: 1e9 },
+  {
+    symbol: 'SOL',
+    mint: NATIVE_MINT,
+    decimals: 1e9,
+    image: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'
+  },
+  {
+    symbol: 'DUST',
+    mint: new PublicKey("DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ"),
+    decimals: 1e9,
+    image: 'https://arweave.net/iLHBUE18SsWraKU_AIp-pUPs901TwUXckPEfdMQRkIg'
+  },
+  {
+    symbol: 'ZEN',
+    mint: new PublicKey("ZEN5PLn2YpFCGVZobQGUocpdzS7PuZRAN4MARaX8qAz"),
+    decimals: 1e9,
+    image: 'https://shdw-drive.genesysgo.net/e9T5RYnrbiQ1EsQ5xzYSLP897nYD8TAVfWsGV23pgis/ZEN5PLn2YpFCGVZobQGUocpdzS7PuZRAN4MARaX8qAz-918.json'
+  },
 ];
 
 export const RARITY = [

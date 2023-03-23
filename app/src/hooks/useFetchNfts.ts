@@ -10,7 +10,7 @@ import { Lootbox } from '@/lootbox-program-libs/types';
 
 const hsClient = new HyperspaceClient(HYPERSPACE_API_KEY);
 
-const useFetchNfts = (reload: {}, lootbox?: Lootbox): { nfts: Array<NftData>, loading: boolean } => {
+const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftData>, loading: boolean } => {
   const wallet = useWallet();
   const { connection } = useConnection();
 
@@ -19,17 +19,16 @@ const useFetchNfts = (reload: {}, lootbox?: Lootbox): { nfts: Array<NftData>, lo
   const [nfts, setNfts] = useState<Array<NftData>>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetch = useCallback(async (lootbox?: Lootbox) => {
+  const fetch = useCallback(async () => {
     if (!wallet.publicKey) {
       return;
     }
     setLoading(true);
     try {
       let allNfts;
-      if (!lootbox) {
+      if (!mints) {
         allNfts = await metaplex.nfts().findAllByOwner({ owner: wallet.publicKey });
       } else {
-        const mints = lootbox.splVaults.filter(splVault => splVault.amount.toNumber() === 1).map((splVault) => splVault.mint);
         allNfts = (await metaplex.nfts().findAllByMintList({ mints })).filter(nft => nft);
       }
       const creators: { [key: string]: number } = {};
@@ -85,11 +84,11 @@ const useFetchNfts = (reload: {}, lootbox?: Lootbox): { nfts: Array<NftData>, lo
     }
 
     setLoading(false);
-  }, [metaplex, wallet.publicKey]);
+  }, [metaplex, wallet.publicKey, mints]);
 
   useEffect(() => {
-    fetch(lootbox);
-  }, [wallet.publicKey, metaplex, fetch, reload, lootbox]);
+    fetch();
+  }, [wallet.publicKey, metaplex, fetch, reload, mints]);
 
   return { nfts, loading };
 };

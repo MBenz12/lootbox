@@ -1,10 +1,9 @@
 import { Lootbox as LootboxIDL } from '@/idl/lootbox';
 import { Lootbox } from '@/lootbox-program-libs/types';
-import { getLootboxPda } from '@/lootbox-program-libs/utils';
 import { Program } from '@project-serum/anchor';
 import { useCallback, useEffect, useState } from 'react';
 
-const useFetchLootbox = (program: Program<LootboxIDL> | undefined, reload: {}): { lootboxes: Array<Lootbox>, loading: boolean } => {
+const useFetchAllLootboxes = (program: Program<LootboxIDL> | undefined, reload: {}): { lootboxes: Array<Lootbox>, loading: boolean } => {
   const [lootboxes, setLootboxes] = useState<Array<Lootbox>>([]);
   const [loading, setLoading] = useState(false);
 
@@ -28,4 +27,4 @@ const useFetchLootbox = (program: Program<LootboxIDL> | undefined, reload: {}): 
   return { lootboxes, loading };
 };
 
-export default useFetchLootbox;
+export default useFetchAllLootboxes;
