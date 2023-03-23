@@ -465,10 +465,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     if (!lootbox) return;
     let prize = offChainPrizes[rarity][prizeIndex];
     if (prize.lootbox) {
-      let totalIndex = getTotalPrizeIndex(lootbox, null, prize.index);
-      if (totalIndex !== -1) {
-        removeOffChainPrize(totalIndex);
-      }
+      removeOffChainPrize(prize.index);
     } else {
       const newOffChainPrizes = offChainPrizes.map((prizes) => [...prizes]);
       newOffChainPrizes[rarity].splice(prizeIndex, 1);
