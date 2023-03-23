@@ -15,11 +15,21 @@ export type TOKEN = {
   decimals: number;
 }
 
-export type SplPrize = { index: number, amount: number, lootbox: boolean };
+export type SplPrize = { 
+  lootboxName?: string,
+  index: number, 
+  amount: number, 
+  lootbox: boolean,
+};
 
-export type NftPrize = { index: number, lootbox: boolean };
+export type NftPrize = { 
+  lootboxName?: string,
+  index: number, 
+  lootbox: boolean,
+};
 
 export type OffChainPrize = { 
+  lootboxName?: string,
   index: number, 
   name: string, 
   image: string, 
