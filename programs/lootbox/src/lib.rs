@@ -212,6 +212,7 @@ pub mod lootbox {
     }
 
     #[access_control(valid_program(&ctx.accounts.instruction_sysvar_account, *ctx.program_id))]
+    #[access_control(prevent_suffix_instruction(&ctx.accounts.instruction_sysvar_account))]
     pub fn play(ctx: Context<Play>) -> Result<()> {
         let lootbox = &ctx.accounts.lootbox;
         let fee = lootbox.fee;
@@ -341,7 +342,6 @@ pub mod lootbox {
     }
 
     #[access_control(valid_program(&ctx.accounts.instruction_sysvar_account, *ctx.program_id))]
-    #[access_control(prevent_prefix_instruction(&ctx.accounts.instruction_sysvar_account))]
     pub fn claim(ctx: Context<Claim>) -> Result<()> {
         let lootbox = &ctx.accounts.lootbox;
         let player = &mut ctx.accounts.player;
