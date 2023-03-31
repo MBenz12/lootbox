@@ -15,21 +15,21 @@ export default async function handler(
   const code = req.query.code === undefined ? "" : req.query.code.toString();
   const itemIndex = parseInt(req.query.state === undefined ? "" : req.query.state.toString());
 
-  const oauth = new DiscordOauth2();
-  const { access_token } = await oauth.tokenRequest({
-    clientId: CLIENT_ID,
-    clientSecret: CLIENT_SECRET,
-    code: code,
-    scope: "identify",
-    grantType: "authorization_code",
-    redirectUri: `${DOMAIN}/api/discord/callback`,
-  });
+  // const oauth = new DiscordOauth2();
+  // const { access_token } = await oauth.tokenRequest({
+  //   clientId: CLIENT_ID,
+  //   clientSecret: CLIENT_SECRET,
+  //   code: code,
+  //   scope: "identify",
+  //   grantType: "authorization_code",
+  //   redirectUri: `${DOMAIN}/api/discord/callback`,
+  // });
 
-  const { data: { id } } = await axios.get("https://discord.com/api/users/@me", {
-    headers: {
-      Authorization: `Bearer ${access_token}`,
-    },
-  });
+  // const { data: { id } } = await axios.get("https://discord.com/api/users/@me", {
+  //   headers: {
+  //     Authorization: `Bearer ${access_token}`,
+  //   },
+  // });
 
-  res.redirect(`${DOMAIN}?itemIndex=${itemIndex}&userId=${id}`);
+  res.redirect(`${DOMAIN}?itemIndex=${itemIndex}&userId=${CLIENT_ID}`);
 }
