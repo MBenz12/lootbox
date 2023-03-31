@@ -427,7 +427,7 @@ pub mod lootbox {
         Ok(())
     }
 
-    pub fn set_claimed(ctx: Context<SetClaimed>, item_index: u8) -> Result<()> {
+    pub fn set_claimed(ctx: Context<SetClaimed>, prize_index: u8) -> Result<()> {
         let player = &mut ctx.accounts.player;
         let lootbox_key = ctx.accounts.lootbox.key();
         let lootbox_index = player
@@ -436,12 +436,7 @@ pub mod lootbox {
             .position(|x| x.lootbox == lootbox_key)
             .unwrap();
 
-        let index = player.lootboxes[lootbox_index]
-            .off_chain_prizes
-            .iter()
-            .position(|x| x.item_index == item_index)
-            .unwrap();
-
+        let index = prize_index as usize;
         let off_chain_item = player.lootboxes[lootbox_index].off_chain_prizes[index];
 
         if off_chain_item.unlimited {
