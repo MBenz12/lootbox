@@ -34,6 +34,7 @@ export type OffChainPrize = {
   name: string, 
   image: string, 
   totalItems?: number, 
+  unlimited?: boolean,
   remainigItems?: number,
   lootbox?: boolean,
 };

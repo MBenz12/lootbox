@@ -6,21 +6,37 @@ import CardsSection from "../sections/claim/CardsSection";
 import { ModalContext } from "@/contexts/modal-context";
 import Head from "next/head";
 import LiveFeed from "@/components/LiveFeed";
-import Image from "next/image";
 import useFetchPlayer from '@/hooks/useFetchPlayer';
 import { NftPrize, OffChainPrize, SplPrize } from '@/types';
 import useFetchPrizes from '@/hooks/useFetchPrizes';
 import { PublicKey } from '@solana/web3.js';
 import useFetchNfts from '@/hooks/useFetchNfts';
-import { getLootboxPda } from '@/lootbox-program-libs/utils';
 import { TOKENS } from '@/config';
 import useFetchAllLootboxes from '@/hooks/useFetchAllLootboxes';
 import { Button } from '@/components/lootboxes/Button';
+import useProgram from '@/hooks/useProgram';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { claim, claimAll } from '@/lootbox-program-libs/methods';
+import { toast } from 'react-toastify';
+import { getLootbox } from '@/utils';
+import { getCookie } from 'cookies-next';
 
-type PrizeCard = { name: string, image: string, lootbox: string, value: number };
+export async function getServerSideProps(context: any) {
+  const discord_access = getCookie("discord_access", context);
+  return {
+    props: {
+      discord_access: discord_access === undefined ? null : discord_access,
+    },
+  };
+}
 
-const Claim = () => {
-  const [reload] = useState({});
+type PrizeCard = { prize: NftPrize | SplPrize | OffChainPrize, name: string, image: string, lootbox: string, value: number };
+
+const Claim = ({ discord_access }: { discord_access: any }) => {
+  console.log(discord_access);
+  const program = useProgram();
+  const wallet = useWallet();
+  const [reload, setReload] = useState({});
   const { lootboxes } = useFetchAllLootboxes(reload);
   const { player } = useFetchPlayer(reload);
 
@@ -35,14 +51,13 @@ const Claim = () => {
   const { nfts: lootboxNfts } = useFetchNfts(reload, mints);
 
   const { nftPrizes, splPrizes, offChainPrizes } = useMemo(() => {
-    const nftPrizes: Array<NftPrize> = new Array(4).fill([]);
-    const splPrizes: Array<SplPrize> = new Array(4).fill([]);
-    const offChainPrizes: Array<OffChainPrize> = new Array(4).fill([]);
+    const nftPrizes: Array<NftPrize> = [];
+    const splPrizes: Array<SplPrize> = [];
+    const offChainPrizes: Array<OffChainPrize> = [];
 
     if (player) {
       for (const playerBox of player.lootboxes) {
-        let index = lootboxes.map(lootbox => getLootboxPda(lootbox.name)[0].toString()).indexOf(playerBox.lootbox.toString());
-        const lootbox = lootboxes[index];
+        const lootbox = getLootbox(playerBox.lootbox, lootboxes);
         for (const onChainPrize of playerBox.onChainPrizes) {
           const { splIndex, amount: prizeAmount } = onChainPrize;
           const { mint, amount } = lootbox.splVaults[splIndex];
@@ -90,6 +105,7 @@ const Claim = () => {
       if (!lootboxNfts[prize.index]) continue;
       const { name, image, floorPrice } = lootboxNfts[prize.index];
       nftCards.push({
+        prize,
         name,
         image,
         lootbox: prize.lootboxName || '',
@@ -100,6 +116,7 @@ const Claim = () => {
       if (!TOKENS[prize.index]) continue;
       const { symbol, image } = TOKENS[prize.index];
       splCards.push({
+        prize,
         name: symbol,
         lootbox: prize.lootboxName || '',
         image,
@@ -110,6 +127,7 @@ const Claim = () => {
       if (!prizeItems[prize.index]) continue;
       const { name, image } = prizeItems[prize.index];
       offChainCards.push({
+        prize,
         name,
         image,
         value: 0,
@@ -120,6 +138,87 @@ const Claim = () => {
 
   }, [nftPrizes, splPrizes, offChainPrizes, lootboxNfts, prizeItems]);
 
+  const handleClaimNft = async (prize: NftPrize) => {
+    if (!wallet.publicKey || !program || !prize.lootboxName) {
+      return;
+    }
+    const mint = lootboxNfts[prize.index].mint;
+    const txn = await claim(
+      program,
+      prize.lootboxName,
+      wallet,
+      mint,
+    );
+
+    if (txn) {
+      toast.success('Claimed prize successfully');
+      setReload({});
+    } else {
+      toast.error('Failed to claim prize');
+    }
+  }
+
+  const handleClaimSpl = async (prize: SplPrize) => {
+    if (!wallet.publicKey || !program || !player) {
+      return;
+    }
+    const boxNames = player.lootboxes.map(playerBox => {
+      const lootbox = getLootbox(playerBox.lootbox, lootboxes);
+      return lootbox.name;
+    });
+    const mints = new Array(boxNames.length).fill(TOKENS[prize.index].mint);
+    const txn = await claimAll(
+      program,
+      boxNames,
+      wallet,
+      mints,
+    );
+
+    if (txn) {
+      toast.success('Claimed prize successfully');
+      setReload({});
+    } else {
+      toast.error('Failed to claim prize');
+    }
+  }
+
+  const handleClaimAll = async () => {
+    if (!wallet.publicKey || !program || !player) {
+      return;
+    }
+
+    const boxNames: Array<string> = [];
+    const mints: Array<PublicKey> = [];
+    for (const prize of splPrizes) {
+      boxNames.push(...player.lootboxes.map(playerBox => {
+        const lootbox = getLootbox(playerBox.lootbox, lootboxes);
+        return lootbox.name;
+      }));
+      mints.push(...new Array(boxNames.length).fill(TOKENS[prize.index].mint));
+    }
+
+    for (const prize of nftPrizes) {
+      if (!prize.lootboxName) continue;
+      const mint = lootboxNfts[prize.index].mint;
+      mints.push(mint);
+      boxNames.push(prize.lootboxName);
+    }
+
+    const txn = await claimAll(
+      program,
+      boxNames,
+      wallet,
+      mints,
+    );
+
+    if (txn) {
+      toast.success('Claimed prize successfully');
+      setReload({});
+    } else {
+      toast.error('Failed to claim prize');
+    }
+  }
+
   return (
     <>
       <Head>
@@ -129,14 +228,14 @@ const Claim = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="px-5 lg:px-32">
-        <Heading />
+        <Heading handleClaimAll={handleClaimAll} />
         <div className={"my-5"}>
           <p className={"font-bold font-space-mono text-[18px] my-5"}>TOKENS</p>
           {splCards.map((card, index) => (
             <div className={"flex place-items-center gap-2"} key={"token" + index}>
               <img width={16} height={16} className={"w-[16px] h-[16px]"} src={card.image} alt="" />
               <p className={"font-space-mono"}>{card.value} {card.name}</p>
-              <Button handler={() => {}} text={"CLAIM"}/>
+              <Button handler={() => handleClaimSpl(card.prize as SplPrize)} text={"CLAIM"} />
             </div>
           ))}
         </div>
@@ -145,6 +244,7 @@ const Claim = () => {
             nftCards.map((card, index) => {
               return (
                 <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} handler={() => {
+                  handleClaimNft(card.prize as NftPrize);
                   showModal(
                     <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming />
                   )

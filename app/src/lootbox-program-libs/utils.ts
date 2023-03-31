@@ -58,9 +58,16 @@ export const sendTransactions = async (
     transaction.feePayer = wallet.publicKey;
     transaction.recentBlockhash = await getRecentBlockhash(connection);
     for (const instruction of instructions) {
-      const tempTransaction = transaction;
+      const tempTransaction = new Transaction();
+      tempTransaction.instructions = [...transaction.instructions];
       transaction.add(instruction);
-      const bytes = transaction.serialize({ requireAllSignatures: false, verifySignatures: false }).length;
+      let bytes = 0;
+      try {
+        bytes = transaction.serialize({ requireAllSignatures: false, verifySignatures: false }).length;        
+        console.log(bytes);
+      } catch (error) {
+        bytes = 1232 + 1;
+      }
       if (bytes > 1232) {
         transactions.push(tempTransaction);
         transaction.instructions = [];
@@ -69,6 +76,7 @@ export const sendTransactions = async (
     if (transaction.instructions.length) transactions.push(transaction);
     const recentBlockhash = await getRecentBlockhash(connection);
     for (const transaction of transactions) {
+      transaction.feePayer = wallet.publicKey;
       transaction.recentBlockhash = recentBlockhash;
     }
     const signedTxns = await wallet.signAllTransactions(transactions);

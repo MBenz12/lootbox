@@ -1,7 +1,5 @@
-import { Lootbox as LootboxIDL } from '@/idl/lootbox';
 import { Lootbox } from '@/lootbox-program-libs/types';
 import { getLootboxPda } from '@/lootbox-program-libs/utils';
-import { Program } from '@project-serum/anchor';
 import { useCallback, useEffect, useState } from 'react';
 import useProgram from './useProgram';
 

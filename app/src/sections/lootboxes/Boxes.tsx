@@ -43,10 +43,10 @@ export const Boxes = ({ lootboxes, setReload, }: { lootboxes: Array<Lootbox>, se
     );
 
     if (txn) {
-      toast.success('Created player account successfully');
+      toast.success('Played successfully');
       setReload({});
     } else {
-      toast.error('Failed to create player account');
+      toast.error('Failed to play');
     }
   }
   return (
