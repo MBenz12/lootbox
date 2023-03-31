@@ -1,5 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { AUTHORIZE_URL } from '@/config';
+import { OffChainPrize } from '@/types';
+import { useWallet } from '@solana/wallet-adapter-react';
 import React, { useRef } from "react";
 import { Button } from "../lootboxes/Button";
 
@@ -9,11 +11,12 @@ interface NftCardProps {
   image: string;
   claiming?: boolean;
   handler?: () => void;
-  itemIndex?: number;
+  prize?: OffChainPrize;
 }
 
-const NftCard: React.FC<NftCardProps> = ({ name, box, image, claiming, handler, itemIndex }) => {
+const NftCard: React.FC<NftCardProps> = ({ name, box, image, claiming, handler, prize }) => {
   const discordRef = useRef<any>();
+  const { publicKey } = useWallet();
   return (
     <div
       className={"flex flex-col place-items-center h-fit backdrop-blur-[25px] p-2 bg-gradient-box-fill border-[1px] border-[rgba(255,255,255,0.10)] rounded-xl" + (claiming ? " w-[240px]" : " w-[180px]")}>
@@ -22,7 +25,12 @@ const NftCard: React.FC<NftCardProps> = ({ name, box, image, claiming, handler, 
         claiming ? (
           <div className={"flex flex-col my-4 place-items-center"}>
             <p className={"font-akira font-[800] text-[24px] mb-2.5"}>{name}</p>
-            <a target={"_blank"} href={`${AUTHORIZE_URL}&state=${itemIndex}`} ref={discordRef} className='hidden'></a>
+            <a target={"_blank"} href={`${AUTHORIZE_URL}&state=${JSON.stringify({
+              user: publicKey?.toString(),
+              lootboxName: prize?.lootboxName,
+              prizeIndex: prize?.prizeIndex,
+              itemIndex: prize?.itemIndex,
+            })}`} ref={discordRef} className='hidden'></a>
             <Button handler={() => {
               discordRef.current.click();
             }} text={"CONNECT DISCORD"} />

@@ -24,6 +24,7 @@ import useFetchPrizes from '@/hooks/useFetchPrizes';
 import useProgram from '@/hooks/useProgram';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import ClaimsDialog from '@/components/admin/ClaimsDialog';
+import useFetchClaims from '@/hooks/useFetchClaims';
 
 interface MainProps {
   name: string;
@@ -79,6 +80,8 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const [currentOffRarity, setCurrentOffRarity] = useState(3);
   const [selectedPrizes, setSelectedPrizes] = useState<Array<number>>([]);
 
+  const { claims } = useFetchClaims(reload);
+
   const [offPrizeDialogOpen, setOffPrizeDialogOpen] = useState(false);
   const [claimDialogOpen, setClaimDialogOpen] = useState(false);
   const [fundDialogOpen, setFundDialogOpen] = useState(false);
@@ -130,7 +133,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
             const { itemIndex, totalItems, usedItems, unlimited } = prizeItem.offChainItem;
             const { name, image } = prizeItems[itemIndex] || { name: '', image: '' };
             offChainPrizes[rarity].push({
-              index: itemIndex,
+              itemIndex,
               name,
               image,
               totalItems,
@@ -357,10 +360,10 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
       })
       offChainPrizes[rarity].forEach(prizeItem => {
         if (!prizeItem.lootbox) {
-          const { index, totalItems, unlimited } = prizeItem;
+          const { itemIndex, totalItems, unlimited } = prizeItem;
           if (!totalItems) return;
           offChainItems.push({
-            itemIndex: index,
+            itemIndex,
             totalItems: totalItems,
             usedItems: 0,
             unlimited: unlimited || false,
@@ -498,7 +501,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     if (!lootbox) return;
     let prize = offChainPrizes[rarity][prizeIndex];
     if (prize.lootbox) {
-      removeOffChainPrize(prize.index);
+      removeOffChainPrize(prize.itemIndex);
     } else {
       const newOffChainPrizes = offChainPrizes.map((prizes) => [...prizes]);
       newOffChainPrizes[rarity].splice(prizeIndex, 1);
@@ -578,7 +581,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
         />
       }
       {claimDialogOpen &&
-        <ClaimsDialog setOpen={setClaimDialogOpen} setReload={setReload} />
+        <ClaimsDialog setOpen={setClaimDialogOpen} setReload={setReload} claims={claims} prizes={prizeItems} />
       }
 
       <div className={"w-full flex justify-center mt-5 gap-4"}>

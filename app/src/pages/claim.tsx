@@ -66,14 +66,16 @@ const Claim = () => {
             }
           }
         }
-        for (const offChainPrize of playerBox.offChainPrizes) {
-          const { itemIndex, totalItems, usedItems, claimed } = offChainPrize;
+        
+        for (let prizeIndex = 0; prizeIndex < playerBox.offChainPrizes.length; prizeIndex++) {
+          const { itemIndex, totalItems, usedItems, claimed } = playerBox.offChainPrizes[prizeIndex];
           if (claimed) {
             continue;
           }
           const { name, image } = prizeItems[itemIndex] || { name: '', image: '' };
           offChainPrizes.push({
-            index: itemIndex,
+            itemIndex,
+            prizeIndex,
             name,
             image,
             totalItems,
@@ -117,8 +119,8 @@ const Claim = () => {
       })
     }
     for (const prize of offChainPrizes) {
-      if (!prizeItems[prize.index]) continue;
-      const { name, image } = prizeItems[prize.index];
+      if (!prizeItems[prize.itemIndex]) continue;
+      const { name, image } = prizeItems[prize.itemIndex];
       offChainCards.push({
         prize,
         name,
@@ -252,7 +254,7 @@ const Claim = () => {
               return (
                 <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} handler={() => {
                   showModal(
-                    <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming itemIndex={(card.prize as OffChainPrize).index} />
+                    <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming prize={(card.prize as OffChainPrize)} />
                   )                  
                 }} />
               )

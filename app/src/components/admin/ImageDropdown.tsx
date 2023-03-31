@@ -27,7 +27,7 @@ const ImageDropdown = ({
         {items.map((item) => (
           <div
             className='flex gap-1 px-1 py-0.5'
-            key={item.index}
+            key={item.itemIndex}
             onClick={() => {
               setCurrentItem(item);
               console.log(item);
