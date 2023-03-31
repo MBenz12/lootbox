@@ -24,6 +24,7 @@ import useFetchPrizes from '@/hooks/useFetchPrizes';
 import useProgram from '@/hooks/useProgram';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import ClaimsDialog from '@/components/admin/ClaimsDialog';
+import useFetchClaims from '@/hooks/useFetchClaims';
 
 interface MainProps {
   name: string;
@@ -78,6 +79,8 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const [offChainPrizes, setOffChainPrizes] = useState<Array<Array<OffChainPrize>>>(new Array(4).fill([]).map(() => []));
   const [currentOffRarity, setCurrentOffRarity] = useState(3);
   const [selectedPrizes, setSelectedPrizes] = useState<Array<number>>([]);
+
+  const { claims } = useFetchClaims(reload);
 
   const [offPrizeDialogOpen, setOffPrizeDialogOpen] = useState(false);
   const [claimDialogOpen, setClaimDialogOpen] = useState(false);
@@ -578,7 +581,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
         />
       }
       {claimDialogOpen &&
-        <ClaimsDialog setOpen={setClaimDialogOpen} setReload={setReload} />
+        <ClaimsDialog setOpen={setClaimDialogOpen} setReload={setReload} claims={claims} prizes={prizeItems} />
       }
 
       <div className={"w-full flex justify-center mt-5 gap-4"}>

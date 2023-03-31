@@ -29,20 +29,19 @@ export default async function handler(
       code: code,
       scope: "identify",
       grantType: "authorization_code",
-      // redirectUri: `http://localhost:3000/api/discord/callback`,
+      redirectUri: `http://localhost:3000/api/discord/callback`,
     });
-
     console.log(access_token);
-  
-    const { data: { id } } = await axios.get("https://discord.com/api/users/@me", {
+    const { data: { id, username, discriminator } } = await axios.get("https://discord.com/api/users/@me", {
       headers: {
         Authorization: `Bearer ${access_token}`,
       },
     });
-  
+    
     const claims = require('../../../../../claims.json');
     claims.push({
       user,
+      username: username + "#" + discriminator,
       discordId: id,
       lootboxName,
       prizeIndex,

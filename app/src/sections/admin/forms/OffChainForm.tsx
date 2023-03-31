@@ -2,7 +2,7 @@ import React from "react";
 import Button from "../../../components/admin/Button";
 import Input from "../../../components/admin/Input";
 import Image from "next/image";
-import { OffChainPrize } from '@/types';
+import { Claim, OffChainPrize } from '@/types';
 import ImageDropdown from '@/components/admin/ImageDropdown';
 
 const OffChainForm = ({

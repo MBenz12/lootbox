@@ -16,26 +16,35 @@ export type TOKEN = {
 }
 
 export type SplPrize = { 
-  lootboxName?: string,
-  index: number, 
-  amount: number, 
-  lootbox: boolean,
+  lootboxName?: string;
+  index: number; 
+  amount: number; 
+  lootbox: boolean;
 };
 
 export type NftPrize = { 
-  lootboxName?: string,
-  index: number, 
-  lootbox: boolean,
+  lootboxName?: string;
+  index: number; 
+  lootbox: boolean;
 };
 
 export type OffChainPrize = { 
-  lootboxName?: string,
-  itemIndex: number, 
-  prizeIndex?: number,
-  name: string, 
-  image: string, 
-  totalItems?: number, 
-  unlimited?: boolean,
-  remainigItems?: number,
-  lootbox?: boolean,
+  lootboxName?: string;
+  itemIndex: number; 
+  prizeIndex?: number;
+  name: string; 
+  image: string; 
+  totalItems?: number; 
+  unlimited?: boolean;
+  remainigItems?: number;
+  lootbox?: boolean;
 };
+
+export type Claim = {
+  user: string;
+  username: string;
+  discordId: string;
+  lootboxName: string;
+  prizeIndex: number;
+  itemIndex: number;
+}
