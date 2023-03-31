@@ -19,7 +19,8 @@ const NftCard: React.FC<NftCardProps> = ({name, box, image, claiming, handler}) 
         claiming ? (
           <div className={"flex flex-col my-4 place-items-center"}>
             <p className={"font-akira font-[800] text-[24px] mb-2.5"}>{name}</p>
-            <p className={"text-[12px] opacity-50 text-center"}>Please open a ticket in our Discord to claim your prize.</p>
+            <Button handler={handler} text={"CONNECT DISCORD"}/>
+            <p className={"text-[12px] opacity-50 text-center"}>Please connect your Discord & open a ticket in our server to claim.</p>
           </div>
         ) : (
           <>

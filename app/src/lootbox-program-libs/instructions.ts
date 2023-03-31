@@ -58,6 +58,7 @@ export const getFundInstructions = async (
   funder: PublicKey,
   prizeMint: PublicKey,
   amount: BN,
+  isNft: boolean,
 ) => {
   const [lootbox] = getLootboxPda(name);
   const funderAta = getAssociatedTokenAddressSync(prizeMint, funder);
@@ -83,7 +84,7 @@ export const getFundInstructions = async (
   instructions.push(
     await program.methods.fund(
       amount,
-      amount.toNumber() === 1
+      isNft,
     ).accounts({
       funder,
       lootbox,
