@@ -11,19 +11,29 @@ import { NftPrize, OffChainPrize, SplPrize } from '@/types';
 import useFetchPrizes from '@/hooks/useFetchPrizes';
 import { PublicKey } from '@solana/web3.js';
 import useFetchNfts from '@/hooks/useFetchNfts';
-import { getLootboxPda } from '@/lootbox-program-libs/utils';
 import { TOKENS } from '@/config';
 import useFetchAllLootboxes from '@/hooks/useFetchAllLootboxes';
 import { Button } from '@/components/lootboxes/Button';
 import useProgram from '@/hooks/useProgram';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { claim, claimAll, play } from '@/lootbox-program-libs/methods';
+import { claim, claimAll } from '@/lootbox-program-libs/methods';
 import { toast } from 'react-toastify';
 import { getLootbox } from '@/utils';
+import { getCookie } from 'cookies-next';
+
+export async function getServerSideProps(context: any) {
+  const discord_access = getCookie("discord_access", context);
+  return {
+    props: {
+      discord_access: discord_access === undefined ? null : discord_access,
+    },
+  };
+}
 
 type PrizeCard = { prize: NftPrize | SplPrize | OffChainPrize, name: string, image: string, lootbox: string, value: number };
 
-const Claim = () => {
+const Claim = ({ discord_access }: { discord_access: any }) => {
+  console.log(discord_access);
   const program = useProgram();
   const wallet = useWallet();
   const [reload, setReload] = useState({});
@@ -176,7 +186,7 @@ const Claim = () => {
     if (!wallet.publicKey || !program || !player) {
       return;
     }
-    
+
     const boxNames: Array<string> = [];
     const mints: Array<PublicKey> = [];
     for (const prize of splPrizes) {
@@ -193,7 +203,7 @@ const Claim = () => {
       mints.push(mint);
       boxNames.push(prize.lootboxName);
     }
-      
+
     const txn = await claimAll(
       program,
       boxNames,

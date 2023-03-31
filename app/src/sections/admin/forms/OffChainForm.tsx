@@ -10,7 +10,8 @@ const OffChainForm = ({
   prizeItems,
   prizes,
   setCurrentRarity,
-  handleOpenDialog,
+  handleOpenPrizeDialog,
+  handleOpenClaimDialog,
   setPrizes,
   handleRemovePrize,
 }: {
@@ -18,16 +19,18 @@ const OffChainForm = ({
   prizeItems: Array<OffChainPrize>,
   prizes: Array<Array<OffChainPrize>>,
   setCurrentRarity: (rarity: number) => void,
-  handleOpenDialog: (show: boolean) => void,
+  handleOpenPrizeDialog: (show: boolean) => void,
+  handleOpenClaimDialog: (show: boolean) => void,
   setPrizes: (prizes: Array<Array<OffChainPrize>>) => void,
   handleRemovePrize: (rarity: number, prizeIndex: number) => void
+
 }) => {
 
   return (
     <div className={"flex flex-col border-2 rounded-2xl border-[rgba(255,255,255,.5)] p-2"}>
       <p className={"text-center mb-1 text-[30px] font-bold"}>Off-Chain Prize</p>
       <div className='flex justify-center'>
-        <Button text={"Prizes"} onClick={() => handleOpenDialog(true)} />
+        <Button text={"Prizes"} onClick={() => handleOpenPrizeDialog(true)} />
       </div>
       <div className={"flex gap-1 justify-center my-4"}>
         {['Common', 'Uncommon', 'Rare', 'Legend'].map((category, index) => (
@@ -40,12 +43,13 @@ const OffChainForm = ({
           />
         )).reverse()}
       </div>
-      <div className={"flex gap-1"}>
+      <div className={"flex gap-2"}>
         <p className={"text-[10px] w-[180px]"}>Prize Item</p>
-        <p className={"text-[10px]"}>Total Quantity</p>
+        <p className={"text-[10px] w-[80px]"}>Total Quantity</p>
+        <p className={"text-[10px]"}>Unlimited</p>
       </div>
       {prizes[currentRarity].map((prize, index) => (
-        <div key={index} className={"flex gap-1 my-2"}>
+        <div key={index} className={"flex gap-2 my-2 items-center"}>
           <ImageDropdown
             currentItem={prize}
             items={prizeItems}
@@ -73,7 +77,17 @@ const OffChainForm = ({
               <p className='text-[8px]'>{prize.remainigItems} Remaining</p>
             </div>}
           </div>
-
+          <input
+            type='checkbox'
+            className='w-6 h-6'
+            checked={prize.unlimited || false}
+            onChange={(e) => {
+              if (prize.lootbox) return;
+              const newPrizes = prizes.map((prizes) => prizes.map(prize => ({ ...prize })));
+              newPrizes[currentRarity][index].unlimited = e.target.checked;
+              setPrizes(newPrizes);
+            }}
+          />
           <div className={"cursor-pointer"} onClick={() => {
             if (prize.lootbox) {
               handleRemovePrize(currentRarity, index);
@@ -87,13 +101,16 @@ const OffChainForm = ({
           </div>
         </div>
       ))}
-      <div className={"flex mt-auto justify-center mb-3"}>
+      <div className={"flex flex-col gap-2 items-center mt-auto justify-center mb-3"}>
         <p className={"opacity-50 text-[14px] cursor-pointer w-fit"} onClick={() => {
           const newPrizes = prizes.map((prizes) => prizes.map(prize => ({ ...prize })));
           const { name, image } = prizeItems[0];
           newPrizes[currentRarity].push({ index: 0, name, image, });
           setPrizes(newPrizes);
         }}>+ Add New Prize</p>
+        <Button text={"Prize Claims"} onClick={() => {
+          handleOpenClaimDialog(true)
+        }} />
       </div>
     </div>
   );

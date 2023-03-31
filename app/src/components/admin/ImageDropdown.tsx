@@ -17,7 +17,7 @@ const ImageDropdown = ({
 }) => {
   const [open, setOpen] = useState(false);
   return (
-    <div className={'w-[180px] px-1 cursor-pointer relative flex justify-between items-center bg-white ' + (open ? 'rounded-t-md' : 'rounded-md')}>
+    <div className={'w-[180px] px-1 py-1 cursor-pointer relative flex justify-between items-center bg-white ' + (open ? 'rounded-t-md' : 'rounded-md')}>
       <div className='flex gap-1 w-full' onClick={() => setOpen(true)}>
         <img alt='' src={currentItem?.image} className='w-[25px] h-[25px] rounded-md' />
         <p className='text-black'>{currentItem?.name}</p>

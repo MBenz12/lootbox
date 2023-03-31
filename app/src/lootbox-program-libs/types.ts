@@ -22,6 +22,7 @@ export type Rarity = {
 export type SplVault = {
   mint: PublicKey;
   amount: BN;
+  isNft: boolean;
 }
 
 export type PrizeItem = {
@@ -39,6 +40,7 @@ export type OffChainItem = {
   itemIndex: number;
   totalItems: number;
   usedItems: number;
+  unlimited: boolean;
   claimed: boolean;
 }
 

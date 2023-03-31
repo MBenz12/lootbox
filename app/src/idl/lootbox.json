@@ -132,6 +132,10 @@
         {
           "name": "amount",
           "type": "u64"
+        },
+        {
+          "name": "isNft",
+          "type": "bool"
         }
       ]
     },
@@ -252,6 +256,10 @@
         {
           "name": "totalItems",
           "type": "u32"
+        },
+        {
+          "name": "unlimited",
+          "type": "bool"
         },
         {
           "name": "rarity",
@@ -383,32 +391,6 @@
       "args": []
     },
     {
-      "name": "confirmClaimed",
-      "accounts": [
-        {
-          "name": "user",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "lootbox",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "player",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "itemIndex",
-          "type": "u8"
-        }
-      ]
-    },
-    {
       "name": "setClaimed",
       "accounts": [
         {
@@ -438,6 +420,27 @@
           "type": "u8"
         }
       ]
+    },
+    {
+      "name": "closePda",
+      "accounts": [
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "pda",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -539,6 +542,10 @@
           {
             "name": "amount",
             "type": "u64"
+          },
+          {
+            "name": "isNft",
+            "type": "bool"
           }
         ]
       }
@@ -603,6 +610,10 @@
           {
             "name": "usedItems",
             "type": "u32"
+          },
+          {
+            "name": "unlimited",
+            "type": "bool"
           },
           {
             "name": "claimed",

@@ -82,7 +82,8 @@ export const getFundInstructions = async (
 
   instructions.push(
     await program.methods.fund(
-      amount
+      amount,
+      amount.toNumber() === 1
     ).accounts({
       funder,
       lootbox,
@@ -180,12 +181,14 @@ export const getAddOffChainItemInstruction = async (
   authority: PublicKey,
   itemIndex: number,
   totalItems: number,
+  unlimited: boolean,
   rarity: number,
 ) => {
   const [lootbox] = getLootboxPda(name);
   return program.methods.addOffChainItem(
     itemIndex,
     totalItems,
+    unlimited,
     rarity,
   ).accounts({
     authority,
@@ -322,20 +325,14 @@ export const getSetClaimedInstruction = async (
   }).instruction()
 }
 
-export const getConfirmClaimedInstruction = async (
+export const getClosePdaInstruction = async (
   program: Program<Lootbox>,
-  name: string,
-  user: PublicKey,
-  itemIndex: number,
+  authority: PublicKey,
+  pda: PublicKey,
 ) => {
-  const [player] = getPlayerPda(user);
-  const [lootbox] = getLootboxPda(name);
-
-  return program.methods.confirmClaimed(
-    itemIndex
-  ).accounts({
-    user,
-    lootbox,
-    player,
-  }).instruction()
+  return program.methods.closePda().accounts({
+    signer: authority,
+    pda,
+    systemProgram: SystemProgram.programId
+  }).instruction();
 }
