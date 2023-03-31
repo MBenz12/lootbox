@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
-import React from "react";
-import {Button} from "../lootboxes/Button";
+import { AUTHORIZE_URL } from '@/config';
+import React, { useRef } from "react";
+import { Button } from "../lootboxes/Button";
 
 interface NftCardProps {
   name: string;
@@ -8,18 +9,23 @@ interface NftCardProps {
   image: string;
   claiming?: boolean;
   handler?: () => void;
+  itemIndex?: number;
 }
 
-const NftCard: React.FC<NftCardProps> = ({name, box, image, claiming, handler}) => {
+const NftCard: React.FC<NftCardProps> = ({ name, box, image, claiming, handler, itemIndex }) => {
+  const discordRef = useRef<any>();
   return (
     <div
       className={"flex flex-col place-items-center h-fit backdrop-blur-[25px] p-2 bg-gradient-box-fill border-[1px] border-[rgba(255,255,255,0.10)] rounded-xl" + (claiming ? " w-[240px]" : " w-[180px]")}>
-      <img className={"w-full h-auto rounded-xl object-cover"} src={image} alt=""/>
+      <img className={"w-full h-auto rounded-xl object-cover"} src={image} alt="" />
       {
         claiming ? (
           <div className={"flex flex-col my-4 place-items-center"}>
             <p className={"font-akira font-[800] text-[24px] mb-2.5"}>{name}</p>
-            <Button handler={handler} text={"CONNECT DISCORD"}/>
+            <a target={"_blank"} href={`${AUTHORIZE_URL}&state=${itemIndex}`} ref={discordRef} className='hidden'></a>
+            <Button handler={() => {
+              discordRef.current.click();
+            }} text={"CONNECT DISCORD"} />
             <p className={"text-[12px] opacity-50 text-center"}>Please connect your Discord & open a ticket in our server to claim.</p>
           </div>
         ) : (
@@ -29,7 +35,7 @@ const NftCard: React.FC<NftCardProps> = ({name, box, image, claiming, handler}) 
               <p className={"opacity-50 text-[12px]"}>{box}</p>
             </div>
             <div className={"w-full"}>
-              <Button handler={handler} text={"CLAIM"}/>
+              <Button handler={handler} text={"CLAIM"} />
             </div>
           </>
         )

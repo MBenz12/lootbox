@@ -19,20 +19,10 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { claim, claimAll } from '@/lootbox-program-libs/methods';
 import { toast } from 'react-toastify';
 import { getLootbox } from '@/utils';
-import { getCookie } from 'cookies-next';
-
-export async function getServerSideProps(context: any) {
-  const discord_access = getCookie("discord_access", context);
-  return {
-    props: {
-      discord_access: discord_access === undefined ? null : discord_access,
-    },
-  };
-}
 
 type PrizeCard = { prize: NftPrize | SplPrize | OffChainPrize, name: string, image: string, lootbox: string, value: number };
 
-const Claim = ({ discord_access }: { discord_access: any }) => {
+const Claim = () => {
   const program = useProgram();
   const wallet = useWallet();
   const [reload, setReload] = useState({});
@@ -57,6 +47,7 @@ const Claim = ({ discord_access }: { discord_access: any }) => {
     if (player) {
       for (const playerBox of player.lootboxes) {
         const lootbox = getLootbox(playerBox.lootbox, lootboxes);
+        if (!lootbox) continue;
         for (const onChainPrize of playerBox.onChainPrizes) {
           const { splIndex, amount: prizeAmount } = onChainPrize;
           const { mint, isNft } = lootbox.splVaults[splIndex];
@@ -261,8 +252,8 @@ const Claim = ({ discord_access }: { discord_access: any }) => {
               return (
                 <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} handler={() => {
                   showModal(
-                    <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming />
-                  )
+                    <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming itemIndex={(card.prize as OffChainPrize).index} />
+                  )                  
                 }} />
               )
             })
