@@ -18,6 +18,7 @@ pub struct Lootbox {
 pub struct SplVault {
     pub mint: Pubkey,
     pub amount: u64,
+    pub is_nft: bool,
 }
 
 impl SplVault {
@@ -42,6 +43,7 @@ pub struct OffChainItem {
     pub item_index: u8,
     pub total_items: u32,
     pub used_items: u32,
+    pub unlimited: bool,
     pub claimed: bool,
 }
 

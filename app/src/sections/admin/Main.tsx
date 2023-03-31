@@ -9,7 +9,7 @@ import SelectNftsDialog from "../../components/admin/SelectNftsDialog";
 import OffChainPrizeDialog from '../../components/admin/OffChainPrizeDialog';
 
 import useFetchNfts from '@/hooks/useFetchNfts';
-import { addItems, createLootbox, drain, fund, updateLootbox, updateOffChainItem, updateOnChainItem } from '@/lootbox-program-libs/methods';
+import { addItems, closeLootbox, closePdas, createLootbox, drain, fund, updateLootbox, updateOffChainItem, updateOnChainItem } from '@/lootbox-program-libs/methods';
 import { OffChainItem, Rarity } from '@/lootbox-program-libs/types';
 import { BN } from '@project-serum/anchor';
 import { getMint } from '@solana/spl-token';
@@ -23,6 +23,7 @@ import { getTotalPrizeIndex, getUnselectedPrizes } from '@/utils';
 import useFetchPrizes from '@/hooks/useFetchPrizes';
 import useProgram from '@/hooks/useProgram';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import ClaimsDialog from '@/components/admin/ClaimsDialog';
 
 interface MainProps {
   name: string;
@@ -66,7 +67,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const [selectedLootboxNfts, setSelectedLootboxNfts] = useState<Array<number>>([]);
 
   const [nftPrizes, setNftPrizes] = useState<Array<Array<NftPrize>>>(new Array(4).fill([]).map(() => []));
-  const [currentNftRarity, setCurrentNftRarity] = useState(3);
+  const [currentRarity, setCurrentRarity] = useState(3);
 
   const [splPrizes, setSplPrizes] = useState<Array<Array<SplPrize>>>(new Array(4).fill([]).map(() => []));
   const [currentSplRarity, setCurrentSplRarity] = useState(3);
@@ -77,6 +78,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const [selectedPrizes, setSelectedPrizes] = useState<Array<number>>([]);
 
   const [offPrizeDialogOpen, setOffPrizeDialogOpen] = useState(false);
+  const [claimDialogOpen, setClaimDialogOpen] = useState(false);
   const [fundDialogOpen, setFundDialogOpen] = useState(false);
   const [drainDialogOpen, setDrainDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -84,6 +86,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const fetchData = useCallback(async (tokens: Array<TOKEN>) => {
     try {
       if (lootbox && connection) {
+        console.log(lootbox);
         setFee(lootbox.fee.toNumber() / LAMPORTS_PER_SOL);
         setFeeWallet(lootbox.feeWallet.toString());
         let index = tokens.map(token => token.mint.toString()).indexOf(lootbox.ticketMint.toString());
@@ -122,13 +125,14 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
               splPrizes[rarity].push({ index: tokenIndex, lootbox: true, amount: prizeAmount.toNumber() / decimals });
             }
           } else if (prizeItem.offChainItem) {
-            const { itemIndex, totalItems, usedItems } = prizeItem.offChainItem;
+            const { itemIndex, totalItems, usedItems, unlimited } = prizeItem.offChainItem;
             const { name, image } = prizeItems[itemIndex] || { name: '', image: '' };
             offChainPrizes[rarity].push({
               index: itemIndex,
               name,
               image,
               totalItems,
+              unlimited,
               remainigItems: totalItems - usedItems,
               lootbox: true,
             });
@@ -147,6 +151,15 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     } catch (error) {
       console.log(error);
     }
+
+    setSelectedNfts([]);
+    setSelectedLootboxNfts([]);
+    setSelectedPrizes([]);
+    setOffPrizeDialogOpen(false);
+    setFundDialogOpen(false);
+    setClaimDialogOpen(false);
+    setDrainDialogOpen(false);
+    setAddDialogOpen(false);
   }, [lootbox, connection, lootboxNfts, prizeItems]);
 
   useEffect(() => {
@@ -201,23 +214,24 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     }
   }
 
-  // const handleCreatePlayer = async () => {
-  //   if (!wallet.publicKey || !program) {
-  //     return;
-  //   }
+  const handleCloseLootbox = async () => {
+    if (!wallet.publicKey || !program) {
+      return;
+    }
 
-  //   const txn = await createPlayer(
-  //     program,
-  //     wallet,
-  //   );
+    const txn = await closeLootbox(
+      program,
+      name,
+      wallet,
+    );
 
-  //   if (txn) {
-  //     toast.success('Created player account successfully');
-  //     setReload({});
-  //   } else {
-  //     toast.error('Failed to create player account');
-  //   }
-  // }
+    if (txn) {
+      toast.success('Closed lootbox successfully');
+      setReload({});
+    } else {
+      toast.error('Failed to close lootbox');
+    }
+  }
 
   const handleFundNfts = async () => {
     if (!wallet.publicKey || !program) {
@@ -338,12 +352,13 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
       })
       offChainPrizes[rarity].forEach(prizeItem => {
         if (!prizeItem.lootbox) {
-          const { index, totalItems } = prizeItem;
+          const { index, totalItems, unlimited  } = prizeItem;
           if (!totalItems) return;
           offChainItems.push({
             itemIndex: index,
             totalItems: totalItems,
             usedItems: 0,
+            unlimited: unlimited || false,
             claimed: false,
           })
           rarities.push(rarity);
@@ -366,6 +381,28 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
       setReload({});
     } else {
       toast.error('Failed to add items');
+    }
+  }
+
+  const handleCloseAllPda = async () => {
+    console.log(program);
+    if (!wallet.publicKey || !program) {
+      return;
+    }
+
+    const accounts = await connection.getProgramAccounts(program.programId);
+
+    const txn = await closePdas(
+      program,
+      wallet,
+      accounts.map(account => account.pubkey),
+    );
+
+    if (txn) {
+      toast.success('Closed all pdas successfully');
+      setReload({});
+    } else {
+      toast.error('Failed to close all pdas');
     }
   }
 
@@ -401,6 +438,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
       wallet,
       index,
       0,
+      false,
     );
     console.log(txn)
     if (txn) {
@@ -501,6 +539,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
         setTicketPrice={setTicketPrice}
         setTicketToken={setTicketToken}
         handleClickCreate={!lootbox ? handleCreateLootbox : handleUpdateLootbox}
+        handleClickClose={handleCloseLootbox}
       />
 
       <SPLForm
@@ -520,7 +559,8 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
         currentRarity={currentOffRarity}
         setCurrentRarity={setCurrentOffRarity}
         prizeItems={prizeItems}
-        handleOpenDialog={setOffPrizeDialogOpen}
+        handleOpenPrizeDialog={setOffPrizeDialogOpen}
+        handleOpenClaimDialog={setClaimDialogOpen}
         prizes={offChainPrizes}
         setPrizes={setOffChainPrizes}
         handleRemovePrize={handleRemoveOffChainPrize}
@@ -532,113 +572,124 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
           prizes={prizeItems}
         />
       }
-
-      <div className={"w-full flex justify-center my-5 gap-4"}>
-        <Button onClick={() => setFundDialogOpen(true)} text={"Fund NFTs"} />
-        <Button onClick={() => setDrainDialogOpen(true)} text={"Drain NFTs"} />
-        <Button onClick={() => handleAddPrizes()} text={"Add Prizes"} />
-      </div>
-
-      {
-        rarities.map((rarity: Rarity, index) => {
-          return (
-            <div key={rarityCategories[index]} className={"mx-24 w-full mt-10"}>
-              {(addDialogOpen && currentNftRarity === index) &&
-                <SelectNftsDialog
-                  setOpen={() => setAddDialogOpen(false)}
-                  nfts={getUnselectedPrizes(lootboxNfts, nftPrizes)}
-                  selectedNfts={selectedPrizes}
-                  setSelectedNfts={setSelectedPrizes}
-                  label={`Add NFTs as ${rarityCategories[index]}`}
-                  buttonName="Add"
-                  handleClick={() => handleAddNftPrizes(getUnselectedPrizes(lootboxNfts, nftPrizes), selectedPrizes, index)}
-                />
-              }
-              <div className={"flex place-items-center gap-4 mb-5"}>
-                <p className={"text-[32px] w-[200px]"}>{rarityCategories[index]}</p>
-                <div className={"flex gap-5"}>
-                  <Input
-                    size={"sm"}
-                    type={"number"}
-                    name={`${rarityCategories[index]}.dropPercentage`}
-                    onChange={(e) => {
-                      const newRarities = rarities.map(rarity => ({ ...rarity }));
-                      newRarities[index].dropPercent = (parseFloat(e.target.value) || 0.0) * 100;
-                      setRarities(newRarities);
-                    }}
-                    label={"Drop %"}
-                    value={rarity.dropPercent / 100}
-                  />
-                  <Input
-                    size={"sm"}
-                    type={"number"}
-                    name={`${rarityCategories[index]}.minSOLValue`}
-                    onChange={() => { }}
-                    label={"Min. SOL Value"}
-                    value={0}
-                  />
-                  <Input
-                    size={"sm"}
-                    type={"number"}
-                    name={`${rarityCategories[index]}.minSpins`}
-                    onChange={(e) => {
-                      const newRarities = rarities.map(rarity => ({ ...rarity }));
-                      newRarities[index].minSpins = parseInt(e.target.value) || 0.0;
-                      setRarities(newRarities);
-                    }}
-                    label={"Min. Spins"}
-                    value={rarity.minSpins}
-                  />
-                </div>
-                <div className={"ml-auto"}>
-                  <Button text={"Add NFTs"} onClick={() => {
-                    setCurrentNftRarity(index);
-                    setAddDialogOpen(true);
-                  }} />
-                </div>
-              </div>
-              <NftsSection>
-                {
-                  nftPrizes[index].map((nftItem: NftPrize, prizeIndex: number) => {
-                    return (
-                      <NftCard
-                        image={lootboxNfts[nftItem.index]?.image}
-                        price={lootboxNfts[nftItem.index]?.floorPrice}
-                        key={"nft-" + prizeIndex}
-                        handleDelete={() => handleRemoveNftPrize(index, prizeIndex)}
-                      />
-                    )
-                  })
-                }
-                {
-                  splPrizes[index].map((splItem: SplPrize, prizeIndex: number) => {
-                    return (
-                      <NftCard
-                        price={splItem.amount}
-                        key={"spl-" + prizeIndex}
-                        symbol={tokens[splItem.index]?.symbol}
-                        handleDelete={() => handleRemoveSplPrize(index, prizeIndex)}
-                      />
-                    )
-                  })
-                }
-                {
-                  offChainPrizes[index].map((prizeItem: OffChainPrize, prizeIndex: number) => {
-                    return (
-                      <NftCard
-                        key={"off-chain-item" + prizeIndex}
-                        image={prizeItem.image}
-                        handleDelete={() => handleRemoveOffChainPrize(index, prizeIndex)}
-                      />
-                    )
-                  })
-                }
-              </NftsSection>
-            </div>
-          )
-        }).reverse()
+      {claimDialogOpen &&
+        <ClaimsDialog setOpen={setClaimDialogOpen} setReload={setReload} />
       }
 
+      <div className={"w-full flex justify-center mt-5 gap-4"}>
+        <Button onClick={() => setFundDialogOpen(true)} text={"Fund NFTs"} />
+        <Button onClick={() => setDrainDialogOpen(true)} text={"Drain NFTs"} />
+        <Button onClick={() => handleAddPrizes()} text={"Submit"} />
+      </div>
+      <div key={rarityCategories[currentRarity]} className={"mx-24 w-full mt-10"}>
+        {addDialogOpen &&
+          <SelectNftsDialog
+            setOpen={() => setAddDialogOpen(false)}
+            nfts={getUnselectedPrizes(lootboxNfts, nftPrizes)}
+            selectedNfts={selectedPrizes}
+            setSelectedNfts={setSelectedPrizes}
+            label={`Add NFTs as ${rarityCategories[currentRarity]}`}
+            buttonName="Add"
+            handleClick={() => handleAddNftPrizes(getUnselectedPrizes(lootboxNfts, nftPrizes), selectedPrizes, currentRarity)}
+          />
+        }
+        <div className={"flex justify-center items-end gap-4 mb-5"}>
+          <div className={"flex gap-1"}>
+            {['Common', 'Uncommon', 'Rare', 'Legend'].map((category, index) => (
+              <Button
+                key={category + index}
+                size={"md"}
+                text={category}
+                type={currentRarity === index ? "outline" : "ghost"}
+                onClick={() => setCurrentRarity(index)}
+              />
+            )).reverse()}
+          </div>
+          <div className={"flex gap-5"}>
+            <Input
+              size={"sm"}
+              type={"number"}
+              name={`${rarityCategories[currentRarity]}.dropPercentage`}
+              onChange={(e) => {
+                const newRarities = rarities.map(rarity => ({ ...rarity }));
+                newRarities[currentRarity].dropPercent = (parseFloat(e.target.value) || 0.0) * 100;
+                setRarities(newRarities);
+              }}
+              label={"Drop %"}
+              value={rarities[currentRarity].dropPercent / 100}
+            />
+            <Input
+              size={"sm"}
+              type={"number"}
+              name={`${rarityCategories[currentRarity]}.minSpins`}
+              onChange={(e) => {
+                const newRarities = rarities.map(rarity => ({ ...rarity }));
+                newRarities[currentRarity].minSpins = parseInt(e.target.value) || 0.0;
+                setRarities(newRarities);
+              }}
+              label={"Min. Spins"}
+              value={rarities[currentRarity].minSpins}
+            />
+          </div>
+          <div className={"flex ml-auto justify-center items-end gap-4"}>
+            <Input
+              size={"sm"}
+              type={"number"}
+              name={`${rarityCategories[currentRarity]}.minSOLValue`}
+              onChange={() => { }}
+              label={"Min. SOL Value"}
+              value={0}
+            />
+            <Button text={"Auto Select"} onClick={() => {
+              
+            }} />
+            <Button text={"Select NFTs"} onClick={() => {
+              // setcurrentRarity(index);
+              setAddDialogOpen(true);
+            }} />
+          </div>
+        </div>
+        <NftsSection heading={<p className={"text-[32px] w-[200px]"}>{rarityCategories[currentRarity]}</p>}>
+          {
+            nftPrizes[currentRarity].map((nftItem: NftPrize, prizeIndex: number) => {
+              return (
+                <NftCard
+                  image={lootboxNfts[nftItem.index]?.image}
+                  price={lootboxNfts[nftItem.index]?.floorPrice}
+                  key={"nft-" + prizeIndex}
+                  handleDelete={() => handleRemoveNftPrize(currentRarity, prizeIndex)}
+                />
+              )
+            })
+          }
+          {
+            splPrizes[currentRarity].map((splItem: SplPrize, prizeIndex: number) => {
+              return (
+                <NftCard
+                  price={splItem.amount}
+                  key={"spl-" + prizeIndex}
+                  symbol={tokens[splItem.index]?.symbol}
+                  handleDelete={() => handleRemoveSplPrize(currentRarity, prizeIndex)}
+                />
+              )
+            })
+          }
+          {
+            offChainPrizes[currentRarity].map((prizeItem: OffChainPrize, prizeIndex: number) => {
+              return (
+                <NftCard
+                  key={"off-chain-item" + prizeIndex}
+                  image={prizeItem.image}
+                  handleDelete={() => handleRemoveOffChainPrize(currentRarity, prizeIndex)}
+                />
+              )
+            })
+          }
+        </NftsSection>
+      </div>
+      <div className={"w-full flex justify-center mt-5 gap-4"}>
+        <Button onClick={() => handleCloseAllPda()} text={"Close All Pda"} />
+      </div>
     </div>
   );
 };

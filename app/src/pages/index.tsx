@@ -20,8 +20,8 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="px-5 lg:px-32">
-        <Banner/>
-        <Prizes lootboxes={lootboxes}/>
+        <Banner />
+        <Prizes lootboxes={lootboxes} />
         <Boxes lootboxes={lootboxes} setReload={setReload} />
         <LiveFeed />
       </div>

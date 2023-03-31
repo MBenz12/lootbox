@@ -10,7 +10,9 @@ export default function Admin() {
   const [name, setName] = useState('Lootbox 1');
   const boxes = useMemo(() => { 
     const names = lootboxes.map(lootbox => lootbox.name);
-    setName(names[0]);
+    if (names.length) { 
+      setName(names[0]);
+    }
     return names;
   }, [lootboxes]);
 

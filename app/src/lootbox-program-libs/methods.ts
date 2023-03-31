@@ -2,9 +2,9 @@ import { Lootbox } from '@/idl/lootbox';
 import { BN, Program } from '@project-serum/anchor';
 import { WalletContextState } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
-import { getAddOffChainItemInstruction, getAddOnChainItemInstruction, getClaimInstructions, getConfirmClaimedInstruction, getCreateLootboxInstruction, getCreatePlayerInstruction, getDrainInstructions, getFundInstructions, getPlayInstructions, getSetClaimedInstruction, getUpdateLootboxInstruction, getUpdateOnChainItemInstruction } from './instructions';
+import { getAddOffChainItemInstruction, getAddOnChainItemInstruction, getClaimInstructions, getClosePdaInstruction, getCreateLootboxInstruction, getCreatePlayerInstruction, getDrainInstructions, getFundInstructions, getPlayInstructions, getSetClaimedInstruction, getUpdateLootboxInstruction, getUpdateOnChainItemInstruction } from './instructions';
 import { OffChainItem, Rarity } from './types';
-import { sendTransaction, sendTransactions } from './utils';
+import { getLootboxPda, sendTransaction, sendTransactions } from './utils';
 
 
 export const createLootbox = async (
@@ -135,6 +135,7 @@ export const addItems = async (
       )
     );
   }
+  let j = 0;
   for (let item of offChainItems) {
     instructions.push(
       await getAddOffChainItemInstruction(
@@ -143,6 +144,7 @@ export const addItems = async (
         wallet.publicKey,
         item.itemIndex,
         item.totalItems,
+        item.unlimited,
         rarities[i++],
       )
     )
@@ -174,6 +176,7 @@ export const updateOffChainItem = async (
   wallet: WalletContextState,
   itemIndex: number,
   totalItems: number,
+  unlimited: boolean,
 ) => {
   if (!wallet.publicKey) return;
   const instruction = await getAddOffChainItemInstruction(
@@ -182,6 +185,7 @@ export const updateOffChainItem = async (
     wallet.publicKey,
     itemIndex,
     totalItems,
+    unlimited,
     0
   );
   return await sendTransaction(wallet, program.provider.connection, instruction);
@@ -246,22 +250,6 @@ export const claimAll = async (
   return await sendTransactions(wallet, program.provider.connection, instructions);
 }
 
-export const confirmClaimed = async (
-  program: Program<Lootbox>,
-  name: string,
-  wallet: WalletContextState,
-  itemIndex: number,
-) => {
-  if (!wallet.publicKey) return;
-  const instruction = await getConfirmClaimedInstruction(
-    program,
-    name,
-    wallet.publicKey,
-    itemIndex,
-  );
-  return await sendTransaction(wallet, program.provider.connection, instruction);
-}
-
 export const setClaimed = async (
   program: Program<Lootbox>,
   name: string,
@@ -278,4 +266,45 @@ export const setClaimed = async (
     itemIndex,
   );
   return await sendTransaction(wallet, program.provider.connection, instruction);
+}
+
+export const closeLootbox = async (
+  program: Program<Lootbox>,
+  name: string,
+  wallet: WalletContextState,
+) => {
+  if (!wallet.publicKey) return;
+  const [lootbox] = getLootboxPda(name);
+  const instruction = await getClosePdaInstruction(
+    program,
+    wallet.publicKey,
+    lootbox,
+  );
+  return await sendTransaction(wallet, program.provider.connection, instruction);
+}
+
+export async function closePda(
+  program: Program<Lootbox>,
+  wallet: WalletContextState,
+  pda: PublicKey,
+) {
+  if (!wallet.publicKey) return;
+  const instruction = await getClosePdaInstruction(program, wallet.publicKey, pda);
+
+  return await sendTransaction(wallet, program.provider.connection, instruction);
+}
+
+export async function closePdas(
+  program: Program<Lootbox>,
+  wallet: WalletContextState,
+  pdas: Array<PublicKey>,
+) {
+  if (!wallet.publicKey || !wallet.signAllTransactions) return;
+  const instructions = [];
+  for (const pda of pdas) {
+    instructions.push(
+      await getClosePdaInstruction(program, wallet.publicKey, pda)
+    );
+  }
+  return await sendTransactions(wallet, program.provider.connection, instructions);
 }

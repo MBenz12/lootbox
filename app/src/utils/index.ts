@@ -1,7 +1,7 @@
 import { TOKENS } from '@/config'
-import { Lootbox, PlayerBox, PrizeItem } from '@/lootbox-program-libs/types';
+import { Lootbox } from '@/lootbox-program-libs/types';
 import { getLootboxPda } from '@/lootbox-program-libs/utils';
-import { NftData, NftPrize, SplPrize, TOKEN } from '@/types';
+import { NftData, NftPrize } from '@/types';
 import { PublicKey } from '@solana/web3.js'
 
 export const getTokenSymbol = (mint: PublicKey) => {

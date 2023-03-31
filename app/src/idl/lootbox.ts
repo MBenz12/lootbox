@@ -132,6 +132,10 @@ export type Lootbox = {
         {
           "name": "amount",
           "type": "u64"
+        },
+        {
+          "name": "isNft",
+          "type": "bool"
         }
       ]
     },
@@ -252,6 +256,10 @@ export type Lootbox = {
         {
           "name": "totalItems",
           "type": "u32"
+        },
+        {
+          "name": "unlimited",
+          "type": "bool"
         },
         {
           "name": "rarity",
@@ -383,32 +391,6 @@ export type Lootbox = {
       "args": []
     },
     {
-      "name": "confirmClaimed",
-      "accounts": [
-        {
-          "name": "user",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "lootbox",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "player",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "itemIndex",
-          "type": "u8"
-        }
-      ]
-    },
-    {
       "name": "setClaimed",
       "accounts": [
         {
@@ -438,6 +420,27 @@ export type Lootbox = {
           "type": "u8"
         }
       ]
+    },
+    {
+      "name": "closePda",
+      "accounts": [
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "pda",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -539,6 +542,10 @@ export type Lootbox = {
           {
             "name": "amount",
             "type": "u64"
+          },
+          {
+            "name": "isNft",
+            "type": "bool"
           }
         ]
       }
@@ -603,6 +610,10 @@ export type Lootbox = {
           {
             "name": "usedItems",
             "type": "u32"
+          },
+          {
+            "name": "unlimited",
+            "type": "bool"
           },
           {
             "name": "claimed",
@@ -849,6 +860,10 @@ export const IDL: Lootbox = {
         {
           "name": "amount",
           "type": "u64"
+        },
+        {
+          "name": "isNft",
+          "type": "bool"
         }
       ]
     },
@@ -969,6 +984,10 @@ export const IDL: Lootbox = {
         {
           "name": "totalItems",
           "type": "u32"
+        },
+        {
+          "name": "unlimited",
+          "type": "bool"
         },
         {
           "name": "rarity",
@@ -1100,32 +1119,6 @@ export const IDL: Lootbox = {
       "args": []
     },
     {
-      "name": "confirmClaimed",
-      "accounts": [
-        {
-          "name": "user",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "lootbox",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "player",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "itemIndex",
-          "type": "u8"
-        }
-      ]
-    },
-    {
       "name": "setClaimed",
       "accounts": [
         {
@@ -1155,6 +1148,27 @@ export const IDL: Lootbox = {
           "type": "u8"
         }
       ]
+    },
+    {
+      "name": "closePda",
+      "accounts": [
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "pda",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -1256,6 +1270,10 @@ export const IDL: Lootbox = {
           {
             "name": "amount",
             "type": "u64"
+          },
+          {
+            "name": "isNft",
+            "type": "bool"
           }
         ]
       }
@@ -1320,6 +1338,10 @@ export const IDL: Lootbox = {
           {
             "name": "usedItems",
             "type": "u32"
+          },
+          {
+            "name": "unlimited",
+            "type": "bool"
           },
           {
             "name": "claimed",

@@ -19,6 +19,7 @@ const MainForm = ({
   setTicketPrice,
   setTicketToken,
   handleClickCreate,
+  handleClickClose,
 }: {
   name: string,
   lootbox: Lootbox | undefined,
@@ -33,6 +34,7 @@ const MainForm = ({
   setTicketPrice: (price: number) => void,
   setTicketToken: (token: TOKEN) => void,
   handleClickCreate: () => void,
+  handleClickClose: () => void,
 }) => {
   return (
     <div className={"flex flex-col gap-5"}>
@@ -62,8 +64,9 @@ const MainForm = ({
             label={"Fee Wallet"} />
         </div>
       </div>
-      <div>
+      <div className='flex gap-2'>
         <Button size={"md"} onClick={handleClickCreate} text={!lootbox ? "Create" : "Update"} />
+        {lootbox && <Button size={"md"} onClick={handleClickClose} text="Close" />}
       </div>
     </div>
   );
