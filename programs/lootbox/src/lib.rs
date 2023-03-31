@@ -55,7 +55,7 @@ pub mod lootbox {
         Ok(())
     }
 
-    pub fn fund(ctx: Context<Fund>, amount: u64) -> Result<()> {
+    pub fn fund(ctx: Context<Fund>, amount: u64, is_nft: bool) -> Result<()> {
         let lootbox = &mut ctx.accounts.lootbox;
         let prize_mint = ctx.accounts.prize_mint.key();
         let index = lootbox.spl_vaults.iter().position(|x| x.mint == prize_mint);
@@ -65,10 +65,24 @@ pub mod lootbox {
                 .checked_add(amount)
                 .unwrap();
         } else {
-            lootbox.spl_vaults.push(SplVault {
+            let new_spl_vault = SplVault {
                 mint: prize_mint,
                 amount,
-            });
+                is_nft,
+            };
+            let mut added = false;
+            for i in 0..lootbox.spl_vaults.len() {
+                let SplVault { mint, is_nft: _, amount: _ } = lootbox.spl_vaults[i];
+                if mint == Pubkey::default() {
+                    lootbox.spl_vaults[i] = new_spl_vault;
+                    added = true;
+                    break;
+                }
+            }
+
+            if added == false {
+                lootbox.spl_vaults.push(new_spl_vault);
+            }
         }
 
         transfer(
@@ -113,16 +127,22 @@ pub mod lootbox {
             .iter()
             .position(|x| x.mint == prize_mint)
             .unwrap();
-        lootbox.spl_vaults[index].amount = lootbox.spl_vaults[index]
-            .amount
-            .checked_sub(amount)
-            .unwrap();
 
+        if lootbox.spl_vaults[index].is_nft {
+            lootbox.spl_vaults[index].mint = Pubkey::default();
+        } else {
+            lootbox.spl_vaults[index].amount = lootbox.spl_vaults[index]
+                .amount
+                .checked_sub(amount)
+                .unwrap();
+        }
+        
         require!(
             lootbox
                 .prize_items
                 .iter()
-                .any(|x| x.on_chain_item.is_some() && x.on_chain_item.unwrap().spl_index == index as u8)
+                .any(|x| x.on_chain_item.is_some()
+                    && x.on_chain_item.unwrap().spl_index == index as u8)
                 == false,
             LootboxError::InvalidDrain
         );
@@ -171,6 +191,7 @@ pub mod lootbox {
         ctx: Context<UpdateLootbox>,
         item_index: u8,
         total_items: u32,
+        unlimited: bool,
         rarity: u8,
     ) -> Result<()> {
         let lootbox = &mut ctx.accounts.lootbox;
@@ -193,6 +214,7 @@ pub mod lootbox {
                     item_index,
                     total_items,
                     used_items: 0,
+                    unlimited,
                     claimed: false,
                 }),
                 rarity,
@@ -283,16 +305,30 @@ pub mod lootbox {
             index = index.checked_add(1).unwrap();
         }
 
+        let is_winnable =
+            |x: &PrizeItem| {
+                if x.rarity == win_rarity_index as u8 {
+                    if x.on_chain_item.is_some() {
+                        return true;
+                    }
+                    if let Some(off_chain_item) = x.off_chain_item {
+                        if off_chain_item.total_items > off_chain_item.used_items {
+                            if off_chain_item.unlimited {
+                                return true;
+                            }
+                            return player.lootboxes[lootbox_index].off_chain_prizes.iter().any(
+                                |y| y.item_index == off_chain_item.item_index && y.claimed == false,
+                            );
+                        }
+                    }
+                }
+                return false;
+            };
+
         let len = lootbox
             .prize_items
             .iter()
-            .filter(|&x| {
-                x.rarity == win_rarity_index as u8
-                    && (x.on_chain_item.is_some()
-                        || x.off_chain_item.is_some()
-                            && (x.off_chain_item.unwrap().total_items
-                                > x.off_chain_item.unwrap().used_items))
-            })
+            .filter(|&x| is_winnable(x))
             .count();
         require!(len > 0, LootboxError::NoPrize);
 
@@ -300,12 +336,7 @@ pub mod lootbox {
         let mut prize_index: usize = 0;
         for i in 0..lootbox.prize_items.len() {
             let x = lootbox.prize_items[i];
-            if x.rarity == win_rarity_index as u8
-                && (x.on_chain_item.is_some()
-                    || x.off_chain_item.is_some()
-                        && (x.off_chain_item.unwrap().total_items
-                            > x.off_chain_item.unwrap().used_items))
-            {
+            if is_winnable(&x) {
                 if rand_index == 0 {
                     prize_index = i;
                     break;
@@ -386,26 +417,12 @@ pub mod lootbox {
             prize_item.amount,
         )?;
 
-        Ok(())
-    }
-
-    pub fn confirm_claimed(ctx: Context<ConfirmClaimed>, item_index: u8) -> Result<()> {
-        let player = &mut ctx.accounts.player;
-        let lootbox_key = ctx.accounts.lootbox.key();
-        let lootbox_index = player
-            .lootboxes
-            .iter()
-            .position(|x| x.lootbox == lootbox_key)
-            .unwrap();
-
-        let index = player.lootboxes[lootbox_index]
-            .off_chain_prizes
-            .iter()
-            .position(|x| x.item_index == item_index)
-            .unwrap();
-        player.lootboxes[lootbox_index]
-            .off_chain_prizes
-            .remove(index);
+        let lootbox = &mut ctx.accounts.lootbox;
+        let spl_index = prize_item.spl_index as usize;
+        let SplVault { mint: _, amount: _, is_nft } = lootbox.spl_vaults[spl_index];
+        if is_nft {
+            lootbox.spl_vaults[spl_index].mint = Pubkey::default();
+        }
 
         Ok(())
     }
@@ -424,7 +441,28 @@ pub mod lootbox {
             .iter()
             .position(|x| x.item_index == item_index)
             .unwrap();
-        player.lootboxes[lootbox_index].off_chain_prizes[index].claimed = true;
+
+        let off_chain_item = player.lootboxes[lootbox_index].off_chain_prizes[index];
+
+        if off_chain_item.unlimited {
+            player.lootboxes[lootbox_index]
+                .off_chain_prizes
+                .remove(index);
+        } else {
+            player.lootboxes[lootbox_index].off_chain_prizes[index].claimed = true;
+        }
+
+        Ok(())
+    }
+
+    pub fn close_pda(ctx: Context<ClosePda>) -> Result<()> {
+        let dest_account_info = ctx.accounts.signer.to_account_info();
+        let source_account_info = ctx.accounts.pda.to_account_info();
+        let dest_starting_lamports = dest_account_info.lamports();
+        **dest_account_info.lamports.borrow_mut() = dest_starting_lamports
+            .checked_add(source_account_info.lamports())
+            .unwrap();
+        **source_account_info.lamports.borrow_mut() = 0;
 
         Ok(())
     }

@@ -260,27 +260,13 @@ pub struct SetClaimed<'info> {
 }
 
 #[derive(Accounts)]
-pub struct ConfirmClaimed<'info> {
-    #[account(mut, address = player.key)]
-    pub user: Signer<'info>,
+pub struct ClosePda<'info> {
+    #[account(mut, address = "3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd".parse::<Pubkey>().unwrap())]
+    pub signer: Signer<'info>,
 
-    #[account(
-        mut,
-        seeds = [
-            b"lootbox".as_ref(),
-            lootbox.name.as_ref(),
-        ],
-        bump = lootbox.bump
-    )]
-    pub lootbox: Box<Account<'info, Lootbox>>,
+    /// CHECK:
+    #[account(mut)]
+    pub pda: AccountInfo<'info>,
 
-    #[account(
-        mut,
-        seeds = [
-            b"player".as_ref(),
-            user.key().as_ref(),
-        ],
-        bump = player.bump,
-    )]
-    pub player: Box<Account<'info, Player>>,
+    pub system_program: Program<'info, System>,
 }
