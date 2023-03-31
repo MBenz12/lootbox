@@ -105,7 +105,9 @@ const OffChainForm = ({
         <p className={"opacity-50 text-[14px] cursor-pointer w-fit"} onClick={() => {
           const newPrizes = prizes.map((prizes) => prizes.map(prize => ({ ...prize })));
           const { name, image } = prizeItems[0];
-          newPrizes[currentRarity].push({ index: 0, name, image, });
+          newPrizes[currentRarity].push({
+            itemIndex: 0, name, image,
+          });
           setPrizes(newPrizes);
         }}>+ Add New Prize</p>
         <Button text={"Prize Claims"} onClick={() => {

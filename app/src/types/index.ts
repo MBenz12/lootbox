@@ -31,7 +31,7 @@ export type NftPrize = {
 export type OffChainPrize = { 
   lootboxName?: string,
   itemIndex: number, 
-  prizeIndex: number,
+  prizeIndex?: number,
   name: string, 
   image: string, 
   totalItems?: number, 
