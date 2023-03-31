@@ -61,7 +61,9 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const [tokenAmounts, setTokenAmounts] = useState(Array(TOKENS.length).fill(0));
   const { lootbox } = useFetchLootbox(name, reload);
 
-  const mints: Array<PublicKey> | undefined = useMemo(() => lootbox ? lootbox.splVaults.filter(splVault => splVault.amount.toNumber() === 1).map((splVault) => splVault.mint) : undefined, [lootbox]);
+  const mints: Array<PublicKey> | undefined = useMemo(() => lootbox ? lootbox.splVaults.filter(splVault =>
+    splVault.isNft && splVault.mint.toString() !== PublicKey.default.toString()
+  ).map((splVault) => splVault.mint) : undefined, [lootbox]);
 
   const { nfts: lootboxNfts } = useFetchNfts(reload, mints);
   const [selectedLootboxNfts, setSelectedLootboxNfts] = useState<Array<number>>([]);
@@ -114,8 +116,8 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
           const { rarity } = prizeItem;
           if (prizeItem.onChainItem) {
             const { splIndex, amount: prizeAmount } = prizeItem.onChainItem;
-            const { mint, amount } = lootbox.splVaults[splIndex];
-            if (amount.toNumber() === 1) {
+            const { mint, isNft } = lootbox.splVaults[splIndex];
+            if (isNft) {
               let index = lootboxNfts.map(nft => nft.mint.toString()).indexOf(mint.toString());
               nftPrizes[rarity].push({ index, lootbox: true });
             } else {
@@ -240,12 +242,14 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
 
     const mints = selectedNfts.map(index => nfts[index].mint);
     const amounts = Array(selectedNfts.length).fill(new BN(1));
+    const isNfts = Array(selectedNfts.length).fill(true);
     const txn = await fund(
       program,
       name,
       wallet,
       mints,
       amounts,
+      isNfts,
     );
     console.log(txn)
     if (txn) {
@@ -270,6 +274,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
       wallet,
       [mint],
       [new BN(amount * decimals)],
+      [false],
     );
     console.log(txn)
     if (txn) {
@@ -352,7 +357,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
       })
       offChainPrizes[rarity].forEach(prizeItem => {
         if (!prizeItem.lootbox) {
-          const { index, totalItems, unlimited  } = prizeItem;
+          const { index, totalItems, unlimited } = prizeItem;
           if (!totalItems) return;
           offChainItems.push({
             itemIndex: index,
@@ -641,7 +646,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
               value={0}
             />
             <Button text={"Auto Select"} onClick={() => {
-              
+
             }} />
             <Button text={"Select NFTs"} onClick={() => {
               // setcurrentRarity(index);
