@@ -33,7 +33,6 @@ export async function getServerSideProps(context: any) {
 type PrizeCard = { prize: NftPrize | SplPrize | OffChainPrize, name: string, image: string, lootbox: string, value: number };
 
 const Claim = ({ discord_access }: { discord_access: any }) => {
-  console.log(discord_access);
   const program = useProgram();
   const wallet = useWallet();
   const [reload, setReload] = useState({});

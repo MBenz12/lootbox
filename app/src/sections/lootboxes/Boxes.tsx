@@ -1,6 +1,6 @@
 import React from 'react';
 import BoxItem from "../../components/lootboxes/BoxItem";
-import { ModalContext } from "@/contexts/modal-context";
+// import { ModalContext } from "@/contexts/modal-context";
 import { Lootbox } from '@/lootbox-program-libs/types';
 import useProgram from '@/hooks/useProgram';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -9,13 +9,13 @@ import { toast } from 'react-toastify';
 
 export const Boxes = ({ lootboxes, setReload, }: { lootboxes: Array<Lootbox>, setReload: (reload: {}) => void }) => {
   const boxes: { [key: string]: { name: string, nameColor: string, description: string, price: number, } } = {
-    "zen-box": {
+    "Zen": {
       name: "ZEN",
       nameColor: "#E93E67",
       description: "Use ZEN for a chance to win NFTs, SOL, merch and more.",
       price: 500
     },
-    "lootbox": {
+    "Free": {
       name: "Free",
       nameColor: "#2A6ED4",
       description: "Try a free spin by having staked Ukiyans in your wallet.",
@@ -23,7 +23,7 @@ export const Boxes = ({ lootboxes, setReload, }: { lootboxes: Array<Lootbox>, se
     }
   }
 
-  const { showModal } = React.useContext(ModalContext)
+  // const { showModal } = React.useContext(ModalContext)
 
   const program = useProgram();
   const wallet = useWallet();

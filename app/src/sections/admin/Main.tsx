@@ -61,7 +61,9 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const [tokenAmounts, setTokenAmounts] = useState(Array(TOKENS.length).fill(0));
   const { lootbox } = useFetchLootbox(name, reload);
 
-  const mints: Array<PublicKey> | undefined = useMemo(() => lootbox ? lootbox.splVaults.filter(splVault => splVault.amount.toNumber() === 1).map((splVault) => splVault.mint) : undefined, [lootbox]);
+  const mints: Array<PublicKey> | undefined = useMemo(() => lootbox ? lootbox.splVaults.filter(splVault =>
+    splVault.isNft && splVault.mint.toString() !== PublicKey.default.toString()
+  ).map((splVault) => splVault.mint) : undefined, [lootbox]);
 
   const { nfts: lootboxNfts } = useFetchNfts(reload, mints);
   const [selectedLootboxNfts, setSelectedLootboxNfts] = useState<Array<number>>([]);
@@ -352,7 +354,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
       })
       offChainPrizes[rarity].forEach(prizeItem => {
         if (!prizeItem.lootbox) {
-          const { index, totalItems, unlimited  } = prizeItem;
+          const { index, totalItems, unlimited } = prizeItem;
           if (!totalItems) return;
           offChainItems.push({
             itemIndex: index,
@@ -641,7 +643,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
               value={0}
             />
             <Button text={"Auto Select"} onClick={() => {
-              
+
             }} />
             <Button text={"Select NFTs"} onClick={() => {
               // setcurrentRarity(index);
