@@ -1,13 +1,22 @@
 [
 	{
-		"signature": "5Y7LvQc7b6WwPFNasUCG5PG4EZBkK8mACNFMc8NseaXXccBAHRZYnrut1SVpzoKeweSNaasDaWPExoFmCvq9hXL6",
+		"signature": "5qSLgGdQsLuqcpGwFKxc3tfdGm5nPUZt1SaZyFrnF8MtBettjZrMmVwpnj8bYMZPh1uxU5GX9HNtihjfjy7NJum4",
 		"lootboxName": "Free",
 		"user": "3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd",
 		"rarity": 0,
-		"timestamp": 1680278060,
-		"image": "https://arweave.net/mBVbmTkA3KB1rfpjej75DoXPmL2fhggM2xo0pi6g5Eo?ext=png",
-		"name": "Angry Cat #0002",
-		"mint": "HwU3yHfVyNtRZ8qe5da4AgwCKzyWX3LCGyZ6UkEcaaZz"
+		"timestamp": 1680310811,
+		"image": "https://arweave.net/CYhWPn4dpxePktGN-usl3hL9aRma5LHXnHPH71XGfUs?ext=png",
+		"name": "#723",
+		"mint": "Gv98zqyxzuuXv2jyTb92ypKozYHgFc9VnMCSnhD9bvtH"
+	},
+	{
+		"signature": "2JLosJ2s3qxggMPASz1AWhaHEBRdJB25dXe7CafTuEz8oHVTc38xnQjqVKUMWVLYzEFEfAyeY7omJKsFkaRC88a4",
+		"lootboxName": "Free",
+		"user": "3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd",
+		"rarity": 0,
+		"timestamp": 1680309526,
+		"image": "https://bafybeiftdynsr2m3j5c377axqi7tqacp5spg4xl7exf4gpux6umr3tctvq.ipfs.nftstorage.link/MBenz.svg",
+		"name": "Lootbox"
 	},
 	{
 		"signature": "3FmxPsua8V3z59nG5hEVPoMoRjVGAqcv2P6PQzTxNgCQbis4pxd45xrRdBGPwrJkEHJ871m1VxSvz2Hn3v7jPrTs",
@@ -21,22 +30,33 @@
 		"mint": "So11111111111111111111111111111111111111112"
 	},
 	{
-		"signature": "2JLosJ2s3qxggMPASz1AWhaHEBRdJB25dXe7CafTuEz8oHVTc38xnQjqVKUMWVLYzEFEfAyeY7omJKsFkaRC88a4",
+		"signature": "5Y7LvQc7b6WwPFNasUCG5PG4EZBkK8mACNFMc8NseaXXccBAHRZYnrut1SVpzoKeweSNaasDaWPExoFmCvq9hXL6",
 		"lootboxName": "Free",
 		"user": "3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd",
 		"rarity": 0,
-		"timestamp": 1680309526,
-		"image": "https://bafybeiftdynsr2m3j5c377axqi7tqacp5spg4xl7exf4gpux6umr3tctvq.ipfs.nftstorage.link/MBenz.svg",
-		"name": "Lootbox"
+		"timestamp": 1680278060,
+		"image": "https://arweave.net/mBVbmTkA3KB1rfpjej75DoXPmL2fhggM2xo0pi6g5Eo?ext=png",
+		"name": "Angry Cat #0002",
+		"mint": "HwU3yHfVyNtRZ8qe5da4AgwCKzyWX3LCGyZ6UkEcaaZz"
 	},
 	{
-		"signature": "5qSLgGdQsLuqcpGwFKxc3tfdGm5nPUZt1SaZyFrnF8MtBettjZrMmVwpnj8bYMZPh1uxU5GX9HNtihjfjy7NJum4",
+		"signature": "31imqeht15Nh4N3UyCX1oJBYTBMgiXN1W1rr9f3D8QciqWsWY7Fm1hBiooXm4nABGs6ss75FcMphUMrd8AsPcMs8",
+		"lootboxName": "Free",
+		"user": "3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd",
+		"rarity": 1,
+		"timestamp": 1680311067,
+		"image": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png",
+		"symbol": "SOL",
+		"amount": 0.02,
+		"mint": "So11111111111111111111111111111111111111112"
+	},
+	{
+		"signature": "EAcH3ScFzdaS5XGAfBAW6qfuqLPDVY9RKoHrSrMEDr6mikhsV43xvZ8qYWiJmkUWw92aY8X919VbxKtGjb1fzkV",
 		"lootboxName": "Free",
 		"user": "3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd",
 		"rarity": 0,
-		"timestamp": 1680310811,
-		"image": "https://arweave.net/CYhWPn4dpxePktGN-usl3hL9aRma5LHXnHPH71XGfUs?ext=png",
-		"name": "#723",
-		"mint": "Gv98zqyxzuuXv2jyTb92ypKozYHgFc9VnMCSnhD9bvtH"
+		"timestamp": 1680311120,
+		"image": "https://bafybeiftdynsr2m3j5c377axqi7tqacp5spg4xl7exf4gpux6umr3tctvq.ipfs.nftstorage.link/MBenz.svg",
+		"name": "Lootbox"
 	}
 ]
