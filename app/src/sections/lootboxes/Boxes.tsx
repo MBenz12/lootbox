@@ -1,13 +1,14 @@
-import React from 'react';
 import BoxItem from "../../components/lootboxes/BoxItem";
-// import { ModalContext } from "@/contexts/modal-context";
 import { Lootbox } from '@/lootbox-program-libs/types';
 import useProgram from '@/hooks/useProgram';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { play } from '@/lootbox-program-libs/methods';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/router'
 
-export const Boxes = ({ lootboxes, setReload, }: { lootboxes: Array<Lootbox>, setReload: (reload: {}) => void }) => {
+export const Boxes = ({ lootboxes, }: { lootboxes: Array<Lootbox> }) => {
+  const router = useRouter();
+
   const boxes: { [key: string]: { name: string, nameColor: string, description: string, price: number, } } = {
     "Zen": {
       name: "ZEN",
@@ -22,8 +23,6 @@ export const Boxes = ({ lootboxes, setReload, }: { lootboxes: Array<Lootbox>, se
       price: 0
     }
   }
-
-  // const { showModal } = React.useContext(ModalContext)
 
   const program = useProgram();
   const wallet = useWallet();
@@ -44,7 +43,6 @@ export const Boxes = ({ lootboxes, setReload, }: { lootboxes: Array<Lootbox>, se
 
     if (txn) {
       toast.success('Played successfully');
-      setReload({});
     } else {
       toast.error('Failed to play');
     }
@@ -56,7 +54,8 @@ export const Boxes = ({ lootboxes, setReload, }: { lootboxes: Array<Lootbox>, se
           const box = boxes[lootbox.name];
           return (
             <BoxItem key={index} handleClick={() => {
-              handlePlay(lootbox);
+              router.push(`/${box.name}`);
+              // handlePlay(lootbox);
               // showModal(
               //   <BoxItem name={box.name} nameColor={box.nameColor} description={box.description} price={box.price} opening />
               // )
