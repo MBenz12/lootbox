@@ -4,8 +4,11 @@ import useProgram from '@/hooks/useProgram';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { play } from '@/lootbox-program-libs/methods';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/router'
 
 export const Boxes = ({ lootboxes, }: { lootboxes: Array<Lootbox> }) => {
+  const router = useRouter();
+
   const boxes: { [key: string]: { name: string, nameColor: string, description: string, price: number, } } = {
     "Zen": {
       name: "ZEN",
@@ -51,7 +54,8 @@ export const Boxes = ({ lootboxes, }: { lootboxes: Array<Lootbox> }) => {
           const box = boxes[lootbox.name];
           return (
             <BoxItem key={index} handleClick={() => {
-              handlePlay(lootbox);
+              router.push(`/${box.name}`);
+              // handlePlay(lootbox);
               // showModal(
               //   <BoxItem name={box.name} nameColor={box.nameColor} description={box.description} price={box.price} opening />
               // )

@@ -1,7 +1,7 @@
 import { Connection, PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js'
-import idl from '@/idl/lootbox.json'
+import idl from '../idl/lootbox.json'
 import { WalletContextState } from '@solana/wallet-adapter-react'
-import { SKIP_PREFLIGHT, DEBUG, } from '@/config'
+import { SKIP_PREFLIGHT, DEBUG, } from '../config'
 import { createAssociatedTokenAccountInstruction } from '@solana/spl-token'
 
 export const programId = new PublicKey(idl.metadata.address)
@@ -63,7 +63,7 @@ export const sendTransactions = async (
       transaction.add(instruction);
       let bytes = 0;
       try {
-        bytes = transaction.serialize({ requireAllSignatures: false, verifySignatures: false }).length;        
+        bytes = transaction.serialize({ requireAllSignatures: false, verifySignatures: false }).length;
       } catch (error) {
         bytes = 1232 + 1;
       }
