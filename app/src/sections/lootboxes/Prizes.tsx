@@ -149,7 +149,7 @@ export const Prizes = ({ reload, lootboxes, setReload }: { reload: {}, lootboxes
       await axios.post('/api/played', { signature, lootboxName, rarity, timestamp: timestamp.toNumber(), user: publicKey?.toString() , ...data, });
       setReload({});
     },
-    [lootboxes, prizeItems, lootboxNfts, publicKey],
+    [lootboxes, prizeItems, lootboxNfts, publicKey, setReload],
   )
 
   useEffect(() => {
