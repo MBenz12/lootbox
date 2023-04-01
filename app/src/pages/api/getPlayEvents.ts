@@ -6,5 +6,5 @@ export default function handler(
   res: NextApiResponse<Array<any>>
 ) {
   const liveFeed = require('../../../../playEvents.json');
-  res.status(200).json(liveFeed);
+  res.status(200).json(liveFeed.reverse().slice(0, 10));
 }
