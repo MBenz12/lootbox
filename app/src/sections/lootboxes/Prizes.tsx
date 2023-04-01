@@ -149,7 +149,8 @@ export const Prizes = ({ reload, lootboxes, setReload }: { reload: {}, lootboxes
       await axios.post('/api/played', { signature, lootboxName, rarity, timestamp: timestamp.toNumber(), user: publicKey?.toString() , ...data, });
       setReload({});
     },
-    [lootboxes, prizeItems, lootboxNfts, publicKey, setReload],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [lootboxes, prizeItems, lootboxNfts, publicKey],
   )
 
   useEffect(() => {
