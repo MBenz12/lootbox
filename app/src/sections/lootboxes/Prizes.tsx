@@ -156,9 +156,10 @@ export const Prizes = ({ reload, lootboxes, setReload }: { reload: {}, lootboxes
   useEffect(() => {
     if (!program) return;
     const listenerId = program.addEventListener('PlayEvent', eventListener);
+    console.log("added event listener: ", listenerId);
     return () => {
-      console.log("remove event listener:", listenerId);
-      program.removeEventListener(listenerId);
+      // console.log("remove event listener:", listenerId);
+      // program.removeEventListener(listenerId);
     }
   }, [program, eventListener]);
 

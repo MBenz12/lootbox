@@ -28,5 +28,15 @@
 		"timestamp": 1680309526,
 		"image": "https://bafybeiftdynsr2m3j5c377axqi7tqacp5spg4xl7exf4gpux6umr3tctvq.ipfs.nftstorage.link/MBenz.svg",
 		"name": "Lootbox"
+	},
+	{
+		"signature": "5qSLgGdQsLuqcpGwFKxc3tfdGm5nPUZt1SaZyFrnF8MtBettjZrMmVwpnj8bYMZPh1uxU5GX9HNtihjfjy7NJum4",
+		"lootboxName": "Free",
+		"user": "3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd",
+		"rarity": 0,
+		"timestamp": 1680310811,
+		"image": "https://arweave.net/CYhWPn4dpxePktGN-usl3hL9aRma5LHXnHPH71XGfUs?ext=png",
+		"name": "#723",
+		"mint": "Gv98zqyxzuuXv2jyTb92ypKozYHgFc9VnMCSnhD9bvtH"
 	}
 ]
