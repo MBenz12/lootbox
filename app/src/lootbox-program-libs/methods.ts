@@ -71,6 +71,7 @@ export const fund = async (
   wallet: WalletContextState,
   mints: Array<PublicKey>,
   amounts: Array<BN>,
+  isNfts: Array<boolean>,
 ) => {
   if (!wallet.publicKey) return;
   const instructions = [];
@@ -82,6 +83,7 @@ export const fund = async (
         wallet.publicKey,
         mints[i],
         amounts[i],
+        isNfts[i],
       )
     );
   }

@@ -71,7 +71,7 @@ const OffChainPrizeDialog = ({
             <div className=''>Image</div>
           </div>
           {prizes.map((prize, index) => (
-            <div key={prize.index} className='flex gap-2 items-center w-full justify-between'>
+            <div key={prize.itemIndex} className='flex gap-2 items-center w-full justify-between'>
               <div className='w-[20%]'>{index + 1}</div>
               <div className='w-[60%]'>{prize.name}</div>
               <div className='w-10 h-10 rounded-md'>

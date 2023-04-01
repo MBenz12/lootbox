@@ -64,7 +64,6 @@ export const sendTransactions = async (
       let bytes = 0;
       try {
         bytes = transaction.serialize({ requireAllSignatures: false, verifySignatures: false }).length;        
-        console.log(bytes);
       } catch (error) {
         bytes = 1232 + 1;
       }

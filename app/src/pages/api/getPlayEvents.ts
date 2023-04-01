@@ -3,8 +3,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 export default function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Array<string>>
+  res: NextApiResponse<Array<any>>
 ) {
-  const prizes = require('../../../../prizes.json');
-  res.status(200).json(prizes);
+  const liveFeed = require('../../../../playEvents.json');
+  res.status(200).json(liveFeed);
 }

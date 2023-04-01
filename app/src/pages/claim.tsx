@@ -19,32 +19,23 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { claim, claimAll } from '@/lootbox-program-libs/methods';
 import { toast } from 'react-toastify';
 import { getLootbox } from '@/utils';
-import { getCookie } from 'cookies-next';
-
-export async function getServerSideProps(context: any) {
-  const discord_access = getCookie("discord_access", context);
-  return {
-    props: {
-      discord_access: discord_access === undefined ? null : discord_access,
-    },
-  };
-}
+import useFetchEvents from '@/hooks/useFetchEvents';
 
 type PrizeCard = { prize: NftPrize | SplPrize | OffChainPrize, name: string, image: string, lootbox: string, value: number };
 
-const Claim = ({ discord_access }: { discord_access: any }) => {
-  console.log(discord_access);
+const Claim = () => {
   const program = useProgram();
   const wallet = useWallet();
   const [reload, setReload] = useState({});
   const { lootboxes } = useFetchAllLootboxes(reload);
   const { player } = useFetchPlayer(reload);
+  const { events } = useFetchEvents(reload);
 
   const { prizes: prizeItems } = useFetchPrizes(reload);
   const mints = useMemo(() => {
     const mints: Array<PublicKey> = [];
     lootboxes.forEach(lootbox => {
-      mints.push(...lootbox.splVaults.filter(splVault => splVault.amount.toNumber() === 1).map((splVault) => splVault.mint));
+      mints.push(...lootbox.splVaults.filter(splVault => splVault.isNft && splVault.mint.toString() !== PublicKey.default.toString()).map((splVault) => splVault.mint));
     });
     return mints;
   }, [lootboxes]);
@@ -58,10 +49,11 @@ const Claim = ({ discord_access }: { discord_access: any }) => {
     if (player) {
       for (const playerBox of player.lootboxes) {
         const lootbox = getLootbox(playerBox.lootbox, lootboxes);
+        if (!lootbox) continue;
         for (const onChainPrize of playerBox.onChainPrizes) {
           const { splIndex, amount: prizeAmount } = onChainPrize;
-          const { mint, amount } = lootbox.splVaults[splIndex];
-          if (amount.toNumber() === 1) {
+          const { mint, isNft } = lootbox.splVaults[splIndex];
+          if (isNft) {
             let index = lootboxNfts.map(nft => nft.mint.toString()).indexOf(mint.toString());
             nftPrizes.push({ index, lootbox: true, lootboxName: lootbox.name });
           } else {
@@ -76,11 +68,16 @@ const Claim = ({ discord_access }: { discord_access: any }) => {
             }
           }
         }
-        for (const offChainPrize of playerBox.offChainPrizes) {
-          const { itemIndex, totalItems, usedItems, claimed } = offChainPrize;
+        
+        for (let prizeIndex = 0; prizeIndex < playerBox.offChainPrizes.length; prizeIndex++) {
+          const { itemIndex, totalItems, usedItems, claimed } = playerBox.offChainPrizes[prizeIndex];
+          if (claimed) {
+            continue;
+          }
           const { name, image } = prizeItems[itemIndex] || { name: '', image: '' };
           offChainPrizes.push({
-            index: itemIndex,
+            itemIndex,
+            prizeIndex,
             name,
             image,
             totalItems,
@@ -124,8 +121,8 @@ const Claim = ({ discord_access }: { discord_access: any }) => {
       })
     }
     for (const prize of offChainPrizes) {
-      if (!prizeItems[prize.index]) continue;
-      const { name, image } = prizeItems[prize.index];
+      if (!prizeItems[prize.itemIndex]) continue;
+      const { name, image } = prizeItems[prize.itemIndex];
       offChainCards.push({
         prize,
         name,
@@ -259,15 +256,15 @@ const Claim = ({ discord_access }: { discord_access: any }) => {
               return (
                 <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} handler={() => {
                   showModal(
-                    <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming />
-                  )
+                    <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming prize={(card.prize as OffChainPrize)} />
+                  )                  
                 }} />
               )
             })
           }
         </CardsSection>
       </div>
-      <LiveFeed />
+      <LiveFeed events={events} />
     </>
   );
 };

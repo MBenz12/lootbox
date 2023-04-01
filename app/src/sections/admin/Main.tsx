@@ -9,8 +9,8 @@ import SelectNftsDialog from "../../components/admin/SelectNftsDialog";
 import OffChainPrizeDialog from '../../components/admin/OffChainPrizeDialog';
 
 import useFetchNfts from '@/hooks/useFetchNfts';
-import { addItems, closeLootbox, closePdas, createLootbox, drain, fund, updateLootbox, updateOffChainItem, updateOnChainItem } from '@/lootbox-program-libs/methods';
-import { OffChainItem, Rarity } from '@/lootbox-program-libs/types';
+import { addItems, closeLootbox, closePdas, createLootbox, drain, fund, setClaimed, updateLootbox, updateOffChainItem, updateOnChainItem } from '@/lootbox-program-libs/methods';
+import { OffChainItem, PlayEvent, Rarity } from '@/lootbox-program-libs/types';
 import { BN } from '@project-serum/anchor';
 import { getMint } from '@solana/spl-token';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
@@ -24,6 +24,8 @@ import useFetchPrizes from '@/hooks/useFetchPrizes';
 import useProgram from '@/hooks/useProgram';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import ClaimsDialog from '@/components/admin/ClaimsDialog';
+import useFetchClaims from '@/hooks/useFetchClaims';
+import axios from 'axios';
 
 interface MainProps {
   name: string;
@@ -61,7 +63,9 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const [tokenAmounts, setTokenAmounts] = useState(Array(TOKENS.length).fill(0));
   const { lootbox } = useFetchLootbox(name, reload);
 
-  const mints: Array<PublicKey> | undefined = useMemo(() => lootbox ? lootbox.splVaults.filter(splVault => splVault.amount.toNumber() === 1).map((splVault) => splVault.mint) : undefined, [lootbox]);
+  const mints: Array<PublicKey> | undefined = useMemo(() => lootbox ? lootbox.splVaults.filter(splVault =>
+    splVault.isNft && splVault.mint.toString() !== PublicKey.default.toString()
+  ).map((splVault) => splVault.mint) : undefined, [lootbox]);
 
   const { nfts: lootboxNfts } = useFetchNfts(reload, mints);
   const [selectedLootboxNfts, setSelectedLootboxNfts] = useState<Array<number>>([]);
@@ -76,6 +80,8 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const [offChainPrizes, setOffChainPrizes] = useState<Array<Array<OffChainPrize>>>(new Array(4).fill([]).map(() => []));
   const [currentOffRarity, setCurrentOffRarity] = useState(3);
   const [selectedPrizes, setSelectedPrizes] = useState<Array<number>>([]);
+
+  const { claims } = useFetchClaims(reload);
 
   const [offPrizeDialogOpen, setOffPrizeDialogOpen] = useState(false);
   const [claimDialogOpen, setClaimDialogOpen] = useState(false);
@@ -114,8 +120,8 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
           const { rarity } = prizeItem;
           if (prizeItem.onChainItem) {
             const { splIndex, amount: prizeAmount } = prizeItem.onChainItem;
-            const { mint, amount } = lootbox.splVaults[splIndex];
-            if (amount.toNumber() === 1) {
+            const { mint, isNft } = lootbox.splVaults[splIndex];
+            if (isNft) {
               let index = lootboxNfts.map(nft => nft.mint.toString()).indexOf(mint.toString());
               nftPrizes[rarity].push({ index, lootbox: true });
             } else {
@@ -128,7 +134,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
             const { itemIndex, totalItems, usedItems, unlimited } = prizeItem.offChainItem;
             const { name, image } = prizeItems[itemIndex] || { name: '', image: '' };
             offChainPrizes[rarity].push({
-              index: itemIndex,
+              itemIndex,
               name,
               image,
               totalItems,
@@ -157,7 +163,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     setSelectedPrizes([]);
     setOffPrizeDialogOpen(false);
     setFundDialogOpen(false);
-    setClaimDialogOpen(false);
+    // setClaimDialogOpen(false);
     setDrainDialogOpen(false);
     setAddDialogOpen(false);
   }, [lootbox, connection, lootboxNfts, prizeItems]);
@@ -240,12 +246,14 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
 
     const mints = selectedNfts.map(index => nfts[index].mint);
     const amounts = Array(selectedNfts.length).fill(new BN(1));
+    const isNfts = Array(selectedNfts.length).fill(true);
     const txn = await fund(
       program,
       name,
       wallet,
       mints,
       amounts,
+      isNfts,
     );
     console.log(txn)
     if (txn) {
@@ -270,6 +278,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
       wallet,
       [mint],
       [new BN(amount * decimals)],
+      [false],
     );
     console.log(txn)
     if (txn) {
@@ -352,10 +361,10 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
       })
       offChainPrizes[rarity].forEach(prizeItem => {
         if (!prizeItem.lootbox) {
-          const { index, totalItems, unlimited  } = prizeItem;
+          const { itemIndex, totalItems, unlimited } = prizeItem;
           if (!totalItems) return;
           offChainItems.push({
-            itemIndex: index,
+            itemIndex,
             totalItems: totalItems,
             usedItems: 0,
             unlimited: unlimited || false,
@@ -493,11 +502,37 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     if (!lootbox) return;
     let prize = offChainPrizes[rarity][prizeIndex];
     if (prize.lootbox) {
-      removeOffChainPrize(prize.index);
+      removeOffChainPrize(prize.itemIndex);
     } else {
       const newOffChainPrizes = offChainPrizes.map((prizes) => [...prizes]);
       newOffChainPrizes[rarity].splice(prizeIndex, 1);
       setOffChainPrizes(newOffChainPrizes);
+    }
+  }
+
+  const handleSetClaimed = async (claimIndex: number) => {
+    if (!wallet.publicKey || !program) {
+      return;
+    }
+
+    const { lootboxName, user, prizeIndex } = claims[claimIndex];
+
+    await axios.post('/api/setClaimed', {
+      claimIndex
+    });
+    const txn = await setClaimed(
+      program,
+      lootboxName,
+      wallet,
+      new PublicKey(user),
+      prizeIndex,
+    );
+    console.log(txn)
+    if (txn) {
+      toast.success('Set Claimed successfully');
+      setReload({});
+    } else {
+      toast.error('Failed to set claimed');
     }
   }
 
@@ -573,7 +608,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
         />
       }
       {claimDialogOpen &&
-        <ClaimsDialog setOpen={setClaimDialogOpen} setReload={setReload} />
+        <ClaimsDialog setOpen={setClaimDialogOpen} setReload={setReload} claims={claims} prizes={prizeItems} setClaimed={handleSetClaimed} />
       }
 
       <div className={"w-full flex justify-center mt-5 gap-4"}>
@@ -641,7 +676,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
               value={0}
             />
             <Button text={"Auto Select"} onClick={() => {
-              
+
             }} />
             <Button text={"Select NFTs"} onClick={() => {
               // setcurrentRarity(index);
