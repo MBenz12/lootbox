@@ -29,7 +29,7 @@ export default async function handler(
       code: code,
       scope: "identify",
       grantType: "authorization_code",
-      redirectUri: `http://localhost:3000/api/discord/callback`,
+      redirectUri: `${DOMAIN}/api/discord/callback`,
     });
     console.log(access_token);
     const { data: { id, username, discriminator } } = await axios.get("https://discord.com/api/users/@me", {
