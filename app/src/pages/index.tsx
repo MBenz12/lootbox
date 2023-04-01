@@ -6,11 +6,13 @@ import LiveFeed from "@/components/LiveFeed";
 import React, { useState } from "react";
 import useProgram from '@/hooks/useProgram';
 import useFetchAllLootboxes from '@/hooks/useFetchAllLootboxes';
+import useFetchEvents from '@/hooks/useFetchEvents';
 
 export default function Home() {
   const program = useProgram();
   const [reload, setReload] = useState({});
   const { lootboxes } = useFetchAllLootboxes(reload);
+  const { events } = useFetchEvents(reload);
   return (
     <>
       <Head>
@@ -21,9 +23,9 @@ export default function Home() {
       </Head>
       <div className="px-5 lg:px-32">
         <Banner />
-        <Prizes lootboxes={lootboxes} />
+        <Prizes lootboxes={lootboxes} reload={reload} setReload={setReload} />
         <Boxes lootboxes={lootboxes} setReload={setReload} />
-        <LiveFeed />
+        <LiveFeed events={events} />
       </div>
     </>
   )

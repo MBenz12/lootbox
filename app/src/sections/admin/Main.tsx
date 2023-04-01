@@ -9,8 +9,8 @@ import SelectNftsDialog from "../../components/admin/SelectNftsDialog";
 import OffChainPrizeDialog from '../../components/admin/OffChainPrizeDialog';
 
 import useFetchNfts from '@/hooks/useFetchNfts';
-import { addItems, closeLootbox, closePdas, createLootbox, drain, fund, updateLootbox, updateOffChainItem, updateOnChainItem } from '@/lootbox-program-libs/methods';
-import { OffChainItem, Rarity } from '@/lootbox-program-libs/types';
+import { addItems, closeLootbox, closePdas, createLootbox, drain, fund, setClaimed, updateLootbox, updateOffChainItem, updateOnChainItem } from '@/lootbox-program-libs/methods';
+import { OffChainItem, PlayEvent, Rarity } from '@/lootbox-program-libs/types';
 import { BN } from '@project-serum/anchor';
 import { getMint } from '@solana/spl-token';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
@@ -25,6 +25,7 @@ import useProgram from '@/hooks/useProgram';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import ClaimsDialog from '@/components/admin/ClaimsDialog';
 import useFetchClaims from '@/hooks/useFetchClaims';
+import axios from 'axios';
 
 interface MainProps {
   name: string;
@@ -162,7 +163,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     setSelectedPrizes([]);
     setOffPrizeDialogOpen(false);
     setFundDialogOpen(false);
-    setClaimDialogOpen(false);
+    // setClaimDialogOpen(false);
     setDrainDialogOpen(false);
     setAddDialogOpen(false);
   }, [lootbox, connection, lootboxNfts, prizeItems]);
@@ -509,6 +510,32 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     }
   }
 
+  const handleSetClaimed = async (claimIndex: number) => {
+    if (!wallet.publicKey || !program) {
+      return;
+    }
+
+    const { lootboxName, user, prizeIndex } = claims[claimIndex];
+
+    await axios.post('/api/setClaimed', {
+      claimIndex
+    });
+    const txn = await setClaimed(
+      program,
+      lootboxName,
+      wallet,
+      new PublicKey(user),
+      prizeIndex,
+    );
+    console.log(txn)
+    if (txn) {
+      toast.success('Set Claimed successfully');
+      setReload({});
+    } else {
+      toast.error('Failed to set claimed');
+    }
+  }
+
   return (
     <div className={"flex flex-wrap justify-center w-full gap-5"}>
       {fundDialogOpen &&
@@ -581,7 +608,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
         />
       }
       {claimDialogOpen &&
-        <ClaimsDialog setOpen={setClaimDialogOpen} setReload={setReload} claims={claims} prizes={prizeItems} />
+        <ClaimsDialog setOpen={setClaimDialogOpen} setReload={setReload} claims={claims} prizes={prizeItems} setClaimed={handleSetClaimed} />
       }
 
       <div className={"w-full flex justify-center mt-5 gap-4"}>
