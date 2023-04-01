@@ -19,6 +19,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { claim, claimAll } from '@/lootbox-program-libs/methods';
 import { toast } from 'react-toastify';
 import { getLootbox } from '@/utils';
+import useFetchEvents from '@/hooks/useFetchEvents';
 
 type PrizeCard = { prize: NftPrize | SplPrize | OffChainPrize, name: string, image: string, lootbox: string, value: number };
 
@@ -28,6 +29,7 @@ const Claim = () => {
   const [reload, setReload] = useState({});
   const { lootboxes } = useFetchAllLootboxes(reload);
   const { player } = useFetchPlayer(reload);
+  const { events } = useFetchEvents(reload);
 
   const { prizes: prizeItems } = useFetchPrizes(reload);
   const mints = useMemo(() => {
@@ -262,7 +264,7 @@ const Claim = () => {
           }
         </CardsSection>
       </div>
-      <LiveFeed />
+      <LiveFeed events={events} />
     </>
   );
 };

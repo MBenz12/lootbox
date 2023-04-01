@@ -15,26 +15,26 @@ export type TOKEN = {
   decimals: number;
 }
 
-export type SplPrize = { 
+export type SplPrize = {
   lootboxName?: string;
-  index: number; 
-  amount: number; 
+  index: number;
+  amount: number;
   lootbox: boolean;
 };
 
-export type NftPrize = { 
+export type NftPrize = {
   lootboxName?: string;
-  index: number; 
+  index: number;
   lootbox: boolean;
 };
 
-export type OffChainPrize = { 
+export type OffChainPrize = {
   lootboxName?: string;
-  itemIndex: number; 
+  itemIndex: number;
   prizeIndex?: number;
-  name: string; 
-  image: string; 
-  totalItems?: number; 
+  name: string;
+  image: string;
+  totalItems?: number;
   unlimited?: boolean;
   remainigItems?: number;
   lootbox?: boolean;
@@ -47,4 +47,17 @@ export type Claim = {
   lootboxName: string;
   prizeIndex: number;
   itemIndex: number;
+}
+
+export type Event = {
+  signature: string;
+  lootboxName: string;
+  user: string;
+  rarity: number;
+  timestamp: number;
+  image: string;
+  name: string;
+  symbol?: string;
+  amount?: number;
+  mint?: string;
 }

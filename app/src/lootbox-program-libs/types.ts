@@ -61,5 +61,5 @@ export type PlayEvent = {
   player: PublicKey;
   lootbox: PublicKey;
   prizeItem: PrizeItem;
-  timeStamp: BN;
+  timestamp: BN;
 }
