@@ -19,5 +19,14 @@
 		"symbol": "SOL",
 		"amount": 0.01,
 		"mint": "So11111111111111111111111111111111111111112"
+	},
+	{
+		"signature": "2JLosJ2s3qxggMPASz1AWhaHEBRdJB25dXe7CafTuEz8oHVTc38xnQjqVKUMWVLYzEFEfAyeY7omJKsFkaRC88a4",
+		"lootboxName": "Free",
+		"user": "3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd",
+		"rarity": 0,
+		"timestamp": 1680309526,
+		"image": "https://bafybeiftdynsr2m3j5c377axqi7tqacp5spg4xl7exf4gpux6umr3tctvq.ipfs.nftstorage.link/MBenz.svg",
+		"name": "Lootbox"
 	}
 ]
