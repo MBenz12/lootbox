@@ -10,7 +10,7 @@ import OffChainPrizeDialog from '../../components/admin/OffChainPrizeDialog';
 
 import useFetchNfts from '@/hooks/useFetchNfts';
 import { addItems, closeLootbox, closePdas, createLootbox, drain, fund, setClaimed, updateLootbox, updateOffChainItem, updateOnChainItem } from '@/lootbox-program-libs/methods';
-import { OffChainItem, PlayEvent, Rarity } from '@/lootbox-program-libs/types';
+import { OffChainItem, Rarity } from '@/lootbox-program-libs/types';
 import { BN } from '@project-serum/anchor';
 import { getMint } from '@solana/spl-token';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';

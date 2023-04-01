@@ -61,3 +61,11 @@ export type Event = {
   amount?: number;
   mint?: string;
 }
+
+export type WinnablePrize = {
+  rarity: number;
+  name: string;
+  image: string;
+  lootbox: string;
+  value: number;
+}

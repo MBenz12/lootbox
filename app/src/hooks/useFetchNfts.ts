@@ -52,7 +52,7 @@ const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftDa
             const { image } = data;
             nfts[index].image = image;
           } catch (error) {
-            console.log(error);
+            // console.log(error);
           }
         })
       );
@@ -68,7 +68,7 @@ const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftDa
           nft.floorPrice = creators[nft.creator.toString()];
         }        
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
 
 

@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "server": "ts-node src/server",
+    "launch": "run-p dev server",
+    "deploy": "run-p start server",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -17,6 +20,7 @@
     "@solana/wallet-adapter-react-ui": "^0.9.30",
     "@solana/wallet-adapter-wallets": "^0.19.15",
     "@solana/web3.js": "^1.74.0",
+    "@types/express": "^4.17.17",
     "@types/node": "18.15.3",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
@@ -25,6 +29,7 @@
     "discord-oauth2": "^2.11.0",
     "eslint": "8.36.0",
     "eslint-config-next": "13.2.4",
+    "express": "^4.18.2",
     "formik": "^2.2.9",
     "framer-motion": "^10.6.1",
     "hyperspace-client-js": "^1.4.14",
