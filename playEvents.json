@@ -1,0 +1,23 @@
+[
+	{
+		"signature": "5Y7LvQc7b6WwPFNasUCG5PG4EZBkK8mACNFMc8NseaXXccBAHRZYnrut1SVpzoKeweSNaasDaWPExoFmCvq9hXL6",
+		"lootboxName": "Free",
+		"user": "3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd",
+		"rarity": 0,
+		"timestamp": 1680278060,
+		"image": "https://arweave.net/mBVbmTkA3KB1rfpjej75DoXPmL2fhggM2xo0pi6g5Eo?ext=png",
+		"name": "Angry Cat #0002",
+		"mint": "HwU3yHfVyNtRZ8qe5da4AgwCKzyWX3LCGyZ6UkEcaaZz"
+	},
+	{
+		"signature": "3FmxPsua8V3z59nG5hEVPoMoRjVGAqcv2P6PQzTxNgCQbis4pxd45xrRdBGPwrJkEHJ871m1VxSvz2Hn3v7jPrTs",
+		"lootboxName": "Free",
+		"user": "3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd",
+		"rarity": 0,
+		"timestamp": 1680298060,
+		"image": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png",
+		"symbol": "SOL",
+		"amount": 0.01,
+		"mint": "So11111111111111111111111111111111111111112"
+	}
+]
