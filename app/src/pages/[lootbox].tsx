@@ -7,7 +7,7 @@ import useFetchEvents from '@/hooks/useFetchEvents';
 import { TOKENS } from '@/config';
 import useFetchNfts from '@/hooks/useFetchNfts';
 import useFetchPrizes from '@/hooks/useFetchPrizes';
-import { NftPrize, SplPrize, OffChainPrize, WinnablePrize } from '@/types';
+import { NftPrize, SplPrize, OffChainPrize, WinnablePrize, OpenedPrize } from '@/types';
 import { PublicKey } from '@solana/web3.js';
 import { useRouter } from 'next/router'
 import useFetchLootbox from '@/hooks/useFetchLootbox';
@@ -115,14 +115,14 @@ export default function Home() {
     return prizes;
   }, [nftPrizes, splPrizes, offChainPrizes, lootboxNfts, prizeItems]);
 
-  const [openedImage, setOpenedImage] = useState('https://bafybeiftdynsr2m3j5c377axqi7tqacp5spg4xl7exf4gpux6umr3tctvq.ipfs.nftstorage.link/MBenz.svg');
+  const [openedPrize, setOpenedPrize] = useState<OpenedPrize>();
 
   const handlePlay = async () => {
     if (!wallet.publicKey || !program || !lootbox) {
       return;
     }
 
-    setOpenedImage('');
+    setShowPrize(false);
 
     const txn = await play(
       program,
@@ -153,7 +153,7 @@ export default function Home() {
   useEffect(() => {
     if (!lootbox || !wallet.publicKey) return;
     if (event) {
-      const { player, lootbox: lootboxKey, prizeItem: { offChainItem, onChainItem } } = event;
+      const { player, lootbox: lootboxKey, prizeItem: { offChainItem, onChainItem, rarity } } = event;
       if (player.toString() !== wallet.publicKey.toString() || getLootboxPda(lootbox.name)[0].toString() !== lootboxKey.toString()) {
         return;
       }
@@ -178,20 +178,15 @@ export default function Home() {
         }
       }
 
-      setOpenedImage(data.image);
+      setOpenedPrize({ image: data.image, rarity })
+      setShowPrize(true);
     } else {
-      setOpenedImage('');
+      setShowPrize(false);
     }
   }, [event, lootbox, lootboxNfts, prizeItems, wallet.publicKey]);
 
-
   const divider = "after:absolute after:bottom-0 after:left-0 after:right-0 after:w-[100%] after:h-[2px] after:bg-gradient-purple-divider"
   const [showPrize, setShowPrize] = useState(false);
-
-  const getRandomPrize = () => {
-    const randomIndex = Math.floor(Math.random() * prizes.length);
-    return prizes[randomIndex];
-  }
 
   return (
     <>
@@ -207,20 +202,16 @@ export default function Home() {
             <span className={"font-akira font-[800] text-2xl md:text-4xl lg:text-6xl text-[#E93E67] uppercase"}>{lootboxName}</span> BOX
           </h1>
           <img className={"aspect-[1.6] object-cover h-full"} src="/images/open_box_mask.png" alt="open_box_mask" draggable={false} />
-          <Box showPrize={showPrize} prize={getRandomPrize()} boxImage={"/images/opened_lootbox.png"} />
+          <Box showPrize={showPrize} prize={openedPrize} boxImage={"/images/opened_lootbox.png"} />
           <div className={"absolute flex flex-col place-items-center bottom-[2%]"}>
-            <Button text={"Open"} handler={() => setShowPrize(!showPrize)} />
+            <Button text={"Open"} handler={() => handlePlay()} />
             <div className={"flex gap-1 place-items-center"}>
               <img className={"w-[18px] h-[18px]"} src="/images/coin.png" alt="coin" />
               <p className={"opacity-50"}>750 ZEN</p>
             </div>
           </div>
         </div>
-        <Prizes prizes={prizes} />
-        {/*<div className='w-fit'>*/}
-        {/*  <Button text={"Open"} handler={handlePlay} />*/}
-        {/*  {openedImage && <img src={openedImage} alt='' />}*/}
-        {/*</div>*/}
+        {<Prizes prizes={prizes} lootbox={lootbox} />}
         <LiveFeed events={events} />
       </div>
     </>
