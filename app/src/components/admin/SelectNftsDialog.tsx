@@ -30,7 +30,7 @@ const SelectNftsDialog: React.FC<SelectNftsDialogProps> = ({ setOpen, nfts, sele
           <p className={"text-[24px] font-bold"}>{label} ({selectedNfts.length})</p>
           <Button text={buttonName} onClick={handleClick} />
         </div>
-        <div className={"grid grid-cols-[repeat(auto-fill,_minmax(150px,_1fr))] overflow-y-auto overflow-x-hidden gap-2 w-full h-[400px] p-5"}>
+        <div className={"grid grid-cols-[repeat(auto-fill,_minmax(150px,_1fr))] overflow-y-auto overflow-x-hidden gap-x-4 gap-y-6 w-full h-[400px] p-5"}>
           {
             nfts.map((nft, index) => (
               <SelectableNFT key={index} selected={isSelected(index)} handleSelect={() => handleSelectNft(index)} image={nft.image} />

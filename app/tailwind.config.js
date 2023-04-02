@@ -16,6 +16,18 @@ module.exports = {
         "uncommon-card": "0px 1px 6px rgba(128, 7, 185, 0.5)",
         "common-card": "0px 1px 6px rgba(128, 7, 185, 0.5)",
       }),
+      backgroundColor: () => ({
+        "legendary-card": "#FF7CFA",
+        "rare-card": "#ED9A1F",
+        "uncommon-card": "#4693DA",
+        "common-card": "#343751",
+      }),
+      colors: {
+        "common-card": "#343751",
+        "uncommon-card": "#4693DA",
+        "rare-card": "#ED9A1F",
+        "legendary-card": "#FF7CFA",
+      },
       backgroundImage: () => ({
         "gradient-button":
             "linear-gradient(to right, #2A6ED4 0%, #3b96b2 55%, #2A6ED4 100%)",

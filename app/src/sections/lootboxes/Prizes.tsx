@@ -1,31 +1,13 @@
-import { useEffect, useState } from 'react';
 import { PrizeItem } from "@/components/lootboxes/PrizeItem";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode } from "swiper";
 import { WinnablePrize } from '@/types';
 
 export const Prizes = ({ prizes }: { prizes: Array<WinnablePrize> }) => {
-  const [slidesPerView, setSlidesPerView] = useState(4)
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (innerWidth < 768) {
-        setSlidesPerView(1)
-      } else if (innerWidth < 1024) {
-        setSlidesPerView(2)
-      } else if (innerWidth < 1280) {
-        setSlidesPerView(3)
-      } else if (innerWidth < 1600) {
-        setSlidesPerView(4)
-      } else {
-        setSlidesPerView(6)
-      }
-    }
-  }, []);
-
   return (
     <div className="my-5">
-      <h1 className="mb-5 banner-text">Winnable Prizes</h1>
-      <Swiper freeMode={true} spaceBetween={20} slidesPerView={slidesPerView} modules={[FreeMode]} className={"prizes-wrapper"}>
+      <h1 className={"font-akira font-[800] uppercase text-xl my-5"} style={{transform: "scaleY(75%)"}}>Winnable Prizes</h1>
+      <Swiper freeMode={true} spaceBetween={15} slidesPerView="auto" modules={[FreeMode]} className={"prizes-wrapper"}>
         {
           prizes.map((prize, index) => (
             <SwiperSlide key={index}>

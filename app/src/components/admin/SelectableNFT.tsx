@@ -10,7 +10,7 @@ interface SelectableNftProps {
 
 const SelectableNft: React.FC<SelectableNftProps> = ({ image, handleSelect, selected }) => {
   return (
-    <div onClick={handleSelect} className={"relative cursor-pointer w-[150px] h-[150px] rounded-xl"}>
+    <div onClick={handleSelect} className={"relative overflow-hidden cursor-pointer w-[150px] h-[150px] rounded-xl"}>
       <LazyLoadImage
         src={image}
         className='rounded-xl object-cover'

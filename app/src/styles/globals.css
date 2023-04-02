@@ -170,8 +170,12 @@ body::after {
     right: 0;
     bottom: 0;
     z-index: 1;
-    width: 23%;
+    width: 5%;
     background: linear-gradient(270deg, #0d0b16 11.88%, rgba(13, 11, 22, 0) 81.88%);
+}
+
+.swiper-slide {
+    width: fit-content !important;
 }
 
 .load-circle {
