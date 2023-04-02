@@ -69,3 +69,8 @@ export type WinnablePrize = {
   lootbox: string;
   value: number;
 }
+
+export type OpenedPrize = {
+  rarity: number;
+  image: string;
+}

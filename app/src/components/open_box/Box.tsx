@@ -1,11 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
+import { OpenedPrize } from '@/types';
 import { motion } from "framer-motion";
 
-type Prize = {
-  image: string;
-  rarity: number;
-}
-
-const Box = ({ boxImage, showPrize, prize }: { boxImage: string, showPrize: boolean, prize?: Prize }) => {
+const Box = ({ boxImage, showPrize, prize }: { boxImage: string, showPrize: boolean, prize?: OpenedPrize }) => {
   const getRarityColor = () => {
     return [
       "rgba(52,55,81,0.5)",
