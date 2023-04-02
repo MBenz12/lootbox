@@ -242,9 +242,9 @@ const Claim = () => {
               return (
                 <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} handler={() => {
                   handleClaimNft(card.prize as NftPrize);
-                  showModal(
-                    <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming />
-                  )
+                  // showModal(
+                  //   <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming />
+                  // )
                 }} />
               )
             })
