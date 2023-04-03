@@ -114,7 +114,7 @@ export default function Home() {
     }
     return prizes;
   }, [nftPrizes, splPrizes, offChainPrizes, lootboxNfts, prizeItems]);
-  console.log(prizes);
+  
   const [openedPrize, setOpenedPrize] = useState<OpenedPrize>();
 
   const handlePlay = async () => {

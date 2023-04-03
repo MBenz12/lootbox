@@ -62,7 +62,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
 
   const [tokenAmounts, setTokenAmounts] = useState(Array(TOKENS.length).fill(0));
   const { lootbox } = useFetchLootbox(name, reload);
-
+  
   const mints: Array<PublicKey> = useMemo(() => lootbox ? lootbox.splVaults.filter(splVault =>
     splVault.isNft && splVault.mint.toString() !== PublicKey.default.toString()
   ).map((splVault) => splVault.mint) : [], [lootbox]);
@@ -89,10 +89,9 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const [drainDialogOpen, setDrainDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = async () => {
     try {
       if (lootbox && connection) {
-        console.log(lootbox);
         setFee(lootbox.fee.toNumber() / LAMPORTS_PER_SOL);
         setFeeWallet(lootbox.feeWallet.toString());
         let index = tokens.map(token => token.mint.toString()).indexOf(lootbox.ticketMint.toString());
@@ -166,11 +165,12 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     // setClaimDialogOpen(false);
     setDrainDialogOpen(false);
     setAddDialogOpen(false);
-  }, [lootbox, connection, lootboxNfts, prizeItems, tokens]);
+  };
 
   useEffect(() => {
     fetchData();
-  }, [reload, fetchData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reload, lootbox, lootboxNfts, prizeItems]);
 
   const handleCreateLootbox = async () => {
     if (!wallet.publicKey || !program) {
