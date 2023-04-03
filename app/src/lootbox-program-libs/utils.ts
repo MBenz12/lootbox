@@ -79,15 +79,14 @@ export const sendTransactions = async (
       transaction.recentBlockhash = recentBlockhash;
     }
     const signedTxns = await wallet.signAllTransactions(transactions);
-    const txSignatures = [];
-    for (const signedTxn of signedTxns) {
+    const txSignatures = await Promise.all(signedTxns.map(async (signedTxn) => {
       const txSignature = await connection.sendRawTransaction(signedTxn.serialize(), { skipPreflight });
-      txSignatures.push(txSignature);
       DEBUG && console.log(txSignature);
-    }
-    for (const txSignature of txSignatures) {
+      return txSignature;
+    }));
+    await Promise.all(txSignatures.map(async (txSignature) => {
       await confirmTransactionSafe(connection, txSignature, confirmationSafe);
-    }
+    }));
     return txSignatures;
   } catch (error) {
     console.log(error);
