@@ -12,9 +12,10 @@ interface NftCardProps {
   claiming?: boolean;
   handler?: () => void;
   prize?: OffChainPrize;
+  claimed?: boolean;
 }
 
-const NftCard: React.FC<NftCardProps> = ({ name, box, image, claiming, handler, prize }) => {
+const NftCard: React.FC<NftCardProps> = ({ name, box, image, claiming, handler, prize, claimed }) => {
   const discordRef = useRef<any>();
   const { publicKey } = useWallet();
   return (
@@ -42,9 +43,9 @@ const NftCard: React.FC<NftCardProps> = ({ name, box, image, claiming, handler, 
               <p className={"text-[14px]"}>{name}</p>
               <p className={"opacity-50 text-[12px]"}>{box}</p>
             </div>
-            <div className={"w-full"}>
+            {!claimed && <div className={"w-full"}>
               <Button handler={handler} text={"CLAIM"} />
-            </div>
+            </div>}
           </>
         )
       }

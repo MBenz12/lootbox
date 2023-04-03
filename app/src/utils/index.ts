@@ -1,7 +1,7 @@
 import { TOKENS } from '../config'
 import { Lootbox } from '../lootbox-program-libs/types';
 import { getLootboxPda } from '../lootbox-program-libs/utils';
-import { NftData, NftPrize } from '../types';
+import { Claim, NftData, NftPrize, OffChainPrize } from '../types';
 import { PublicKey } from '@solana/web3.js'
 
 export const getTokenSymbol = (mint: PublicKey) => {
@@ -39,4 +39,8 @@ export const getLootbox = (lootboxKey: PublicKey, lootboxes: Array<Lootbox>) => 
 
 export const getSliceAddress = (str: string) => {
   return str.slice(0, 4) + '...' + str.slice(-4);
+}
+
+export const isClaimed = (claims: Array<Claim>, prize: OffChainPrize) => {
+  return claims.some((claim) => claim.prizeIndex === prize.prizeIndex && claim.itemIndex === prize.itemIndex && claim.lootboxName === prize.lootboxName);
 }
