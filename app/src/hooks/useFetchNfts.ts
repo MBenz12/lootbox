@@ -30,6 +30,12 @@ const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftDa
       } else {
         allNfts = (await metaplex.nfts().findAllByMintList({ mints })).filter(nft => nft);
       }
+
+      allNfts.sort((a: any, b: any) => {
+        if (a.name === b.name) return 0;
+        return a.name > b.name ? 1 : -1;
+      });
+
       const creators: { [key: string]: number } = {};
       const nfts: Array<NftData> = allNfts.map(nft => {
         const creator = nft?.creators.length ? nft?.creators[0].address : PublicKey.default;
@@ -43,6 +49,8 @@ const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftDa
           creator,
         };
       });
+
+      setNfts(nfts);
 
       await Promise.all(
         allNfts.map(async (nft, index) => {
@@ -70,13 +78,6 @@ const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftDa
       } catch (error) {
         // console.log(error);
       }
-
-
-      nfts.sort((a: NftData, b: NftData) => {
-        if (a.name === b.name) return 0;
-        return a.name > b.name ? 1 : -1;
-      });
-
       setNfts(nfts);
     } catch (error) {
       console.log(error);

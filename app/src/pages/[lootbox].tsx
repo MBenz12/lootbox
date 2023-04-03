@@ -32,9 +32,9 @@ export default function Home() {
   const [event, setEvent] = useState<PlayEvent>();
   const { events } = useFetchEvents(reload);
   const { prizes: prizeItems } = useFetchPrizes(reload);
-  const mints: Array<PublicKey> | undefined = useMemo(() => lootbox ? lootbox.splVaults.filter(splVault =>
+  const mints: Array<PublicKey> = useMemo(() => lootbox ? lootbox.splVaults.filter(splVault =>
     splVault.isNft && splVault.mint.toString() !== PublicKey.default.toString()
-  ).map((splVault) => splVault.mint) : undefined, [lootbox]);
+  ).map((splVault) => splVault.mint) : [], [lootbox]);
 
   const { nfts: lootboxNfts } = useFetchNfts(reload, mints);
   const { nftPrizes, splPrizes, offChainPrizes } = useMemo(() => {
@@ -114,7 +114,7 @@ export default function Home() {
     }
     return prizes;
   }, [nftPrizes, splPrizes, offChainPrizes, lootboxNfts, prizeItems]);
-
+  console.log(prizes);
   const [openedPrize, setOpenedPrize] = useState<OpenedPrize>();
 
   const handlePlay = async () => {
