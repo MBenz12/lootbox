@@ -13,7 +13,7 @@ import { NftPrize, SplPrize, OffChainPrize, WinnablePrize } from '@/types';
 import { PublicKey } from '@solana/web3.js';
 
 export default function Home() {
-  const [reload, setReload] = useState({});
+  const [reload] = useState({});
   const { lootboxes } = useFetchAllLootboxes(reload);
   const { events } = useFetchEvents(reload);
   const { prizes: prizeItems } = useFetchPrizes(reload);

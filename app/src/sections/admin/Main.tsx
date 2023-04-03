@@ -63,9 +63,9 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const [tokenAmounts, setTokenAmounts] = useState(Array(TOKENS.length).fill(0));
   const { lootbox } = useFetchLootbox(name, reload);
 
-  const mints: Array<PublicKey> | undefined = useMemo(() => lootbox ? lootbox.splVaults.filter(splVault =>
+  const mints: Array<PublicKey> = useMemo(() => lootbox ? lootbox.splVaults.filter(splVault =>
     splVault.isNft && splVault.mint.toString() !== PublicKey.default.toString()
-  ).map((splVault) => splVault.mint) : undefined, [lootbox]);
+  ).map((splVault) => splVault.mint) : [], [lootbox]);
 
   const { nfts: lootboxNfts } = useFetchNfts(reload, mints);
   const [selectedLootboxNfts, setSelectedLootboxNfts] = useState<Array<number>>([]);
