@@ -2,12 +2,12 @@
 import { writeFileSync } from 'fs';
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<string>
 ) {
   const { url } = req.body;
-  const prizes = require('../../../../prizes.json');
+  const prizes = await require('../../../../prizes.json');
   prizes.push(url);
   writeFileSync('../prizes.json', JSON.stringify(prizes, null, '\t'));
   res.status(200).json("success");
