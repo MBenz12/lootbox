@@ -18,8 +18,9 @@ import useProgram from '@/hooks/useProgram';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { claim, claimAll } from '@/lootbox-program-libs/methods';
 import { toast } from 'react-toastify';
-import { getLootbox } from '@/utils';
+import { getLootbox, isClaimed } from '@/utils';
 import useFetchEvents from '@/hooks/useFetchEvents';
+import useFetchUserClaims from '@/hooks/useFetchUserClaims';
 
 type PrizeCard = { prize: NftPrize | SplPrize | OffChainPrize, name: string, image: string, lootbox: string, value: number };
 
@@ -30,6 +31,7 @@ const Claim = () => {
   const { lootboxes } = useFetchAllLootboxes(reload);
   const { player } = useFetchPlayer(reload);
   const { events } = useFetchEvents(reload);
+  const { claims } = useFetchUserClaims(reload);
 
   const { prizes: prizeItems } = useFetchPrizes(reload);
   const mints = useMemo(() => {
@@ -251,7 +253,7 @@ const Claim = () => {
           {
             offChainCards.map((card, index) => {
               return (
-                <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} handler={() => {
+                <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} claimed={isClaimed(claims, card.prize as OffChainPrize)} handler={() => {
                   showModal(
                     <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming prize={(card.prize as OffChainPrize)} />
                   )
