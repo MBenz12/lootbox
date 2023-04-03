@@ -89,7 +89,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const [drainDialogOpen, setDrainDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
 
-  const fetchData = useCallback(async (tokens: Array<TOKEN>) => {
+  const fetchData = useCallback(async () => {
     try {
       if (lootbox && connection) {
         console.log(lootbox);
@@ -166,11 +166,10 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     // setClaimDialogOpen(false);
     setDrainDialogOpen(false);
     setAddDialogOpen(false);
-  }, [lootbox, connection, lootboxNfts, prizeItems]);
+  }, [lootbox, connection, lootboxNfts, prizeItems, tokens]);
 
   useEffect(() => {
-    fetchData(tokens);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchData();
   }, [reload, fetchData]);
 
   const handleCreateLootbox = async () => {
@@ -722,7 +721,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
           }
         </NftsSection>
       </div>
-      <div className={"w-full flex justify-center mt-5 gap-4"}>
+      <div className={"hidden w-full justify-center mt-5 gap-4"}>
         <Button onClick={() => handleCloseAllPda()} text={"Close All Pda"} />
       </div>
     </div>

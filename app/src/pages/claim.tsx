@@ -68,7 +68,7 @@ const Claim = () => {
             }
           }
         }
-        
+
         for (let prizeIndex = 0; prizeIndex < playerBox.offChainPrizes.length; prizeIndex++) {
           const { itemIndex, totalItems, usedItems, claimed } = playerBox.offChainPrizes[prizeIndex];
           if (claimed) {
@@ -242,9 +242,6 @@ const Claim = () => {
               return (
                 <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} handler={() => {
                   handleClaimNft(card.prize as NftPrize);
-                  // showModal(
-                  //   <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming />
-                  // )
                 }} />
               )
             })
@@ -257,7 +254,7 @@ const Claim = () => {
                 <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} handler={() => {
                   showModal(
                     <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming prize={(card.prize as OffChainPrize)} />
-                  )                  
+                  )
                 }} />
               )
             })
