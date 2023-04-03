@@ -2,10 +2,10 @@
 import { Claim } from '@/types';
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Array<Claim>>
 ) {
-  const claims = require('../../../../claims.json');
+  const claims = await require('../../../../claims.json');
   res.status(200).json(claims);
 }
