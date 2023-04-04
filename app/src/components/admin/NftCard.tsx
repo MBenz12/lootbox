@@ -17,10 +17,10 @@ const NftCard: React.FC<NftCardProps> = ({ image, price, symbol, handleDelete })
       </div>
       {
         !image && (
-          <p className={"flex select-none justify-center place-items-center h-full font-bold bg-white text-black rounded-t-xl"}>{price} {symbol}</p>
+          <p className={"flex select-none justify-center place-items-center h-full font-bold bg-white text-black rounded-t-xl"}>{price !== undefined ? price.toLocaleString('en-us', { maximumFractionDigits: 2 }): ''} {symbol}</p>
         )
       }
-      <p className={"text-center text-[12px] py-1 bg-white text-black rounded-b-xl"}>{price ? `${price} SOL` : '-'}</p>
+      <p className={"text-center text-[12px] py-1 bg-white text-black rounded-b-xl"}>{price !== undefined ? `${price.toLocaleString('en-us', { maximumFractionDigits: 2 })} SOL` : '-'}</p>
     </div>
   );
 };
