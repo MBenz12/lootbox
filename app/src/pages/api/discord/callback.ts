@@ -3,16 +3,12 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import DiscordOauth2 from "discord-oauth2";
 import { CLIENT_ID, CLIENT_SECRET, DOMAIN } from '@/config';
 import axios from 'axios';
-import { writeFileSync } from 'fs';
-import { Claim } from '@/types';
-
-type Data = {
-  name: string
-}
+import Claim from '@/db/models/Claim';
+import connect from '@/db/connect';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse
 ) {
   const code = req.query.code === undefined ? "" : req.query.code.toString();
   const {
@@ -38,21 +34,19 @@ export default async function handler(
         Authorization: `Bearer ${access_token}`,
       },
     });
-    
-    const claims: Array<Claim> = require('../../../../../claims.json');
-    if (!claims.some((claim) => {
-      return claim.user === user && claim.lootboxName === lootboxName && claim.prizeIndex === prizeIndex && claim.itemIndex === itemIndex;
-    })) {
-      claims.push({
+
+    await connect();
+    const claim = await Claim.findOne({ user, lootboxName, prizeIndex, itemIndex });
+    if (!claim) {
+      await Claim.create({
         user,
         username: username + "#" + discriminator,
         discordId: id,
         lootboxName,
         prizeIndex,
         itemIndex,
-      })
-      writeFileSync('../claims.json', JSON.stringify(claims, null, '\t'));
-    }
+      });
+    }    
   } catch (error) {
     console.log(error);
   }
