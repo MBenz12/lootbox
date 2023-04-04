@@ -1,11 +1,13 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { Claim } from '@/types';
+import Claim from '@/db/models/Claim';
 import type { NextApiRequest, NextApiResponse } from 'next'
+import connect from '@/db/connect';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Array<Claim>>
+  res: NextApiResponse<Array<any>>
 ) {
-  const claims = await require('../../../../claims.json');
+  await connect();
+  const claims = await Claim.find();
   res.status(200).json(claims);
 }
