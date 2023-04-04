@@ -2,7 +2,7 @@ import { AnchorProvider, Program, Wallet } from '@project-serum/anchor';
 import { Lootbox as LootboxIDL } from './idl/lootbox';
 import { programId } from './lootbox-program-libs/utils';
 import { Connection, Keypair, PublicKey } from '@solana/web3.js';
-import { SOLANA_DEVNET_RPC_URL, TOKENS } from './config';
+import { SOLANA_MAINNET_RPC_URL, TOKENS } from './config';
 import { Metaplex } from '@metaplex-foundation/js';
 import { NftData } from './types';
 import axios from 'axios';
@@ -13,7 +13,7 @@ import Prize from './db/models/Prize';
 import connect from './db/connect';
 
 const idl = require('./idl/lootbox.json');
-const connection = new Connection(SOLANA_DEVNET_RPC_URL);
+const connection = new Connection(SOLANA_MAINNET_RPC_URL);
 const provider = new AnchorProvider(connection, new Wallet(Keypair.generate()), AnchorProvider.defaultOptions());
 const program = new Program(idl, programId.toString(), provider) as Program<LootboxIDL>;
 const metaplex = new Metaplex(connection);
