@@ -71,14 +71,14 @@ const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftDa
           const creator = project.project_id;
           creators[creator] = project.floor_price || 0;
         }
-  
+
         for (const nft of nfts) {
           nft.floorPrice = creators[nft.creator.toString()];
-        }        
+        }
+        setNfts(nfts);
       } catch (error) {
         // console.log(error);
       }
-      setNfts(nfts);
     } catch (error) {
       console.log(error);
     }

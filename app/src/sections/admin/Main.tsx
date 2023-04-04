@@ -57,6 +57,8 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     { dropPercent: 2, minSpins: 50 },
   ]);
 
+  const [minSolValues, setMinSolValues] = useState<Array<number>>(new Array(4).fill(0));
+
   const { nfts } = useFetchNfts(reload);
   const [selectedNfts, setSelectedNfts] = useState<Array<number>>([]);
 
@@ -536,6 +538,23 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     }
   }
 
+  const handleAutoSelect = () => {
+    const unSelectedPrizes = getUnselectedPrizes(lootboxNfts, nftPrizes);
+    const newNftPrizes = nftPrizes.map((prizes) => [...prizes]);
+    for (let rarity = 0; rarity < minSolValues.length; rarity++) {
+      for (let i = 0; i < unSelectedPrizes.length; i++) {
+        let prize = unSelectedPrizes[i];
+        if (prize.floorPrice >= minSolValues[rarity] && (rarity === 3 || (rarity < 3 && prize.floorPrice <= minSolValues[rarity + 1]))) {
+          let index = lootboxNfts.map(nft => nft.mint.toString()).indexOf(prize.mint.toString());
+          newNftPrizes[rarity].push({ index, lootbox: false });
+          unSelectedPrizes.splice(i, 1);
+          i--;
+        }
+      }
+    }
+    setNftPrizes(newNftPrizes);
+  }
+
   return (
     <div className={"flex flex-wrap justify-center w-full gap-5"}>
       {fundDialogOpen &&
@@ -671,13 +690,15 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
               size={"sm"}
               type={"number"}
               name={`${rarityCategories[currentRarity]}.minSOLValue`}
-              onChange={() => { }}
+              onChange={(e) => {
+                const solValues = [...minSolValues];
+                solValues[currentRarity] = parseFloat(e.target.value) || 0;
+                setMinSolValues(solValues);
+              }}
               label={"Min. SOL Value"}
-              value={0}
+              value={minSolValues[currentRarity]}
             />
-            <Button text={"Auto Select"} onClick={() => {
-
-            }} />
+            <Button text={"Auto Select"} onClick={handleAutoSelect} />
             <Button text={"Select NFTs"} onClick={() => {
               // setcurrentRarity(index);
               setAddDialogOpen(true);
