@@ -41,6 +41,7 @@ export type OffChainPrize = {
 };
 
 export type Claim = {
+  _id: string,
   user: string;
   username: string;
   discordId: string;

@@ -509,15 +509,16 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
     }
   }
 
-  const handleSetClaimed = async (claimIndex: number) => {
+  const handleSetClaimed = async (claimId: string) => {
     if (!wallet.publicKey || !program) {
       return;
     }
 
+    const claimIndex = claims.map(claim => claim._id).indexOf(claimId);
     const { lootboxName, user, prizeIndex } = claims[claimIndex];
 
     await axios.post('/api/setClaimed', {
-      claimIndex
+      claimId
     });
     const txn = await setClaimed(
       program,

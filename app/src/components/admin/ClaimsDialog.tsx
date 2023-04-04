@@ -14,7 +14,7 @@ const ClaimsDialog = ({
   prizes: Array<OffChainPrize>,
   setReload: (reload: {}) => void,
   setOpen: (open: boolean) => void,
-  setClaimed: (claimIndex: number) => void,
+  setClaimed: (claimId: string) => void,
 }) => {
 
   return (
@@ -47,7 +47,7 @@ const ClaimsDialog = ({
               </div>
               <div className='w-[40%]'>{claim.username}</div>
               <div className='w-[10%]'>
-                <Button onClick={() => setClaimed(index)} size='sm' text='Claimed' />
+                <Button onClick={() => setClaimed(claim._id)} size='sm' text='Claimed' />
               </div>
             </div>
           ))}
