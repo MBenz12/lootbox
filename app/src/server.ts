@@ -8,7 +8,9 @@ import { NftData } from './types';
 import axios from 'axios';
 import { Lootbox, PlayEvent } from './lootbox-program-libs/types';
 import { getLootbox } from './utils';
-import { writeFileSync } from 'fs';
+import PlayEventModel from './db/models/PlayEvent';
+import Prize from './db/models/Prize';
+import connect from './db/connect';
 
 const idl = require('./idl/lootbox.json');
 const connection = new Connection(SOLANA_DEVNET_RPC_URL);
@@ -27,6 +29,7 @@ const listener = async (event: PlayEvent, slot: number, signature: string) => {
   lootboxes.forEach(lootbox => {
     mints.push(...lootbox.splVaults.filter(splVault => splVault.isNft && splVault.mint.toString() !== PublicKey.default.toString()).map((splVault) => splVault.mint));
   });
+  await connect();
   const [lootboxNfts, prizeItems] = await Promise.all([getNfts(mints), getPrizes()]);
 
   const { player, lootbox: lootboxKey, prizeItem: { offChainItem, onChainItem, rarity }, timestamp } = event;
@@ -54,9 +57,7 @@ const listener = async (event: PlayEvent, slot: number, signature: string) => {
   }
 
   const playEvent = { signature, lootboxName, rarity, timestamp: timestamp.toNumber(), user: player , ...data, };
-  const events = require('../../playEvents.json');
-  events.push(playEvent);
-  writeFileSync("../playEvents.json", JSON.stringify(events, null, "\t"));
+  await PlayEventModel.create(playEvent);
 }
 
 const getNfts = async (mints: Array<PublicKey>) => {
@@ -95,9 +96,9 @@ const getNfts = async (mints: Array<PublicKey>) => {
 }
 
 const getPrizes = async () => {
-  const urls = require('../../prizes.json');
-  const prizes = await Promise.all(urls.map((async (url: string, index: number) => {
-    const { data: metadata } = await axios.get(url);
+  const prizeItems = await Prize.find();
+  const prizes = await Promise.all(prizeItems.map((async (prize: { url: string }, index: number) => {
+    const { data: metadata } = await axios.get(prize.url);
     const list = metadata.image.split('/');
     return {
       index,
