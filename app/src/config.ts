@@ -7,6 +7,7 @@ export const VERIFIED_WALLETS = {
   "3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd": 2,
   "571RWruF1NSQQw6LfwWXVPNBPiKmVqkv3nqcs3EPfoho": 1,
   "6Aqu8YY6iZAYMGzXYLD7t2EuDkiLKh58AkpAN4WSVuM6": 1,
+  "7yDTeqMBp8qYVwQQrghm7UNJDnZq91rFQDymM4yYSi1T": 1,
 };
 export const HYPERSPACE_API_KEY = process.env.NEXT_PUBLIC_HYPERSPACE_API_KEY || '';
 export const SKIP_PREFLIGHT = true;
