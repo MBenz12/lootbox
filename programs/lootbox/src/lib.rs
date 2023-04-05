@@ -40,7 +40,7 @@ pub mod lootbox {
     }
 
     pub fn update_lootbox(
-        ctx: Context<CreateLootbox>,
+        ctx: Context<UpdateLootbox>,
         fee: u64,
         fee_wallet: Pubkey,
         ticket_price: u64,
