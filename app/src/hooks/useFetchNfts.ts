@@ -49,7 +49,6 @@ const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftDa
           creator,
         };
       });
-
       setNfts(nfts);
 
       await Promise.all(
@@ -57,8 +56,9 @@ const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftDa
           try {
             if (!nft || !nft.uri) return;
             const { data } = await axios.get(nft.uri);
-            const { image } = data;
+            const { image, name } = data;
             nfts[index].image = image;
+            nfts[index].name = name;
           } catch (error) {
             // console.log(error);
           }
