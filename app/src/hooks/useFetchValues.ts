@@ -29,7 +29,7 @@ const useFetchValues = (events: Array<Event>) => {
 
       setValues(values);
     } catch (error) {
-
+      console.log(error);
     }
   }, [events, nfts]);
 
