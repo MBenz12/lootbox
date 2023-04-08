@@ -3,7 +3,7 @@ import { Event } from '@/types';
 import { PublicKey } from '@metaplex-foundation/js';
 import useFetchNfts from './useFetchNfts';
 
-const useFetchValues = ({ events }: { events: Array<Event> }) => {
+const useFetchValues = (events: Array<Event>) => {
   const [values, setValues] = useState<Array<number>>([]);
   const [reload] = useState({});
   const mints = useMemo(() => events.filter(event => event.mint && event.name).map(event => new PublicKey(event.mint || '')), [events]);
