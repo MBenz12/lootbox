@@ -11,7 +11,7 @@ export const RecentlyWonPrizes = ({ events }: { events: Array<Event> }) => {
         {
           events.map((event, index) => (
             <SwiperSlide key={index}>
-              <PrizeItem rarity={event.rarity} icon={event.image} title={event.name} box={event.lootboxName} value={event.amount} />
+              <PrizeItem rarity={event.rarity} icon={event.image} title={event.name ? event.name :  `${event.amount} ${event.symbol}`} box={event.lootboxName} value={event.amount} />
             </SwiperSlide>
           ))
         }
