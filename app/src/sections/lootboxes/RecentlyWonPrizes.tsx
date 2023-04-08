@@ -6,7 +6,6 @@ import useFetchValues from '@/hooks/useFetchValues';
 
 export const RecentlyWonPrizes = ({ events }: { events: Array<Event> }) => {
   const { values } = useFetchValues(events);
-  console.log(values);
   return (
     <div className="my-5">
       <h1 className={"font-akira font-[800] uppercase text-xl my-5"} style={{ transform: "scaleY(75%)" }}>Recently Won Prizes</h1>
