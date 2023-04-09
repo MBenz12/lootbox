@@ -16,17 +16,17 @@ module.exports = {
         "uncommon-card": "0px 1px 6px rgba(128, 7, 185, 0.5)",
         "common-card": "0px 1px 6px rgba(128, 7, 185, 0.5)",
       }),
-      backgroundColor: () => ({
-        "legendary-card": "#FF7CFA",
-        "rare-card": "#ED9A1F",
-        "uncommon-card": "#4693DA",
-        "common-card": "#343751",
-      }),
       colors: {
         "common-card": "#343751",
         "uncommon-card": "#4693DA",
         "rare-card": "#ED9A1F",
         "legendary-card": "#FF7CFA",
+      },
+      boxShadow: {
+        "common-card": "0 0 20px 1px #343751",
+        "uncommon-card": "0 0 20px 1px #4693DA",
+        "rare-card": "0 0 20px 1px #ED9A1F",
+        "legendary-card": "0 0 20px 1px #FF7CFA",
       },
       backgroundImage: () => ({
         "gradient-button":
