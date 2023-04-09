@@ -11,7 +11,6 @@ import { NftPrize, SplPrize, OffChainPrize, WinnablePrize, OpenedPrize } from '@
 import { PublicKey } from '@solana/web3.js';
 import { useRouter } from 'next/router'
 import useFetchLootbox from '@/hooks/useFetchLootbox';
-import { Button } from '@/components/open_box/Button';
 import useProgram from '@/hooks/useProgram';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { play } from '@/lootbox-program-libs/methods';
@@ -19,6 +18,7 @@ import { toast } from 'react-toastify';
 import { PlayEvent } from '@/lootbox-program-libs/types';
 import { getLootboxPda } from '@/lootbox-program-libs/utils';
 import Box from "@/components/open_box/Box";
+import BoxWrapper from "@/components/open_box/BoxWrapper";
 
 export default function Home() {
   const router = useRouter()
@@ -185,7 +185,6 @@ export default function Home() {
     }
   }, [event, lootbox, lootboxNfts, prizeItems, wallet.publicKey]);
 
-  const divider = "after:absolute after:bottom-0 after:left-0 after:right-0 after:w-[100%] after:h-[2px] after:bg-gradient-purple-divider"
   const [showPrize, setShowPrize] = useState(false);
 
   return (
@@ -197,20 +196,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="px-5 lg:px-32">
-        <div className={"relative flex justify-center w-full h-auto min-h-[300px] mb-10 overflow-hidden " + divider}>
-          <h1 className={"font-akira font-[800] text-2xl md:text-4xl lg:text-6xl absolute"}>
-            <span className={"font-akira font-[800] text-2xl md:text-4xl lg:text-6xl text-[#E93E67] uppercase"}>{lootboxName}</span> BOX
-          </h1>
-          <img className={"aspect-[1.6] object-cover h-full"} src="/images/open_box_mask.png" alt="open_box_mask" draggable={false} />
+        <BoxWrapper boxName={"Free"} boxNameColor={"#E93E67"} openButtonHandler={() => handlePlay()} boxPrice={222}>
           <Box showPrize={showPrize} prize={openedPrize} boxImage={"/images/opened_lootbox.png"} />
-          <div className={"absolute flex flex-col place-items-center bottom-[2%]"}>
-            <Button text={"Open"} handler={() => handlePlay()} />
-            <div className={"flex gap-1 place-items-center"}>
-              <img className={"w-[18px] h-[18px]"} src="/images/coin.png" alt="coin" />
-              <p className={"opacity-50"}>750 ZEN</p>
-            </div>
-          </div>
-        </div>
+        </BoxWrapper>
         {<Prizes prizes={prizes} lootbox={lootbox} />}
         <LiveFeed events={events} />
       </div>

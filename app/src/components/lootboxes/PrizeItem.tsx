@@ -19,8 +19,17 @@ export const PrizeItem: React.FC<PrizeItemProps> = ({icon, title, box, value, ra
     ][rarity];
   }
 
+  const getRarityBoxShadowClass = () => {
+    return [
+      "hover:shadow-common-card",
+      "hover:shadow-uncommon-card",
+      "hover:shadow-rare-card",
+      "hover:shadow-legendary-card"
+    ][rarity];
+  }
+
   return (
-    <div className="flex w-[250px] box-content rounded-[10px] bg-[#28282840] p-2 gap-5">
+    <div className={"flex w-[250px] box-content rounded-[10px] bg-[#28282840] p-2 gap-5 transition-all duration-300 " + getRarityBoxShadowClass()}>
       <div className={"bg-cover bg-center bg-no-repeat rounded-[5px] w-[72px] h-[72px] " + getRarityShadowClass()} style={{backgroundImage: `url(${icon})`}}></div>
       <div className="flex flex-col justify-center">
         <p className="bg-clip-text text-transparent text-[14px] bg-gradient-card-title">{title}</p>

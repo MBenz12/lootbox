@@ -2,17 +2,19 @@
 import React from "react";
 import {Button} from "./Button";
 import {motion} from "framer-motion";
+import Image from "next/image";
 
 interface BoxItemProps {
   name: string;
   nameColor: string;
+  shadowColor?: string;
   description: string;
   price: number;
   handleClick?: () => void;
   opening?: boolean;
 }
 
-const BoxItem: React.FC<BoxItemProps> = ({name, nameColor, opening, description, price, handleClick}) => {
+const BoxItem: React.FC<BoxItemProps> = ({name, nameColor, shadowColor,  opening, description, price, handleClick}) => {
   const renderButton = () => {
     if (opening) {
       return <Button text={"OPENING BOX..."}/>
@@ -22,11 +24,20 @@ const BoxItem: React.FC<BoxItemProps> = ({name, nameColor, opening, description,
     }
     return <Button text={"Free"} handler={handleClick}/>
   }
+
   return (
-    <div
-      className="w-[290px] h-[320px] p-[2px] rounded-[15px] backdrop-blur-[25px] bg-gradient-box-fill border-[3px] border-[rgba(255,255,255,0.15)]">
-      <div className="relative -top-20 flex justify-center transition-all duration-300 hover:scale-[1.1]">
-        <img src="/images/box1.png" alt="box1"/>
+    <motion.div
+      whileHover={{
+        boxShadow: `0 0 20px 1px ${shadowColor}`,
+      }}
+      transition={{
+        delay: 0,
+        duration: 0.3,
+      }}
+      className="group w-[290px] h-[320px] p-[2px] rounded-[15px] backdrop-blur-[25px] bg-gradient-box-fill border-[3px] border-[rgba(255,255,255,0.15)]"
+    >
+      <div className="transition-all duration-300 group-hover:scale-[1.1] relative -top-20 flex justify-center">
+        <Image width={260} height={240} src="/images/box1.png" alt="box1"/>
       </div>
       <div className="px-5 text-center mt-[-110px]">
         <p className="my-2 banner-text text-[32px]"><span style={{color: nameColor}} className="banner-text">{name}</span> Box</p>
@@ -49,7 +60,7 @@ const BoxItem: React.FC<BoxItemProps> = ({name, nameColor, opening, description,
           renderButton()
         }
       </div>
-    </div>
+    </motion.div>
   );
 };
 
