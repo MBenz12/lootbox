@@ -20,7 +20,7 @@ import { getLootboxPda } from '@/lootbox-program-libs/utils';
 import Box from "@/components/open_box/Box";
 import BoxWrapper from "@/components/open_box/BoxWrapper";
 
-export default function Home() {
+export default function Lootbox() {
   const router = useRouter()
   const { lootbox: lootboxName } = router.query;
 
