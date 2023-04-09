@@ -36,7 +36,7 @@ export const PrizeItem: React.FC<PrizeItemProps> = ({icon, title, box, value, ra
         <p className="opacity-50 text-[11px]">{box}</p>
         <div className="mt-auto flex place-items-center gap-1.5">
           <Image width={12} height={11} className="w-[12px] h-[11px] mt-[-3px]" src="/images/solana.svg" alt="solana"/>
-          <p className="text-[12px]">{value !== undefined ? `${value.toLocaleString('en-us', { maximumFractionDigits: 2 })} SOL Value` : '-'}</p>
+          <p className="text-[12px]">{value ? `${value.toLocaleString('en-us', { maximumFractionDigits: 2 })} SOL Value` : '-'}</p>
         </div>
       </div>
     </div>

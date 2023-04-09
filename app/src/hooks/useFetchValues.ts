@@ -17,7 +17,9 @@ const useFetchValues = (events: Array<Event>) => {
       for (const event of events) {
         if (event.mint) {
           let index = mints.indexOf(event.mint);
-          values[i] = nfts[index].floorPrice;
+          if (nfts[index]) {
+            values[i] = nfts[index].floorPrice;
+          }
         }
         if (event.symbol === "SOL") {
           values[i] = event.amount;
@@ -27,7 +29,7 @@ const useFetchValues = (events: Array<Event>) => {
 
       setValues(values);
     } catch (error) {
-      
+      console.log(error);
     }
   }, [events, nfts]);
 
