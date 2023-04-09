@@ -1,4 +1,4 @@
-import { ReactNode, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/open_box/Button";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -16,10 +16,13 @@ const BoxWrapper = ({children, boxName, boxNameColor="#fff", openButtonHandler, 
   const canvasRef = useRef<HTMLDivElement>(null);
   const [canvasWidth, setCanvasWidth] = useState(0);
   const [canvasHeight, setCanvasHeight] = useState(0);
-  if (canvasRef.current) {
-    setCanvasWidth(canvasRef.current.clientWidth);
-    setCanvasHeight(canvasRef.current.clientHeight);
-  }
+  useEffect(() => {
+    if (canvasRef.current) {
+      setCanvasWidth(canvasRef.current.clientWidth);
+      setCanvasHeight(canvasRef.current.clientHeight);
+    }    
+  }, [canvasRef]);
+  
 
   return (
     <div ref={canvasRef} className={"relative flex flex-col justify-center place-items-center w-full h-auto min-h-[300px] mb-10 overflow-hidden " + divider}>
