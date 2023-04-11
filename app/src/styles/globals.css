@@ -22,7 +22,7 @@ body::-webkit-scrollbar {
     background-color: #e4e4e400;
     border-radius: 100px;
 }
-  
+
 ::-webkit-scrollbar-thumb {
     background-color: #898989;
     border-radius: 100px;
@@ -50,38 +50,6 @@ body::after {
 
 .admin-page * {
     font-family: "Space Mono", monospace;
-}
-
-@font-face {
-    font-family: 'Aber Mono';
-    src: url('../../public/fonts/Aber Mono/Aber-Mono-Regular.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Aber Mono';
-    src: url('../../public/fonts/Aber Mono/Aber-Mono-Bold.woff2') format('woff2');
-    font-weight: bold;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Akira Expanded';
-    src: url('../../public/fonts/Akira Expanded/Akira-Expanded.otf') format('otf');
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Space Mono';
-    src: url('../../public/fonts/Space Mono/SpaceMono-Regular.ttf') format('ttf');
-    font-weight: normal;
-}
-
-@font-face {
-    font-family: 'Space Mono';
-    src: url('../../public/fonts/Space Mono/SpaceMono-Bold.ttf') format('ttf');
-    font-weight: bold;
 }
 
 .pulsating-circle {

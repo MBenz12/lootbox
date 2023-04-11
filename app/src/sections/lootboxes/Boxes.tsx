@@ -26,7 +26,7 @@ export const Boxes = ({ lootboxes, }: { lootboxes: Array<Lootbox> }) => {
         lootboxes.map((lootbox: Lootbox, index: number) => {
           const box = boxes[lootbox.name];
           return (
-            <BoxItem key={index} handleClick={() => router.push(`/${box.name}`)} name={box.name} nameColor={box.nameColor} description={box.description} price={box.price} />
+            <BoxItem key={index} shadowColor={box.nameColor} handleClick={() => router.push(`/${box.name}`)} name={box.name} nameColor={box.nameColor} description={box.description} price={box.price} />
           )
         })
       }

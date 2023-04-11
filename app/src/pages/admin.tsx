@@ -5,7 +5,6 @@ import Main from '@/sections/admin/Main';
 import useFetchAllLootboxes from '@/hooks/useFetchAllLootboxes';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { getRole } from '@/utils';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
 export default function Admin() {
   const { publicKey } = useWallet();
