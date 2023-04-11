@@ -686,7 +686,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
             />
           </div>
           <div className={"flex ml-auto justify-center items-end gap-4"}>
-            <Input
+            {/* <Input
               size={"sm"}
               type={"number"}
               name={`${rarityCategories[currentRarity]}.minSOLValue`}
@@ -697,8 +697,8 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
               }}
               label={"Min. SOL Value"}
               value={minSolValues[currentRarity]}
-            />
-            <Button text={"Auto Select"} onClick={handleAutoSelect} />
+            /> */}
+            {/* <Button text={"Auto Select"} onClick={handleAutoSelect} /> */}
             <Button text={"Select NFTs"} onClick={() => {
               // setcurrentRarity(index);
               setAddDialogOpen(true);
