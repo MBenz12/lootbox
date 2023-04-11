@@ -35,23 +35,25 @@ export const Header: React.FC = () => {
   const [showMobileMenu, setShowMobileMenu] = React.useState(false);
 
   return (
-    <header className="flex w-full sm:px-20 px-5 place-items-center h-[100px] bg-[rgba(18,_18,_19,_0.6)]">
-      <Link href={"/"} className="bg-gray-600 px-10 py-2 rounded-[15px]">
-        <p>Logo</p>
-      </Link>
-      <nav className="w-full">
-        <div className="hidden place-items-center justify-between gap-10 lg:flex">
-          <Navbar/>
-        </div>
-        <div className="flex w-full justify-end lg:hidden">
-          <div className="cursor-pointer space-y-2" onClick={() => setShowMobileMenu(!showMobileMenu)}>
-            <span className="block w-8 bg-gray-600 h-0.5"></span>
-            <span className="block w-6 bg-gray-600 h-0.5"></span>
-            <span className="block w-4 bg-gray-600 h-0.5"></span>
+    <header className='flex justify-center'>
+      <div className="flex w-full container place-items-center h-[100px] bg-[rgba(18,_18,_19,_0.6)]">
+        <Link href={"/"} className="bg-gray-600 px-10 py-2 rounded-[15px]">
+          <p>Logo</p>
+        </Link>
+        <nav className="w-full">
+          <div className="hidden place-items-center justify-between gap-10 lg:flex">
+            <Navbar/>
           </div>
-        </div>
-      </nav>
-      <MobileMenu show={showMobileMenu} />
+          <div className="flex w-full justify-end lg:hidden">
+            <div className="cursor-pointer space-y-2" onClick={() => setShowMobileMenu(!showMobileMenu)}>
+              <span className="block w-8 bg-gray-600 h-0.5"></span>
+              <span className="block w-6 bg-gray-600 h-0.5"></span>
+              <span className="block w-4 bg-gray-600 h-0.5"></span>
+            </div>
+          </div>
+        </nav>
+        <MobileMenu show={showMobileMenu} />
+      </div>
     </header>
   )
 }
