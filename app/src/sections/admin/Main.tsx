@@ -667,6 +667,11 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
               onChange={(e) => {
                 const newRarities = rarities.map(rarity => ({ ...rarity }));
                 newRarities[currentRarity].dropPercent = (parseFloat(e.target.value) || 0.0) * 100;
+                let remaining = 10000;
+                for (let i = 1; i < 4; i++) {
+                  remaining -= newRarities[i].dropPercent;
+                }
+                newRarities[0].dropPercent = remaining;
                 setRarities(newRarities);
               }}
               label={"Drop %"}
