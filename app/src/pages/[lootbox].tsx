@@ -143,8 +143,8 @@ export default function Lootbox() {
   useEffect(() => {
     if (program) {
       const listenerId = program.addEventListener('PlayEvent', (event: PlayEvent) => {
-        setEvent(event);
         setReload({});
+        setTimeout(() => setEvent(event), 2000);
       });
       console.log('listener: ', listenerId);
     }
@@ -197,7 +197,7 @@ export default function Lootbox() {
       </Head>
       <div className="flex justify-center">
         <div className='container'>
-          <BoxWrapper boxName={"Free"} boxNameColor={"#E93E67"} openButtonHandler={() => handlePlay()} boxPrice={222}>
+          <BoxWrapper boxName={"Free"} boxNameColor={"#E93E67"} openButtonHandler={() => prizes.length && handlePlay()} boxPrice={222}>
             <Box showPrize={showPrize} prize={openedPrize} boxImage={"/images/opened_lootbox.png"} />
           </BoxWrapper>
           {<Prizes prizes={prizes} lootbox={lootbox} />}

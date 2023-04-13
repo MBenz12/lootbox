@@ -83,12 +83,9 @@ const Box = ({ boxImage, showPrize, prize }: { boxImage: string, showPrize: bool
                 damping: 10
               }
             }}
-            className={"absolute rounded-xl w-[45%] aspect-square"}
+            className={"absolute rounded-xl w-[45%] aspect-square bg-cover bg-no-repeat bg-center"}
             style={{
-              background: `url(${prize.image})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat"
+              backgroundImage: `url(${prize.image})`,
             }}
           >
           </motion.div>
