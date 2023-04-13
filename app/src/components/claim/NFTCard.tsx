@@ -4,6 +4,7 @@ import { OffChainPrize } from '@/types';
 import { useWallet } from '@solana/wallet-adapter-react';
 import React, { useRef } from "react";
 import { Button } from "../lootboxes/Button";
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 interface NftCardProps {
   name: string;
@@ -21,7 +22,12 @@ const NftCard: React.FC<NftCardProps> = ({ name, box, image, claiming, handler, 
   return (
     <div
       className={"flex flex-col place-items-center h-fit backdrop-blur-[25px] p-2 bg-gradient-box-fill border-[1px] border-[rgba(255,255,255,0.10)] rounded-xl" + (claiming ? " w-[240px]" : " w-[180px]")}>
-      <img className={"w-full h-auto rounded-xl aspect-square object-cover"} src={image} alt="" />
+      <LazyLoadImage
+        src={image}
+        height={160}
+        className='w-full h-auto rounded-xl aspect-square object-cover'
+        effect='blur'
+      />
       {
         claiming ? (
           <div className={"flex flex-col my-4 place-items-center"}>

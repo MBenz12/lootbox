@@ -66,7 +66,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const { lootbox } = useFetchLootbox(name, reload);
   
   const mints: Array<PublicKey> = useMemo(() => lootbox ? lootbox.splVaults.filter(splVault =>
-    splVault.isNft && splVault.mint.toString() !== PublicKey.default.toString()
+    splVault.isNft && splVault.mint.toString() !== PublicKey.default.toString() && splVault.amount.toNumber() > 0
   ).map((splVault) => splVault.mint) : [], [lootbox]);
 
   const { nfts: lootboxNfts } = useFetchNfts(reload, mints);

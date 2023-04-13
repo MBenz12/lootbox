@@ -52,6 +52,7 @@ const Claim = () => {
       for (const playerBox of player.lootboxes) {
         const lootbox = getLootbox(playerBox.lootbox, lootboxes);
         if (!lootbox) continue;
+        console.log(playerBox.onChainPrizes);
         for (const onChainPrize of playerBox.onChainPrizes) {
           const { splIndex, amount: prizeAmount } = onChainPrize;
           const { mint, isNft } = lootbox.splVaults[splIndex];
@@ -203,6 +204,8 @@ const Claim = () => {
       boxNames.push(prize.lootboxName);
     }
 
+    if (!boxNames.length) return;
+    
     const txn = await claimAll(
       program,
       boxNames,
