@@ -162,14 +162,16 @@ pub mod lootbox {
             .iter()
             .position(|x| x.mint == prize_mint)
             .unwrap();
-        lootbox.prize_items.push(PrizeItem {
-            on_chain_item: Some(OnChainItem {
-                spl_index: index as u8,
-                amount,
-            }),
-            off_chain_item: None,
-            rarity,
-        });
+        if lootbox.spl_vaults[index].amount >= amount {
+            lootbox.prize_items.push(PrizeItem {
+                on_chain_item: Some(OnChainItem {
+                    spl_index: index as u8,
+                    amount,
+                }),
+                off_chain_item: None,
+                rarity,
+            });
+        }
 
         Ok(())
     }
@@ -357,6 +359,8 @@ pub mod lootbox {
             player.lootboxes[lootbox_index]
                 .on_chain_prizes
                 .push(on_chain_item);
+            let spl_index = on_chain_item.spl_index as usize;
+            lootbox.spl_vaults[spl_index].amount = 0;
         }
         if let Some(mut off_chain_item) = prize_item.off_chain_item {
             player.lootboxes[lootbox_index]
