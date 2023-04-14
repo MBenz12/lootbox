@@ -21,10 +21,20 @@ import { toast } from 'react-toastify';
 import { getLootbox, isClaimed } from '@/utils';
 import useFetchEvents from '@/hooks/useFetchEvents';
 import useFetchUserClaims from '@/hooks/useFetchUserClaims';
+import { getCookie } from 'cookies-next'
 
 type PrizeCard = { prize: NftPrize | SplPrize | OffChainPrize, name: string, image: string, lootbox: string, value: number };
 
-const Claim = () => {
+export async function getServerSideProps(context: any) {
+  const discord_access = getCookie("discord_access", context);
+  return {
+    props: {
+      discordAccess: discord_access === undefined ? null : discord_access,
+    },
+  };
+}
+
+const Claim = ({ discordAccess }: { discordAccess: string | undefined }) => {
   const program = useProgram();
   const wallet = useWallet();
   const [reload, setReload] = useState({});
@@ -258,7 +268,7 @@ const Claim = () => {
                 return (
                   <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} claimed={isClaimed(claims, card.prize as OffChainPrize)} handler={() => {
                     showModal(
-                      <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming prize={(card.prize as OffChainPrize)} />
+                      <NFTCard key={`modal${index}`} image={card.image} name={card.name} discordAccess={discordAccess} claiming prize={(card.prize as OffChainPrize)} />
                     )
                   }} />
                 )
