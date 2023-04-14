@@ -49,9 +49,14 @@ const NftCard: React.FC<NftCardProps> = ({ name, box, image, claiming, handler, 
               <p className={"text-[14px]"}>{name}</p>
               <p className={"opacity-50 text-[12px]"}>{box}</p>
             </div>
-            {!claimed && <div className={"w-full"}>
-              <Button handler={handler} text={"CLAIM"} />
-            </div>}
+            {!claimed ?
+              <div className={"w-full"}>
+                <Button handler={handler} text={"CLAIM"} />
+              </div> :
+              <div className='opacity-0'>
+                <Button text={"CLAIM"} />
+              </div>
+            }
           </>
         )
       }
