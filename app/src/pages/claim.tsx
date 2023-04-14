@@ -22,6 +22,8 @@ import { getLootbox, isClaimed } from '@/utils';
 import useFetchEvents from '@/hooks/useFetchEvents';
 import useFetchUserClaims from '@/hooks/useFetchUserClaims';
 import { getCookie } from 'cookies-next'
+import axios from 'axios';
+import { PrizeItem } from '@/lootbox-program-libs/types';
 
 type PrizeCard = { prize: NftPrize | SplPrize | OffChainPrize, name: string, image: string, lootbox: string, value: number };
 
@@ -214,7 +216,7 @@ const Claim = ({ discordAccess }: { discordAccess: string | undefined }) => {
     }
 
     if (!boxNames.length) return;
-    
+
     const txn = await claimAll(
       program,
       boxNames,
@@ -229,6 +231,24 @@ const Claim = ({ discordAccess }: { discordAccess: string | undefined }) => {
       toast.error('Failed to claim prize');
     }
   }
+
+  const handleClaimPrize = async (prize: OffChainPrize) => {
+    try {
+      await axios.post("/api/claim", {
+        access_token: discordAccess,
+        user: wallet.publicKey?.toString(),
+        lootboxName: prize?.lootboxName,
+        prizeIndex: prize?.prizeIndex,
+        itemIndex: prize?.itemIndex,
+      });
+      toast.success('Claimed prize successfully');
+      setReload({});
+    } catch (error) {
+      console.log(error);
+      toast.error('Failed to claim prize');
+    }
+  }
+
 
   return (
     <>
@@ -267,9 +287,13 @@ const Claim = ({ discordAccess }: { discordAccess: string | undefined }) => {
               offChainCards.map((card, index) => {
                 return (
                   <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} claimed={isClaimed(claims, card.prize as OffChainPrize)} handler={() => {
-                    showModal(
-                      <NFTCard key={`modal${index}`} image={card.image} name={card.name} discordAccess={discordAccess} claiming prize={(card.prize as OffChainPrize)} />
-                    )
+                    if (!discordAccess) {
+                      showModal(
+                        <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming />
+                      )
+                    } else {
+                      handleClaimPrize(card.prize as OffChainPrize);
+                    }
                   }} />
                 )
               })
