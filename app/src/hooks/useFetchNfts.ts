@@ -19,7 +19,7 @@ const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftDa
   const [loading, setLoading] = useState(false);
 
   const fetch = useCallback(async () => {
-    if (!wallet.publicKey) {
+    if (!mints && !wallet.publicKey) {
       return;
     }
     setLoading(true);
