@@ -52,7 +52,6 @@ const Claim = () => {
       for (const playerBox of player.lootboxes) {
         const lootbox = getLootbox(playerBox.lootbox, lootboxes);
         if (!lootbox) continue;
-        console.log(playerBox.onChainPrizes);
         for (const onChainPrize of playerBox.onChainPrizes) {
           const { splIndex, amount: prizeAmount } = onChainPrize;
           const { mint, isNft } = lootbox.splVaults[splIndex];

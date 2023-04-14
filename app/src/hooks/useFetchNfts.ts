@@ -19,13 +19,14 @@ const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftDa
   const [loading, setLoading] = useState(false);
 
   const fetch = useCallback(async () => {
-    if (!mints && !wallet.publicKey) {
-      return;
-    }
     setLoading(true);
     try {
       let allNfts;
       if (!mints) {
+        if (!wallet.publicKey) {
+          setLoading(false);
+          return;
+        }
         allNfts = await metaplex.nfts().findAllByOwner({ owner: wallet.publicKey });
       } else {
         allNfts = (await metaplex.nfts().findAllByMintList({ mints })).filter(nft => nft);
