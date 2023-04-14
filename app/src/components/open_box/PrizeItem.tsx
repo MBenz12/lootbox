@@ -50,12 +50,13 @@ export const PrizeItem: React.FC<PrizeItemProps> = ({ icon, title, value, rarity
   return (
     <div className={`flex w-[280px] box-content rounded-[10px] bg-[#28282840] p-2 gap-5 transition-shadow duration-300 ` + getRarityBoxShadowClass()}>
       <div className={"rounded-[5px] w-[90px] h-[90px] aspect-square " + getRarityShadowClass()}>
-        <LazyLoadImage
+        {icon && <LazyLoadImage
           src={icon}
           height={90}
           className='w-full h-auto aspect-square object-cover'
           effect='blur'
-        />
+          alt=''
+        />}
       </div>
       <div className="flex flex-col justify-center">
         <p className="bg-clip-text text-transparent text-[16px] bg-gradient-card-title">{title}</p>
