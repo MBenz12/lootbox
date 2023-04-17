@@ -187,6 +187,11 @@ export default function Lootbox() {
 
   const [showPrize, setShowPrize] = useState(false);
 
+  const handlePlay2 = () => {
+    setOpenedPrize(prizes[2])
+    setShowPrize(!showPrize);
+  }
+
   return (
     <>
       <Head>
@@ -196,8 +201,8 @@ export default function Lootbox() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="px-5 lg:px-32">
-        <BoxWrapper boxName={"Free"} boxNameColor={"#E93E67"} openButtonHandler={() => handlePlay()} boxPrice={222}>
-          <Box showPrize={showPrize} prize={openedPrize} boxImage={"/images/opened_lootbox.png"} />
+        <BoxWrapper boxName={"Free"} boxNameColor={"#E93E67"} prizes={prizes} openedPrize={openedPrize} isRoll={showPrize} openButtonHandler={() => handlePlay2()} boxPrice={222}>
+          <Box boxImage={"/images/opened_lootbox.png"} />
         </BoxWrapper>
         {<Prizes prizes={prizes} lootbox={lootbox} />}
         <LiveFeed events={events} />

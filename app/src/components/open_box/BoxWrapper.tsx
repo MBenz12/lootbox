@@ -2,16 +2,21 @@ import { ReactNode, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/open_box/Button";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { OpenedPrize } from "@/types";
+import RollingBanner from "@/components/open_box/RollingBanner";
 
 type Props = {
   children: ReactNode;
   boxName: string;
   boxNameColor?: string;
+  prizes: OpenedPrize[];
+  openedPrize?: OpenedPrize;
+  isRoll: boolean;
   openButtonHandler: () => void;
   boxPrice: number;
 }
 
-const BoxWrapper = ({children, boxName, boxNameColor="#fff", openButtonHandler, boxPrice}: Props) => {
+const BoxWrapper = ({children, boxName, boxNameColor="#fff", prizes, openedPrize, isRoll, openButtonHandler, boxPrice}: Props) => {
   const divider = "after:absolute after:bottom-0 after:left-0 after:right-0 after:w-[100%] after:h-[2px] after:bg-gradient-purple-divider"
   const canvasRef = useRef<HTMLDivElement>(null);
   const [canvasWidth, setCanvasWidth] = useState(0);
@@ -31,6 +36,11 @@ const BoxWrapper = ({children, boxName, boxNameColor="#fff", openButtonHandler, 
         <p className={"font-akira"}>BOX</p>
       </div>
       {children}
+
+      {isRoll && <RollingBanner prizes={prizes} winnerIndex={
+        prizes.findIndex(prize => prize.image === openedPrize?.image && prize.rarity === openedPrize.rarity)
+      } />}
+
       <div className={"flex flex-col place-items-center my-5"}>
         <Button text={"Open"} handler={openButtonHandler} />
         <div className={"flex gap-1 place-items-center"}>
@@ -38,6 +48,8 @@ const BoxWrapper = ({children, boxName, boxNameColor="#fff", openButtonHandler, 
           <p className={"opacity-50"}>{boxPrice} ZEN</p>
         </div>
       </div>
+
+      {/* Background particles */}
       {
         canvasRef.current &&
         Array.from({ length: 80 }).map((_, i) => (
@@ -65,6 +77,7 @@ const BoxWrapper = ({children, boxName, boxNameColor="#fff", openButtonHandler, 
           />
         ))
       }
+
     </div>
   );
 };
