@@ -42,9 +42,9 @@ const RollingBanner = ({prizes, winnerIndex}: {prizes: OpenedPrize[], winnerInde
       tl.to(rollerContainer.current, {
         // calculate the offset of the winning prize
         x: -(nftWidth + 5) * (winningPrizeIndex - 1),
-        delay: 0.8,
+        delay: 0.5,
         duration: 5,
-        ease: "circ.out",
+        ease: "circ.inOut",
         onComplete: () => {
           if (rollerContainer.current === null) return;
           const getRarityColor = () => {
