@@ -19,7 +19,7 @@ const RollingBanner = ({ prizes, winnerIndex }: { prizes: OpenedPrize[], winnerI
       //   .map((_, i) => prizes[i % prizes.length])
       //   .sort(() => Math.random() - 0.5);
 
-      const duplicatedPrizes = Array.from({ length: 30 }, (_, i) => prizes[i % prizes.length]);
+      const duplicatedPrizes = Array.from({ length: prizes.length * 11 }, (_, i) => prizes[i % prizes.length]);
       const winningPrizeIndex = winnerIndex + prizes.length * 10;
 
       // append duplicated prizes to roller container

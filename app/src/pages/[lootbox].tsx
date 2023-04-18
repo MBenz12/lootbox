@@ -187,10 +187,10 @@ export default function Lootbox() {
 
   const [showPrize, setShowPrize] = useState(false);
 
-  // const handlePlay2 = () => {
-  //   setOpenedPrize(prizes[2])
-  //   setShowPrize(!showPrize);
-  // }
+  const handlePlay2 = () => {
+    setOpenedPrize(prizes[2])
+    setShowPrize(!showPrize);
+  }
 
   return (
     <>
