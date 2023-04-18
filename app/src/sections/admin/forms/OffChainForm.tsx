@@ -104,7 +104,7 @@ const OffChainForm = ({
       <div className={"flex flex-col gap-2 items-center mt-auto justify-center mb-3"}>
         <p className={"opacity-50 text-[14px] cursor-pointer w-fit"} onClick={() => {
           const newPrizes = prizes.map((prizes) => prizes.map(prize => ({ ...prize })));
-          const { name, image } = prizeItems[0];
+          const { name, image } = prizeItems.filter(prize => !prize.isDeleted)[0];
           newPrizes[currentRarity].push({
             itemIndex: 0, name, image,
           });
