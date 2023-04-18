@@ -38,6 +38,7 @@ export type OffChainPrize = {
   unlimited?: boolean;
   remainigItems?: number;
   lootbox?: boolean;
+  isDeleted?: boolean;
 };
 
 export type Claim = {
