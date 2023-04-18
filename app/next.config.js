@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-<<<<<<< HEAD
   images: {
     remotePatterns: [
       {
@@ -9,7 +8,7 @@ const nextConfig = {
         hostname: "**",
       },
     ],
-=======
+  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       // Configure the fallback object
@@ -26,7 +25,6 @@ const nextConfig = {
     }
 
     return config;
->>>>>>> dev
   },
 }
 
