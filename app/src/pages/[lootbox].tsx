@@ -20,6 +20,7 @@ import { PlayEvent } from '@/lootbox-program-libs/types';
 import { getLootboxPda } from '@/lootbox-program-libs/utils';
 import Box from "@/components/open_box/Box";
 import BoxWrapper from "@/components/open_box/BoxWrapper";
+import { getTokenIndex } from '@/utils';
 
 export default function Lootbox() {
   const router = useRouter()
@@ -123,7 +124,9 @@ export default function Lootbox() {
     setPrevPrizes(prizes);
   }, [reload]);
 
+  // console.log(prizes, prevPrizes);
   const [openedPrize, setOpenedPrize] = useState<OpenedPrize>();
+  const [opening, setOpening] = useState(false);
 
   const handlePlay = async () => {
     if (!wallet.publicKey || !program || !lootbox) {
@@ -131,6 +134,7 @@ export default function Lootbox() {
     }
 
     setShowPrize(false);
+    setOpening(true);
 
     const txn = await play(
       program,
@@ -145,6 +149,7 @@ export default function Lootbox() {
       toast.success('Played successfully');
     } else {
       toast.error('Failed to play');
+      setOpening(false);
     }
   }
 
@@ -153,6 +158,7 @@ export default function Lootbox() {
       const listenerId = program.addEventListener('PlayEvent', (event: PlayEvent) => {
         setReload({});
         setTimeout(() => setEvent(event), 2000);
+        setOpening(false);
       });
       console.log('listener: ', listenerId);
     }
@@ -196,7 +202,7 @@ export default function Lootbox() {
   const [showPrize, setShowPrize] = useState(false);
 
   const handlePlay2 = () => {
-    setOpenedPrize(prizes[2])
+    setOpenedPrize(prizes[1])
     setShowPrize(!showPrize);
   }
 
@@ -209,7 +215,16 @@ export default function Lootbox() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="px-5 lg:px-32">
-        <BoxWrapper boxName={"Free"} boxNameColor={"#E93E67"} prizes={prevPrizes} openedPrize={openedPrize} isRoll={showPrize} openButtonHandler={() => handlePlay()} boxPrice={222}>
+        <BoxWrapper
+          boxName={"Free"}
+          boxNameColor={"#E93E67"}
+          prizes={prevPrizes}
+          opening={opening}
+          openedPrize={openedPrize}
+          isRoll={showPrize}
+          openButtonHandler={() => handlePlay()}
+          boxPrice={lootbox ? lootbox.ticketPrice.toNumber() : 0} tokenIndex={lootbox ? getTokenIndex(lootbox.ticketMint) : 0}
+        >
           <Box boxImage={"/images/opened_lootbox.png"} />
         </BoxWrapper>
         {<Prizes prizes={prizes} lootbox={lootbox} />}

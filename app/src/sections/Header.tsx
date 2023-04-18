@@ -36,7 +36,7 @@ export const Header: React.FC = () => {
 
   return (
     <header className='flex justify-center'>
-      <div className="flex w-full container place-items-center h-[100px] bg-[rgba(18,_18,_19,_0.6)]">
+      <div className="flex w-full container place-items-center h-[100px]">
         <Link href={"/"} className="bg-gray-600 px-10 py-2 rounded-[15px]">
           <p>Logo</p>
         </Link>
