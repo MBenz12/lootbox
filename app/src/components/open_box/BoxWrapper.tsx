@@ -73,34 +73,7 @@ const BoxWrapper = ({children, boxName, boxNameColor="#fff", prizes, openedPrize
       </div>
 
       {/* Background particles */}
-      {
-        canvasRef.current &&
-        Array.from({ length: 80 }).map((_, i) => (
-          <motion.span
-            initial={{
-              opacity: 0
-            }}
-            animate={{
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              delay: Math.random() * 2,
-              duration: 3 + Math.random() * 5,
-              repeat: Infinity
-            }}
-            style={{
-              top: Math.random() * canvasHeight,
-              left: Math.random() * canvasWidth,
-              width: 4,
-              height: 4,
-              zIndex: -1
-            }}
-            className={"absolute bg-white rounded-full"}
-            key={i}
-          />
-        ))
-      }
-
+      {canvasRef.current && bgMotions}
     </div>
   );
 };

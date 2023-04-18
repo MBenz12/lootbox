@@ -4,7 +4,7 @@ import { OpenedPrize } from "@/types";
 
 const NFT_ID_PREFIX = "nft_item";
 
-const RollingBanner = ({prizes, winnerIndex}: {prizes: OpenedPrize[], winnerIndex: number}) => {
+const RollingBanner = ({ prizes, winnerIndex }: { prizes: OpenedPrize[], winnerIndex: number }) => {
   if (winnerIndex >= prizes.length) throw new Error("winnerIndex must be less than prizes.length");
   const bannerWrapper = useRef<HTMLDivElement>(null);
   const rollerContainer = useRef<HTMLDivElement>(null);
@@ -19,7 +19,7 @@ const RollingBanner = ({prizes, winnerIndex}: {prizes: OpenedPrize[], winnerInde
       //   .map((_, i) => prizes[i % prizes.length])
       //   .sort(() => Math.random() - 0.5);
 
-      const duplicatedPrizes = Array.from({length: 30}, (_, i) => prizes[i % prizes.length]);
+      const duplicatedPrizes = Array.from({ length: 30 }, (_, i) => prizes[i % prizes.length]);
       const winningPrizeIndex = winnerIndex + prizes.length * 10;
 
       // append duplicated prizes to roller container
@@ -72,7 +72,7 @@ const RollingBanner = ({prizes, winnerIndex}: {prizes: OpenedPrize[], winnerInde
           {
             prizes.map((prize, nftIdIndex) => (
               // <Image id={`${NFT_ID_PREFIX + nftIdIndex}`} key={nftIdIndex} src={prize.image} alt={`nft-${nftIdIndex}`} width={130} height={130} className={"aspect-square rounded-md transition-all duration-[1s]"} />
-              <div key={nftIdIndex} id={`${NFT_ID_PREFIX + nftIdIndex}`} className={"w-[130px] h-[130px] rounded-md bg-no-repeat bg-center bg-cover transition-all duration-[1s]"} style={{backgroundImage: `url(${prize.image})`}}></div>
+              <div key={nftIdIndex} id={`${NFT_ID_PREFIX + nftIdIndex}`} className={"w-[130px] h-[130px] rounded-md bg-no-repeat bg-center bg-cover transition-all duration-[1s]"} style={{ backgroundImage: `url(${prize.image})` }}></div>
             ))
           }
         </div>
