@@ -5,9 +5,12 @@ import connect from '@/db/connect';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Array<string>>
+  res: NextApiResponse<Array<{ itemIndex: number, url: string }>>
 ) {
   await connect();
   const prizes = await Prize.find();
-  res.status(200).json(prizes.map(prize => prize.url));
+  res.status(200).json(prizes.map((prize, index) => ({ itemIndex: index, ...prize }))
+    .filter((prize => !prize.isDeleted))
+    .map((prize) => ({ itemIndex: prize.itemIndex, url: prize.url }))
+  );
 }

@@ -14,7 +14,7 @@ import { OffChainItem, Rarity } from '@/lootbox-program-libs/types';
 import { BN } from '@project-serum/anchor';
 import { getMint } from '@solana/spl-token';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { TOKENS } from '@/config';
 import useFetchLootbox from '@/hooks/useFetchLootbox';
