@@ -21,7 +21,7 @@ const RollingBanner = ({ prizes, winnerIndex }: { prizes: OpenedPrize[], winnerI
 
       const duplicatedPrizes = Array.from({ length: prizes.length * 11 }, (_, i) => prizes[i % prizes.length]);
       const winningPrizeIndex = winnerIndex + prizes.length * 10;
-
+      console.log(winnerIndex, prizes.length, winningPrizeIndex);
       // append duplicated prizes to roller container
       duplicatedPrizes.forEach((prize, nftIdIndex) => {
         const nftItem = document.createElement("div");

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 import { Prizes } from '@/sections/open_box/Prizes'
 import Head from 'next/head'
@@ -32,6 +33,7 @@ export default function Lootbox() {
   const [event, setEvent] = useState<PlayEvent>();
   const { events } = useFetchEvents(reload);
   const { prizes: prizeItems } = useFetchPrizes(reload);
+
   const mints: Array<PublicKey> = useMemo(() => lootbox ? lootbox.splVaults.filter(splVault =>
     splVault.isNft && splVault.mint.toString() !== PublicKey.default.toString()
   ).map((splVault) => splVault.mint) : [], [lootbox]);
@@ -76,13 +78,15 @@ export default function Lootbox() {
     return { nftPrizes, splPrizes, offChainPrizes };
   }, [lootbox, prizeItems, lootboxNfts]);
 
-  const prizes = useMemo(() => {
-    const prizes: Array<WinnablePrize> = [];
+  const [prevPrizes, setPrevPrizes] = useState<Array<WinnablePrize>>([]);
+  const [prizes, setPrizes] = useState<Array<WinnablePrize>>([]);
+  useEffect(() => {
+    const newPrizes: Array<WinnablePrize> = [];
     for (let rarity = 0; rarity < 4; rarity++) {
       for (const prize of nftPrizes[rarity]) {
         if (!lootboxNfts[prize.index]) continue;
         const { name, image, floorPrice } = lootboxNfts[prize.index];
-        prizes.push({
+        newPrizes.push({
           rarity,
           name,
           image,
@@ -92,7 +96,7 @@ export default function Lootbox() {
       }
       for (const prize of splPrizes[rarity]) {
         const { symbol, image } = TOKENS[prize.index];
-        prizes.push({
+        newPrizes.push({
           rarity,
           name: symbol,
           lootbox: prize.lootboxName || '',
@@ -103,7 +107,7 @@ export default function Lootbox() {
       for (const prize of offChainPrizes[rarity]) {
         if (!prizeItems[prize.itemIndex]) continue;
         const { name, image } = prizeItems[prize.itemIndex];
-        prizes.push({
+        newPrizes.push({
           rarity,
           name,
           image,
@@ -112,8 +116,12 @@ export default function Lootbox() {
         })
       }
     }
-    return prizes;
+    setPrizes(newPrizes);
   }, [nftPrizes, splPrizes, offChainPrizes, lootboxNfts, prizeItems]);
+
+  useEffect(() => {
+    setPrevPrizes(prizes);
+  }, [reload]);
 
   const [openedPrize, setOpenedPrize] = useState<OpenedPrize>();
 
@@ -201,7 +209,7 @@ export default function Lootbox() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="px-5 lg:px-32">
-        <BoxWrapper boxName={"Free"} boxNameColor={"#E93E67"} prizes={prizes} openedPrize={openedPrize} isRoll={showPrize} openButtonHandler={() => handlePlay2()} boxPrice={222}>
+        <BoxWrapper boxName={"Free"} boxNameColor={"#E93E67"} prizes={prevPrizes} openedPrize={openedPrize} isRoll={showPrize} openButtonHandler={() => handlePlay()} boxPrice={222}>
           <Box boxImage={"/images/opened_lootbox.png"} />
         </BoxWrapper>
         {<Prizes prizes={prizes} lootbox={lootbox} />}
