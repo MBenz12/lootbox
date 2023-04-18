@@ -8,8 +8,11 @@ export default async function handler(
   res: NextApiResponse<string>
 ) {
   const { itemIndex } = req.body;
-  const prizes = await Prize.find();
   await connect();
-  await Prize.findOneAndUpdate(prizes[itemIndex], { isDeleted: true });
+  const prizes = await Prize.find();
+  const prize = await Prize.findOne({url: prizes[itemIndex].url});
+  prize.isDeleted = true;
+  await prize.save();
+  console.log(prize);
   res.status(200).json("success");
 }
