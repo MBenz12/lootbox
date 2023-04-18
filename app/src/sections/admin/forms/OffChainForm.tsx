@@ -52,7 +52,7 @@ const OffChainForm = ({
         <div key={index} className={"flex gap-2 my-2 items-center"}>
           <ImageDropdown
             currentItem={prize}
-            items={prizeItems}
+            items={prizeItems.filter((prize) => !prize.isDeleted)}
             setCurrentItem={(item: OffChainPrize) => {
               if (prize.lootbox) return;
               const newPrizes = prizes.map((prizes) => prizes.map(prize => ({ ...prize })));
