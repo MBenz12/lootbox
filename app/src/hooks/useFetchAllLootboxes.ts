@@ -3,7 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 import useProgram from './useProgram';
 
 const useFetchAllLootboxes = (reload: {}): { lootboxes: Array<Lootbox>, loading: boolean } => {
-  const program = useProgram();
+  const [generate] = useState(true);
+  const program = useProgram(generate);
   const [lootboxes, setLootboxes] = useState<Array<Lootbox>>([]);
   const [loading, setLoading] = useState(false);
 

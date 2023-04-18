@@ -162,14 +162,16 @@ pub mod lootbox {
             .iter()
             .position(|x| x.mint == prize_mint)
             .unwrap();
-        lootbox.prize_items.push(PrizeItem {
-            on_chain_item: Some(OnChainItem {
-                spl_index: index as u8,
-                amount,
-            }),
-            off_chain_item: None,
-            rarity,
-        });
+        if lootbox.spl_vaults[index].amount >= amount {
+            lootbox.prize_items.push(PrizeItem {
+                on_chain_item: Some(OnChainItem {
+                    spl_index: index as u8,
+                    amount,
+                }),
+                off_chain_item: None,
+                rarity,
+            });
+        }
 
         Ok(())
     }
@@ -178,6 +180,7 @@ pub mod lootbox {
         let lootbox = &mut ctx.accounts.lootbox;
         if amount == 0 {
             lootbox.prize_items.remove(index as usize);
+            update_drop_percents(lootbox);
         } else {
             let mut on_chain_item = lootbox.prize_items[index as usize].on_chain_item.unwrap();
             on_chain_item.amount = amount;
@@ -202,6 +205,7 @@ pub mod lootbox {
         if let Some(index) = index {
             if total_items == 0 {
                 lootbox.prize_items.remove(index);
+                update_drop_percents(lootbox);
             } else {
                 let mut off_chain_item = lootbox.prize_items[index].off_chain_item.unwrap();
                 off_chain_item.total_items = total_items;
@@ -347,12 +351,16 @@ pub mod lootbox {
 
         let lootbox = &mut ctx.accounts.lootbox;
 
+        update_drop_percents(lootbox);
+
         let prize_item = lootbox.prize_items[prize_index];
         if let Some(on_chain_item) = prize_item.on_chain_item {
             lootbox.prize_items.remove(prize_index);
             player.lootboxes[lootbox_index]
                 .on_chain_prizes
                 .push(on_chain_item);
+            let spl_index = on_chain_item.spl_index as usize;
+            lootbox.spl_vaults[spl_index].amount = 0;
         }
         if let Some(mut off_chain_item) = prize_item.off_chain_item {
             player.lootboxes[lootbox_index]

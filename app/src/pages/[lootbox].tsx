@@ -114,7 +114,7 @@ export default function Lootbox() {
     }
     return prizes;
   }, [nftPrizes, splPrizes, offChainPrizes, lootboxNfts, prizeItems]);
-  
+
   const [openedPrize, setOpenedPrize] = useState<OpenedPrize>();
 
   const handlePlay = async () => {
@@ -143,8 +143,8 @@ export default function Lootbox() {
   useEffect(() => {
     if (program) {
       const listenerId = program.addEventListener('PlayEvent', (event: PlayEvent) => {
-        setEvent(event);
         setReload({});
+        setTimeout(() => setEvent(event), 2000);
       });
       console.log('listener: ', listenerId);
     }

@@ -66,7 +66,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const { lootbox } = useFetchLootbox(name, reload);
   
   const mints: Array<PublicKey> = useMemo(() => lootbox ? lootbox.splVaults.filter(splVault =>
-    splVault.isNft && splVault.mint.toString() !== PublicKey.default.toString()
+    splVault.isNft && splVault.mint.toString() !== PublicKey.default.toString() && splVault.amount.toNumber() > 0
   ).map((splVault) => splVault.mint) : [], [lootbox]);
 
   const { nfts: lootboxNfts } = useFetchNfts(reload, mints);
@@ -667,6 +667,11 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
               onChange={(e) => {
                 const newRarities = rarities.map(rarity => ({ ...rarity }));
                 newRarities[currentRarity].dropPercent = (parseFloat(e.target.value) || 0.0) * 100;
+                let remaining = 10000;
+                for (let i = 1; i < 4; i++) {
+                  remaining -= newRarities[i].dropPercent;
+                }
+                newRarities[0].dropPercent = remaining;
                 setRarities(newRarities);
               }}
               label={"Drop %"}
@@ -686,7 +691,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
             />
           </div>
           <div className={"flex ml-auto justify-center items-end gap-4"}>
-            <Input
+            {/* <Input
               size={"sm"}
               type={"number"}
               name={`${rarityCategories[currentRarity]}.minSOLValue`}
@@ -697,8 +702,8 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
               }}
               label={"Min. SOL Value"}
               value={minSolValues[currentRarity]}
-            />
-            <Button text={"Auto Select"} onClick={handleAutoSelect} />
+            /> */}
+            {/* <Button text={"Auto Select"} onClick={handleAutoSelect} /> */}
             <Button text={"Select NFTs"} onClick={() => {
               // setcurrentRarity(index);
               setAddDialogOpen(true);

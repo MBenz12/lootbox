@@ -4,7 +4,8 @@ import { useCallback, useEffect, useState } from 'react';
 import useProgram from './useProgram';
 
 const useFetchLootbox = (name: string, reload: {}): { lootbox: Lootbox | undefined, loading: boolean } => {
-  const program = useProgram();
+  const [generate] = useState(true);
+  const program = useProgram(generate);
   const [lootbox, setLootbox] = useState<Lootbox>();
   const [loading, setLoading] = useState(false);
 

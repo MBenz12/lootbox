@@ -19,13 +19,14 @@ const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftDa
   const [loading, setLoading] = useState(false);
 
   const fetch = useCallback(async () => {
-    if (!wallet.publicKey) {
-      return;
-    }
     setLoading(true);
     try {
       let allNfts;
       if (!mints) {
+        if (!wallet.publicKey) {
+          setLoading(false);
+          return;
+        }
         allNfts = await metaplex.nfts().findAllByOwner({ owner: wallet.publicKey });
       } else {
         allNfts = (await metaplex.nfts().findAllByMintList({ mints })).filter(nft => nft);
@@ -51,34 +52,41 @@ const useFetchNfts = (reload: {}, mints?: Array<PublicKey>): { nfts: Array<NftDa
       });
       setNfts(nfts);
 
+      let fetchPrices = [];
+      for (let i = 0; i < Object.keys(creators).length; i += 10) {
+        fetchPrices.push(async () => {
+          try {
+            const res = await hsClient.getProjects({ condition: { projectIds: Object.keys(creators).slice(i, i + 10) } });
+            for (const project of res.getProjectStats.project_stats || []) {
+              const creator = project.project_id;
+              creators[creator] = project.floor_price || 0;
+            }            
+          } catch (error) {
+            console.log(error);
+          }
+        });
+      }
+
+      let newNfts = nfts.map(nft => ({ ...nft }));
       await Promise.all(
         allNfts.map(async (nft, index) => {
           try {
             if (!nft || !nft.uri) return;
             const { data } = await axios.get(nft.uri);
             const { image, name } = data;
-            nfts[index].image = image;
-            nfts[index].name = name;
+            newNfts[index].image = image;
+            newNfts[index].name = name;
           } catch (error) {
             // console.log(error);
           }
-        })
+        }).concat(fetchPrices.map(async (fetchPrice) => await fetchPrice()))
       );
 
-      try {
-        const res = await hsClient.getProjects({ condition: { projectIds: Object.keys(creators) } });
-        for (const project of res.getProjectStats.project_stats || []) {
-          const creator = project.project_id;
-          creators[creator] = project.floor_price || 0;
-        }
-
-        for (const nft of nfts) {
-          nft.floorPrice = creators[nft.creator.toString()];
-        }
-        setNfts(nfts);
-      } catch (error) {
-        // console.log(error);
+      for (const nft of newNfts) {
+        nft.floorPrice = creators[nft.creator.toString()];
       }
+      setNfts(newNfts);
+
     } catch (error) {
       console.log(error);
     }

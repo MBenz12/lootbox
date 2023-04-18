@@ -83,3 +83,30 @@ pub fn prevent_suffix_instruction(instruction_sysvar_account: &AccountInfo) -> R
 
     Ok(())
 }
+
+pub fn update_drop_percents(lootbox: &mut Box<Account<Lootbox>>) {
+    for rarity in 1..4 {
+        let index = rarity as usize;
+        if lootbox.rarities[index].drop_percent > 0 {
+            if lootbox.prize_items.iter().any(|x| {
+                if x.rarity == rarity as u8 {
+                    if x.on_chain_item.is_some() {
+                        return true;
+                    }
+                    if let Some(off_chain_item) = x.off_chain_item {
+                        if off_chain_item.total_items > off_chain_item.used_items {
+                            if off_chain_item.unlimited {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }) == false {
+                let drop_percent = lootbox.rarities[index].drop_percent;
+                lootbox.rarities[index].drop_percent = 0;
+                lootbox.rarities[0].drop_percent += drop_percent;
+            }
+        }
+    }
+}

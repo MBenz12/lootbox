@@ -21,10 +21,22 @@ import { toast } from 'react-toastify';
 import { getLootbox, isClaimed } from '@/utils';
 import useFetchEvents from '@/hooks/useFetchEvents';
 import useFetchUserClaims from '@/hooks/useFetchUserClaims';
+import { getCookie } from 'cookies-next'
+import axios from 'axios';
+import { PrizeItem } from '@/lootbox-program-libs/types';
 
 type PrizeCard = { prize: NftPrize | SplPrize | OffChainPrize, name: string, image: string, lootbox: string, value: number };
 
-const Claim = () => {
+export async function getServerSideProps(context: any) {
+  const discord_access = getCookie("discord_access", context);
+  return {
+    props: {
+      discordAccess: discord_access === undefined ? null : discord_access,
+    },
+  };
+}
+
+const Claim = ({ discordAccess }: { discordAccess: string | undefined }) => {
   const program = useProgram();
   const wallet = useWallet();
   const [reload, setReload] = useState({});
@@ -203,6 +215,8 @@ const Claim = () => {
       boxNames.push(prize.lootboxName);
     }
 
+    if (!boxNames.length) return;
+
     const txn = await claimAll(
       program,
       boxNames,
@@ -218,6 +232,24 @@ const Claim = () => {
     }
   }
 
+  const handleClaimPrize = async (prize: OffChainPrize) => {
+    try {
+      await axios.post("/api/claim", {
+        access_token: discordAccess,
+        user: wallet.publicKey?.toString(),
+        lootboxName: prize?.lootboxName,
+        prizeIndex: prize?.prizeIndex,
+        itemIndex: prize?.itemIndex,
+      });
+      toast.success('Claimed prize successfully');
+      setReload({});
+    } catch (error) {
+      console.log(error);
+      toast.error('Failed to claim prize');
+    }
+  }
+
+
   return (
     <>
       <Head>
@@ -226,42 +258,48 @@ const Claim = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="px-5 lg:px-32">
-        <Heading handleClaimAll={handleClaimAll} />
-        <div className={"my-5"}>
-          <p className={"font-bold font-space-mono text-[18px] my-5"}>TOKENS</p>
-          {splCards.map((card, index) => (
-            <div className={"flex place-items-center gap-2"} key={"token" + index}>
-              <img width={16} height={16} className={"w-[16px] h-[16px]"} src={card.image} alt="" />
-              <p className={"font-space-mono"}>{card.value} {card.name}</p>
-              <Button handler={() => handleClaimSpl(card.prize as SplPrize)} text={"CLAIM"} />
-            </div>
-          ))}
+      <div className="flex justify-center">
+        <div className='container'>
+          <Heading handleClaimAll={handleClaimAll} />
+          <div className={"my-5"}>
+            <p className={"font-bold font-space-mono text-[18px] my-5"}>TOKENS</p>
+            {splCards.map((card, index) => (
+              <div className={"flex place-items-center gap-2"} key={"token" + index}>
+                <img width={16} height={16} className={"w-[16px] h-[16px]"} src={card.image} alt="" />
+                <p className={"font-space-mono"}>{card.value} {card.name}</p>
+                <Button handler={() => handleClaimSpl(card.prize as SplPrize)} text={"CLAIM"} />
+              </div>
+            ))}
+          </div>
+          <CardsSection sectionName={'NFTs'}>
+            {
+              nftCards.map((card, index) => {
+                return (
+                  <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} handler={() => {
+                    handleClaimNft(card.prize as NftPrize);
+                  }} />
+                )
+              })
+            }
+          </CardsSection>
+          <CardsSection sectionName={'Other Prizes'}>
+            {
+              offChainCards.map((card, index) => {
+                return (
+                  <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} claimed={isClaimed(claims, card.prize as OffChainPrize)} handler={() => {
+                    if (!discordAccess) {
+                      showModal(
+                        <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming />
+                      )
+                    } else {
+                      handleClaimPrize(card.prize as OffChainPrize);
+                    }
+                  }} />
+                )
+              })
+            }
+          </CardsSection>
         </div>
-        <CardsSection sectionName={'NFTs'}>
-          {
-            nftCards.map((card, index) => {
-              return (
-                <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} handler={() => {
-                  handleClaimNft(card.prize as NftPrize);
-                }} />
-              )
-            })
-          }
-        </CardsSection>
-        <CardsSection sectionName={'Other Prizes'}>
-          {
-            offChainCards.map((card, index) => {
-              return (
-                <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} claimed={isClaimed(claims, card.prize as OffChainPrize)} handler={() => {
-                  showModal(
-                    <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming prize={(card.prize as OffChainPrize)} />
-                  )
-                }} />
-              )
-            })
-          }
-        </CardsSection>
       </div>
       <LiveFeed events={events} />
     </>

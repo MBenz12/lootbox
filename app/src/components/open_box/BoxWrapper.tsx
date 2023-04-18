@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/open_box/Button";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -25,14 +25,37 @@ const BoxWrapper = ({children, boxName, boxNameColor="#fff", prizes, openedPrize
     if (canvasRef.current) {
       setCanvasWidth(canvasRef.current.clientWidth);
       setCanvasHeight(canvasRef.current.clientHeight);
-    }    
+    }
   }, [canvasRef]);
-  
 
+  const bgMotions = useMemo(() => Array.from({ length: 80 }).map((_, i) => (
+    <motion.span
+      initial={{
+        opacity: 0
+      }}
+      animate={{
+        opacity: [0, 1, 0],
+      }}
+      transition={{
+        delay: Math.random() * 2,
+        duration: 3 + Math.random() * 5,
+        repeat: Infinity
+      }}
+      style={{
+        top: Math.random() * canvasHeight,
+        left: Math.random() * canvasWidth,
+        width: 4,
+        height: 4,
+        zIndex: -1
+      }}
+      className={"absolute bg-white rounded-full"}
+      key={i}
+    />
+  )), [canvasHeight, canvasWidth]);
   return (
     <div ref={canvasRef} className={"relative flex flex-col justify-center place-items-center w-full h-auto min-h-[300px] mb-10 overflow-hidden " + divider}>
       <div className={"flex gap-2.5 font-[800] text-5xl uppercase"}>
-        <p className={"font-akira"} style={{color: boxNameColor}}>{boxName}</p>
+        <p className={"font-akira"} style={{ color: boxNameColor }}>{boxName}</p>
         <p className={"font-akira"}>BOX</p>
       </div>
       {children}
