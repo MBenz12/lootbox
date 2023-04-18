@@ -623,7 +623,7 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
         <OffChainPrizeDialog
           setOpen={setOffPrizeDialogOpen}
           setReload={setReload}
-          prizes={prizeItems}
+          prizes={prizeItems.filter((prize) => !prize.isDeleted)}
         />
       }
       {claimDialogOpen &&
