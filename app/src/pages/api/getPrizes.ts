@@ -10,7 +10,6 @@ export default async function handler(
   await connect();
   const prizes = await Prize.find();
   res.status(200).json(prizes.map((prize, index) => ({ itemIndex: index, ...prize }))
-    .filter((prize => !prize.isDeleted))
-    .map((prize) => ({ itemIndex: prize.itemIndex, url: prize.url }))
+    .filter(prize => !prize.isDeleted)    
   );
 }
