@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { OpenedPrize } from "@/types";
 import RollingBanner from "@/components/open_box/RollingBanner";
+import { TOKENS } from '@/config';
 
 type Props = {
   children: ReactNode;
@@ -14,9 +15,22 @@ type Props = {
   isRoll: boolean;
   openButtonHandler: () => void;
   boxPrice: number;
+  tokenIndex: number;
+  opening: boolean;
 }
 
-const BoxWrapper = ({children, boxName, boxNameColor="#fff", prizes, openedPrize, isRoll, openButtonHandler, boxPrice}: Props) => {
+const BoxWrapper = ({
+  children,
+  boxName,
+  boxNameColor = "#fff",
+  prizes,
+  openedPrize,
+  isRoll,
+  openButtonHandler,
+  boxPrice,
+  tokenIndex,
+  opening,
+}: Props) => {
   const divider = "after:absolute after:bottom-0 after:left-0 after:right-0 after:w-[100%] after:h-[2px] after:bg-gradient-purple-divider"
   const canvasRef = useRef<HTMLDivElement>(null);
   const [canvasWidth, setCanvasWidth] = useState(0);
@@ -65,11 +79,13 @@ const BoxWrapper = ({children, boxName, boxNameColor="#fff", prizes, openedPrize
       } />}
 
       <div className={"flex flex-col place-items-center my-5"}>
-        <Button text={"Open"} handler={openButtonHandler} />
-        <div className={"flex gap-1 place-items-center"}>
-          <Image width={18} height={18} src="/images/coin.png" alt="coin" />
-          <p className={"opacity-50"}>{boxPrice} ZEN</p>
-        </div>
+        <Button text={opening ? "Opening..." : "Open"} handler={openButtonHandler} />
+        {!!boxPrice ? <div className={"flex gap-1 place-items-center"}>
+          <Image width={18} height={18} src={TOKENS[tokenIndex].image} alt="coin" />
+          <p className={"opacity-50"}>{boxPrice / TOKENS[tokenIndex].decimals} {TOKENS[tokenIndex].symbol}</p>
+        </div> :
+          <p className={"opacity-50"}>Free</p>
+        }
       </div>
 
       {/* Background particles */}

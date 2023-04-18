@@ -6,6 +6,7 @@ const prizeSchema = new Schema({
     required: true,
     unique: true,
   },
+  isDeleted: Boolean,
 }, { timestamps: true });
 
 export default models.prizes || model('prizes', prizeSchema);

@@ -10,6 +10,10 @@ export const getTokenSymbol = (mint: PublicKey) => {
   return TOKENS[index].symbol;
 }
 
+export const getTokenIndex = (mint: PublicKey) => {
+  return TOKENS.map(token => token.mint.toString()).indexOf(mint.toString());  
+}
+
 export const getUnselectedPrizes = (lootboxNfts: Array<NftData>, nftPrizes: Array<Array<NftPrize>>) => {
   return lootboxNfts.filter((nft, index) => {
     const allPrizes: Array<NftPrize> = [];

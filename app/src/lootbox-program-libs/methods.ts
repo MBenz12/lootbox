@@ -137,7 +137,7 @@ export const addItems = async (
       )
     );
   }
-  let j = 0;
+  console.log(offChainItems);
   for (let item of offChainItems) {
     instructions.push(
       await getAddOffChainItemInstruction(

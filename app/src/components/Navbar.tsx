@@ -3,8 +3,6 @@ import { motion } from "framer-motion"
 import { useRouter } from "next/router";
 import Link from 'next/link';
 import Image from 'next/image';
-import { useWallet } from '@solana/wallet-adapter-react';
-import { getSliceAddress } from '@/utils';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
 
@@ -22,7 +20,6 @@ const NavbarAnchor = ({ active }: { active: boolean }) => {
 export const Navbar: React.FC = () => {
   const location = useRouter();
   const isCurrentPath = (path: string) => location.pathname === path;
-  const wallet = useWallet();
 
   return (
     <>

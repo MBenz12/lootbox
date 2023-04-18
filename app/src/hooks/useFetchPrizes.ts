@@ -9,12 +9,12 @@ const useFetchPrizes = (reload: {}): { prizes: Array<OffChainPrize>, loading: bo
   const fetchPrizes = useCallback(async () => {
     setLoading(true);
     try {
-      const { data: urls } = await axios.get('/api/getPrizes');
-      const prizes = await Promise.all(urls.map((async (url: string, index: number) => {
-        const { data: metadata } = await axios.get(url);
+      const { data } = await axios.get('/api/getPrizes');
+      const prizes = await Promise.all(data.map((async (prize: { itemIndex: number, url: string, }) => {
+        const { data: metadata } = await axios.get(prize.url);
         const list = metadata.image.split('/');
         return {
-          index,
+          itemIndex: prize.itemIndex,
           name: metadata.name,
           image: `https://${list[2]}.ipfs.nftstorage.link/${list[3]}`,
         };

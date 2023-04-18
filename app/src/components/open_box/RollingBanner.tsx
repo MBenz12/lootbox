@@ -10,7 +10,7 @@ const RollingBanner = ({ prizes, winnerIndex }: { prizes: OpenedPrize[], winnerI
   const rollerContainer = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (rollerContainer.current !== null && bannerWrapper.current !== null) {
+    if (rollerContainer.current !== null && bannerWrapper.current !== null && winnerIndex !== -1) {
       const nftWidth = rollerContainer.current.children[0].clientWidth + 75;
       bannerWrapper.current.style.width = `${nftWidth * 3}px`;
 
@@ -21,12 +21,12 @@ const RollingBanner = ({ prizes, winnerIndex }: { prizes: OpenedPrize[], winnerI
 
       const duplicatedPrizes = Array.from({ length: prizes.length * 11 }, (_, i) => prizes[i % prizes.length]);
       const winningPrizeIndex = winnerIndex + prizes.length * 10;
-      console.log(winnerIndex, prizes.length, winningPrizeIndex);
+      // console.log(winnerIndex, prizes.length, winningPrizeIndex);
       // append duplicated prizes to roller container
       duplicatedPrizes.forEach((prize, nftIdIndex) => {
         const nftItem = document.createElement("div");
         nftItem.id = NFT_ID_PREFIX + (nftIdIndex + prizes.length);
-        nftItem.className = "w-[130px] h-[130px] rounded-md bg-no-repeat bg-center bg-cover transition-all duration-[1s]";
+        nftItem.className = "w-[100px] h-[100px] rounded-md bg-no-repeat bg-center bg-cover transition-all duration-[1s]";
         nftItem.style.backgroundImage = `url(${prize.image})`;
         // @ts-ignore
         rollerContainer.current.appendChild(nftItem);
@@ -56,7 +56,8 @@ const RollingBanner = ({ prizes, winnerIndex }: { prizes: OpenedPrize[], winnerI
             ][prizes[winnerIndex]?.rarity || 0];
           };
           const nftItem = rollerContainer.current.children[winningPrizeIndex];
-          nftItem.classList.add("scale-[1.2]");
+          nftItem.classList.add("scale-[2]");
+          nftItem.classList.add("-translate-y-[30%]");          
           // @ts-ignore
           nftItem.style.boxShadow = `0 0 20px 18px ${getRarityColor()}`;
         }
@@ -66,13 +67,16 @@ const RollingBanner = ({ prizes, winnerIndex }: { prizes: OpenedPrize[], winnerI
   }, [prizes, winnerIndex])
 
   return (
-    <div className={"absolute z-10 top-8 left-9 flex flex-col w-full place-items-center gap-5"}>
-      <div id={"banner-wrapper"} ref={bannerWrapper} className={`relative flex place-items-center overflow-hidden h-[300px]`}>
-        <div id={"roller-container"} ref={rollerContainer} className={"flex opacity-0 gap-20 w-[9999999999px] h-[130px]"}>
+    <div className={"absolute z-10 top-8 flex flex-col w-full place-items-center gap-5"}>
+      <div id={"banner-wrapper"} ref={bannerWrapper} className={`relative flex place-items-center overflow-hidden h-[350px]`}>
+        {/* <div className='absolute z-[100] left-8 bottom-[60px] w-20 h-[100px] bg-gradient-to-r from-[#0A0C1C] via-50%'></div> */}
+        <div className='absolute z-[100] -left-[110px] bottom-10 w-[200px] h-[220px] bg-[#120D17] blur-xl'></div>
+        <div className='absolute z-[100] -right-[110px] bottom-10 w-[200px] h-[220px] bg-[#100C16] blur-xl'></div>
+        <div id={"roller-container"} ref={rollerContainer} className={"flex opacity-0 gap-20 w-[9999999999px] h-[100px] mt-0 ml-8"}>
           {
             prizes.map((prize, nftIdIndex) => (
               // <Image id={`${NFT_ID_PREFIX + nftIdIndex}`} key={nftIdIndex} src={prize.image} alt={`nft-${nftIdIndex}`} width={130} height={130} className={"aspect-square rounded-md transition-all duration-[1s]"} />
-              <div key={nftIdIndex} id={`${NFT_ID_PREFIX + nftIdIndex}`} className={"w-[130px] h-[130px] rounded-md bg-no-repeat bg-center bg-cover transition-all duration-[1s]"} style={{ backgroundImage: `url(${prize.image})` }}></div>
+              <div key={nftIdIndex} id={`${NFT_ID_PREFIX + nftIdIndex}`} className={"w-[100px] h-[100px] rounded-md bg-no-repeat bg-center bg-cover transition-all duration-[1s]"} style={{ backgroundImage: `url(${prize.image})` }}></div>
             ))
           }
         </div>

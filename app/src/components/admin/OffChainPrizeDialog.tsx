@@ -8,6 +8,7 @@ import { NFT_STORAGE_TOKEN } from '@/config';
 import axios from 'axios';
 import { OffChainPrize } from '@/types';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import Image from 'next/image';
 
 const client = new NFTStorage({ token: NFT_STORAGE_TOKEN })
 
@@ -24,15 +25,28 @@ const OffChainPrizeDialog = ({
   const [image, setImage] = useState<string>();
   const [file, setFile] = useState<File>();
   const handleUpload = async () => {
-    if (!file) return;
-    const { ipnft } = await client.store({
-      name,
-      image: file,
-      description: ''
-    });
-    const url = `https://${ipnft}.ipfs.nftstorage.link/metadata.json`;
-    await axios.post('/api/storePrize', { url });
-    setReload({});
+    try {
+      if (!file) return;
+      const { ipnft } = await client.store({
+        name,
+        image: file,
+        description: ''
+      });
+      const url = `https://${ipnft}.ipfs.nftstorage.link/metadata.json`;
+      await axios.post('/api/storePrize', { url });
+      setReload({});
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleRemove = async (itemIndex: number) => {
+    try {
+      await axios.post('/api/deletePrize', { itemIndex });
+      setReload({});
+    } catch (error) {
+      console.log(error);
+    }
   }
   return (
     <div className={"fixed z-20 flex justify-center place-items-center top-0 left-0 w-full h-full bg-[rgba(0,0,0,.9)]"} onClick={() => setOpen(false)}>
@@ -81,6 +95,11 @@ const OffChainPrizeDialog = ({
                   src={prize.image}
                   className='rounded-md'
                 />
+              </div>
+              <div className={"cursor-pointer"} onClick={() => {
+                handleRemove(prize.itemIndex);
+              }}>
+                <Image width={18} height={18} className="w-[18px] h-[18px] mt-[5px]" src="/images/remove_icon.svg" alt="remove" />
               </div>
             </div>
           ))}
