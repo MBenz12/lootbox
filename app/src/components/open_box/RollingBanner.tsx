@@ -57,7 +57,7 @@ const RollingBanner = ({ prizes, winnerIndex, onComplete }: { prizes: OpenedPriz
             ][prizes[winnerIndex]?.rarity || 0];
           };
           const nftItem = rollerContainer.current.children[winningPrizeIndex];
-          nftItem.classList.add("scale-[2]");
+          nftItem.classList.add("scale-[1.8]");
           nftItem.classList.add("-translate-y-[30%]");          
           // @ts-ignore
           nftItem.style.boxShadow = `0 0 20px 18px ${getRarityColor()}`;
@@ -69,12 +69,12 @@ const RollingBanner = ({ prizes, winnerIndex, onComplete }: { prizes: OpenedPriz
   }, [prizes, winnerIndex])
 
   return (
-    <div className={"absolute z-10 top-8 flex flex-col w-full place-items-center gap-5"}>
-      <div id={"banner-wrapper"} ref={bannerWrapper} className={`relative flex place-items-center overflow-hidden h-[350px]`}>
+    <div className={"absolute z-30 top-16 flex flex-col w-full place-items-center gap-5"}>
+      <div id={"banner-wrapper"} ref={bannerWrapper} className={`relative flex place-items-center overflow-hidden h-[380px]`}>
         {/* <div className='absolute z-[100] left-8 bottom-[60px] w-20 h-[120px] bg-gradient-to-r from-[#0A0C1C] via-50%'></div> */}
-        <div className='absolute z-[100] -left-[110px] bottom-10 w-[200px] h-[220px] bg-[#120D17] blur-xl'></div>
-        <div className='absolute z-[100] -right-[110px] bottom-10 w-[200px] h-[220px] bg-[#100C16] blur-xl'></div>
-        <div id={"roller-container"} ref={rollerContainer} className={"flex opacity-0 gap-20 w-[9999999999px] h-[120px] mt-0 ml-8"}>
+        <div className='absolute z-[100] -left-[110px] bottom-10 w-[200px] h-[300px] bg-[#120D17] blur-xl'></div>
+        <div className='absolute z-[100] -right-[110px] bottom-10 w-[200px] h-[300px] bg-[#100C16] blur-xl'></div>
+        <div id={"roller-container"} ref={rollerContainer} className={"flex opacity-0 gap-20 w-[9999999999px] h-[120px] mt-5 ml-8"}>
           {
             prizes.map((prize, nftIdIndex) => (
               // <Image id={`${NFT_ID_PREFIX + nftIdIndex}`} key={nftIdIndex} src={prize.image} alt={`nft-${nftIdIndex}`} width={130} height={130} className={"aspect-square rounded-md transition-all duration-[1s]"} />
