@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/open_box/Button";
 import Image from "next/image";
@@ -17,6 +18,7 @@ type Props = {
   boxPrice: number;
   tokenIndex: number;
   opening: boolean;
+  setOpening: (opening: boolean) => void
 }
 
 const BoxWrapper = ({
@@ -30,6 +32,7 @@ const BoxWrapper = ({
   boxPrice,
   tokenIndex,
   opening,
+  setOpening,
 }: Props) => {
   const divider = "after:absolute after:bottom-0 after:left-0 after:right-0 after:w-[100%] after:h-[2px] after:bg-gradient-purple-divider"
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -40,7 +43,22 @@ const BoxWrapper = ({
       setCanvasWidth(canvasRef.current.clientWidth);
       setCanvasHeight(canvasRef.current.clientHeight);
     }
-  }, [canvasRef]);
+  }, [canvasRef.current]);
+
+  useEffect(() => {
+    const handleWindowResize = () => {
+      if (canvasRef.current) {
+        setCanvasWidth(canvasRef.current.clientWidth);
+        setCanvasHeight(canvasRef.current.clientHeight);
+      }
+    };
+
+    window.addEventListener('resize', handleWindowResize);
+
+    return () => {
+      window.removeEventListener('resize', handleWindowResize);
+    };
+  });
 
   const bgMotions = useMemo(() => Array.from({ length: 80 }).map((_, i) => (
     <motion.span
@@ -74,9 +92,13 @@ const BoxWrapper = ({
       </div>
       {children}
 
-      {isRoll && <RollingBanner prizes={prizes} winnerIndex={
+      {isRoll && <RollingBanner 
+      prizes={prizes} 
+      winnerIndex={
         prizes.findIndex(prize => prize.image === openedPrize?.image && prize.rarity === openedPrize.rarity)
-      } />}
+      } 
+      onComplete={() => setOpening(false)}
+      />}
 
       <div className={"flex flex-col place-items-center my-5"}>
         <Button text={opening ? "Opening..." : "Open"} handler={openButtonHandler} />

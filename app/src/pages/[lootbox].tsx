@@ -157,8 +157,7 @@ export default function Lootbox() {
     if (program) {
       const listenerId = program.addEventListener('PlayEvent', (event: PlayEvent) => {
         setReload({});
-        setTimeout(() => setEvent(event), 2000);
-        setOpening(false);
+        setEvent(event);
       });
       console.log('listener: ', listenerId);
     }
@@ -224,6 +223,7 @@ export default function Lootbox() {
           isRoll={showPrize}
           openButtonHandler={() => handlePlay()}
           boxPrice={lootbox ? lootbox.ticketPrice.toNumber() : 0} tokenIndex={lootbox ? getTokenIndex(lootbox.ticketMint) : 0}
+          setOpening={setOpening}
         >
           <Box boxImage={"/images/opened_lootbox.png"} />
         </BoxWrapper>
