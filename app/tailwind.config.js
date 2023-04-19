@@ -8,8 +8,8 @@ module.exports = {
     extend: {
       fontFamily: {
         "akira": ["Akira Expanded", "sans-serif"],
-        "space-mono": ["Space Mono", "monospace"],
-        "aber-mono": ["Aber Mono", "monospace"],
+        "space-mono": ["Space Grotesk", "monospace"],
+        "aber-mono": ['Space Grotesk', "sans-serif"],
         "america-mono": ["GT America Mono", "monospace"],
       },
       dropShadow: () => ({
