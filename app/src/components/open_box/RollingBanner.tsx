@@ -1,17 +1,24 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import gsap from 'gsap';
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { OpenedPrize } from "@/types";
 
 const NFT_ID_PREFIX = "nft_item";
 
-const RollingBanner = ({ prizes, winnerIndex, onComplete }: { prizes: OpenedPrize[], winnerIndex: number, onComplete: () => void }) => {
+const RollingBanner = ({ prizes, winnerIndex, rolling, onComplete }: { prizes: OpenedPrize[], winnerIndex: number, rolling: boolean, onComplete: () => void }) => {
   if (winnerIndex >= prizes.length) throw new Error("winnerIndex must be less than prizes.length");
   const bannerWrapper = useRef<HTMLDivElement>(null);
   const rollerContainer = useRef<HTMLDivElement>(null);
+  const [rollerPrizes, setRollerPrizes] = useState<Array<OpenedPrize>>(prizes);
 
   useEffect(() => {
-    if (rollerContainer.current !== null && bannerWrapper.current !== null && winnerIndex !== -1) {
+    if (rolling) {
+      setRollerPrizes(prizes);
+    }
+  }, [prizes, rolling]);
+
+  useEffect(() => {
+    if (rollerContainer.current !== null && bannerWrapper.current !== null && winnerIndex !== -1 && rolling) {
       const nftWidth = rollerContainer.current.children[0].clientWidth + 75;
       bannerWrapper.current.style.width = `${nftWidth * 3}px`;
 
@@ -20,8 +27,8 @@ const RollingBanner = ({ prizes, winnerIndex, onComplete }: { prizes: OpenedPriz
       //   .map((_, i) => prizes[i % prizes.length])
       //   .sort(() => Math.random() - 0.5);
 
-      const duplicatedPrizes = Array.from({ length: prizes.length * 11 }, (_, i) => prizes[i % prizes.length]);
-      const winningPrizeIndex = winnerIndex + prizes.length * 10;
+      const duplicatedPrizes = Array.from({ length: prizes.length + 100 }, (_, i) => prizes[i % prizes.length]);
+      const winningPrizeIndex = winnerIndex + 100;
       console.log(winnerIndex, prizes.length, winningPrizeIndex);
       // append duplicated prizes to roller container
       duplicatedPrizes.forEach((prize, nftIdIndex) => {
@@ -66,7 +73,7 @@ const RollingBanner = ({ prizes, winnerIndex, onComplete }: { prizes: OpenedPriz
       })
 
     }
-  }, [prizes, winnerIndex])
+  }, [prizes, winnerIndex, rolling])
 
   return (
     <div className={"absolute z-30 top-8 flex flex-col w-full place-items-center gap-5"}>
@@ -76,7 +83,7 @@ const RollingBanner = ({ prizes, winnerIndex, onComplete }: { prizes: OpenedPriz
         <div className='absolute z-[100] -right-[110px] bottom-10 w-[200px] h-[300px] bg-[#0b0c1a] blur-xl'></div>
         <div id={"roller-container"} ref={rollerContainer} className={"flex opacity-0 gap-20 w-[9999999999px] h-[120px] mt-5 ml-8"}>
           {
-            prizes.map((prize, nftIdIndex) => (
+            rollerPrizes.map((prize, nftIdIndex) => (
               // <Image id={`${NFT_ID_PREFIX + nftIdIndex}`} key={nftIdIndex} src={prize.image} alt={`nft-${nftIdIndex}`} width={130} height={130} className={"aspect-square rounded-md transition-all duration-[1s]"} />
               <div key={nftIdIndex} id={`${NFT_ID_PREFIX + nftIdIndex}`} className={"w-[120px] h-[120px] rounded-md bg-no-repeat bg-center bg-cover transition-all duration-[1s]"} style={{ backgroundImage: `url(${prize.image})` }}></div>
             ))

@@ -36,7 +36,7 @@ const NftCard: React.FC<NftCardProps> = ({ name, box, image, claiming, handler, 
         ) : (
           <>
             <div className={"flex flex-col place-items-center mt-2"}>
-              <p className={"text-[14px]"}>{name}</p>
+              <p className={"text-[14px] truncate w-[150px] text-center"}>{name}</p>
               <p className={"opacity-50 text-[12px]"}>{box}</p>
             </div>
             {!claimed ?

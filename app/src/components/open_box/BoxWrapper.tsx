@@ -13,12 +13,13 @@ type Props = {
   boxNameColor?: string;
   prizes: OpenedPrize[];
   openedPrize?: OpenedPrize;
-  isRoll: boolean;
+  rolling: boolean;
+  showPrize: boolean;
   openButtonHandler: () => void;
   boxPrice: number;
   tokenIndex: number;
   opening: boolean;
-  setOpening: (opening: boolean) => void
+  onComplete: () => void
 }
 
 const BoxWrapper = ({
@@ -27,12 +28,13 @@ const BoxWrapper = ({
   boxNameColor = "#fff",
   prizes,
   openedPrize,
-  isRoll,
+  rolling,
+  showPrize,
   openButtonHandler,
   boxPrice,
   tokenIndex,
   opening,
-  setOpening,
+  onComplete,
 }: Props) => {
   const divider = "after:absolute after:bottom-0 after:left-0 after:right-0 after:w-[100%] after:h-[2px] after:bg-gradient-purple-divider"
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -92,12 +94,13 @@ const BoxWrapper = ({
       </div>
       {children}
 
-      {isRoll && <RollingBanner 
-      prizes={prizes} 
-      winnerIndex={
-        prizes.findIndex(prize => prize.image === openedPrize?.image && prize.rarity === openedPrize.rarity)
-      } 
-      onComplete={() => setOpening(false)}
+      {showPrize && <RollingBanner
+        prizes={prizes}
+        winnerIndex={
+          prizes.findIndex(prize => prize.image === openedPrize?.image && prize.rarity === openedPrize.rarity)
+        }
+        rolling={rolling}
+        onComplete={onComplete}
       />}
 
       <div className={"flex flex-col place-items-center my-5"}>

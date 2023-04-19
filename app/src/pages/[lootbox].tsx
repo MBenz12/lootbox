@@ -79,7 +79,6 @@ export default function Lootbox() {
     return { nftPrizes, splPrizes, offChainPrizes };
   }, [lootbox, prizeItems, lootboxNfts]);
 
-  const [prevPrizes, setPrevPrizes] = useState<Array<WinnablePrize>>([]);
   const [prizes, setPrizes] = useState<Array<WinnablePrize>>([]);
   useEffect(() => {
     const newPrizes: Array<WinnablePrize> = [];
@@ -120,11 +119,6 @@ export default function Lootbox() {
     setPrizes(newPrizes);
   }, [nftPrizes, splPrizes, offChainPrizes, lootboxNfts, prizeItems]);
 
-  useEffect(() => {
-    setPrevPrizes(prizes);
-  }, [reload]);
-
-  // console.log(prizes, prevPrizes);
   const [openedPrize, setOpenedPrize] = useState<OpenedPrize>();
   const [opening, setOpening] = useState(false);
 
@@ -156,8 +150,7 @@ export default function Lootbox() {
   useEffect(() => {
     if (program) {
       const listenerId = program.addEventListener('PlayEvent', (event: PlayEvent) => {
-        setReload({});
-        setTimeout(() => setEvent(event), 2000);
+        setEvent(event);
       });
       console.log('listener: ', listenerId);
     }
@@ -192,19 +185,29 @@ export default function Lootbox() {
       }
 
       setOpenedPrize({ image: data.image, rarity })
+      setRolling(true);
       setShowPrize(true);
-    } else {
-      setShowPrize(false);
-    }
+      console.log('start rolling!');
+    } 
   }, [event, lootbox, lootboxNfts, prizeItems, wallet.publicKey]);
 
   const [showPrize, setShowPrize] = useState(false);
+  const [rolling, setRolling] = useState(false)
 
   const handlePlay2 = () => {
-    setOpenedPrize(prizes[1])
-    setShowPrize(!showPrize);
+    setOpening(true);
+    setOpenedPrize(prizes[1]);
+    setRolling(true);
+    setShowPrize(false);
+    setTimeout(() => setShowPrize(true), 1000);
   }
 
+  const onComplete = () => {
+    setOpening(false);
+    setRolling(false);
+    setReload({});
+    setEvent(undefined);
+  }
   return (
     <>
       <Head>
@@ -217,13 +220,14 @@ export default function Lootbox() {
         <BoxWrapper
           boxName={"Free"}
           boxNameColor={"#E93E67"}
-          prizes={prevPrizes}
+          prizes={prizes}
           opening={opening}
           openedPrize={openedPrize}
-          isRoll={showPrize}
+          rolling={rolling}
+          showPrize={showPrize}
           openButtonHandler={() => handlePlay()}
           boxPrice={lootbox ? lootbox.ticketPrice.toNumber() : 0} tokenIndex={lootbox ? getTokenIndex(lootbox.ticketMint) : 0}
-          setOpening={setOpening}
+          onComplete={onComplete}
         >
           <Box boxImage={"/images/opened_lootbox.png"} />
         </BoxWrapper>
