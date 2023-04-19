@@ -30,7 +30,7 @@ export const PrizeItem: React.FC<PrizeItemProps> = ({ icon, title, box, value, r
   }
 
   return (
-    <div className={"flex w-[250px] box-content rounded-[10px] bg-[#28282840] p-2 gap-5 transition-all duration-300 " + getRarityBoxShadowClass()}>
+    <div className={"flex w-[300px] box-content rounded-[10px] bg-[#28282840] p-2 gap-5 transition-all duration-300 " + getRarityBoxShadowClass()}>
       <div className={"rounded-[5px] overflow-hidden w-[72px] h-[72px] " + getRarityShadowClass()}>
         {icon && <LazyLoadImage
           src={icon}
@@ -40,7 +40,7 @@ export const PrizeItem: React.FC<PrizeItemProps> = ({ icon, title, box, value, r
         />}
       </div>
       <div className="flex flex-col justify-center">
-        <p className="bg-clip-text text-transparent font-[700] font-aber-mono leading-tight bg-gradient-card-title">{title}</p>
+        <p className="bg-clip-text text-transparent font-[700] font-aber-mono leading-tight bg-gradient-card-title truncate w-[208px]">{title}</p>
         <p className="text-[#65666B] text-[11px]">{box}</p>
         <div className="mt-auto flex place-items-center gap-1.5">
           <Image width={12} height={11} className="w-[12px] h-[11px] mt-[-3px]" src="/images/solana.svg" alt="solana" />
