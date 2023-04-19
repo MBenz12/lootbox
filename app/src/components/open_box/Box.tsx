@@ -13,7 +13,7 @@ const Box = ({ boxImage }: { boxImage: string }) => {
   };
 
   return (
-    <div className={"relative z-10 flex justify-center place-items-center mt-30 h-[371px]"}>
+    <div className={"relative z-10 flex justify-center place-items-center mt-[120px] h-[371px]"}>
       <motion.img
         variants={boxImageVariants}
         initial="initial"
