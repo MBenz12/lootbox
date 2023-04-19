@@ -1,10 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import gsap from 'gsap';
 import { useEffect, useRef } from "react";
 import { OpenedPrize } from "@/types";
 
 const NFT_ID_PREFIX = "nft_item";
 
-const RollingBanner = ({ prizes, winnerIndex }: { prizes: OpenedPrize[], winnerIndex: number }) => {
+const RollingBanner = ({ prizes, winnerIndex, onComplete }: { prizes: OpenedPrize[], winnerIndex: number, onComplete: () => void }) => {
   if (winnerIndex >= prizes.length) throw new Error("winnerIndex must be less than prizes.length");
   const bannerWrapper = useRef<HTMLDivElement>(null);
   const rollerContainer = useRef<HTMLDivElement>(null);
@@ -26,7 +27,7 @@ const RollingBanner = ({ prizes, winnerIndex }: { prizes: OpenedPrize[], winnerI
       duplicatedPrizes.forEach((prize, nftIdIndex) => {
         const nftItem = document.createElement("div");
         nftItem.id = NFT_ID_PREFIX + (nftIdIndex + prizes.length);
-        nftItem.className = "w-[100px] h-[100px] rounded-md bg-no-repeat bg-center bg-cover transition-all duration-[1s]";
+        nftItem.className = "w-[120px] h-[120px] rounded-md bg-no-repeat bg-center bg-cover transition-all duration-[1s]";
         nftItem.style.backgroundImage = `url(${prize.image})`;
         // @ts-ignore
         rollerContainer.current.appendChild(nftItem);
@@ -60,6 +61,7 @@ const RollingBanner = ({ prizes, winnerIndex }: { prizes: OpenedPrize[], winnerI
           nftItem.classList.add("-translate-y-[30%]");          
           // @ts-ignore
           nftItem.style.boxShadow = `0 0 20px 18px ${getRarityColor()}`;
+          onComplete();
         }
       })
 
@@ -69,14 +71,14 @@ const RollingBanner = ({ prizes, winnerIndex }: { prizes: OpenedPrize[], winnerI
   return (
     <div className={"absolute z-10 top-8 flex flex-col w-full place-items-center gap-5"}>
       <div id={"banner-wrapper"} ref={bannerWrapper} className={`relative flex place-items-center overflow-hidden h-[350px]`}>
-        {/* <div className='absolute z-[100] left-8 bottom-[60px] w-20 h-[100px] bg-gradient-to-r from-[#0A0C1C] via-50%'></div> */}
+        {/* <div className='absolute z-[100] left-8 bottom-[60px] w-20 h-[120px] bg-gradient-to-r from-[#0A0C1C] via-50%'></div> */}
         <div className='absolute z-[100] -left-[110px] bottom-10 w-[200px] h-[220px] bg-[#120D17] blur-xl'></div>
         <div className='absolute z-[100] -right-[110px] bottom-10 w-[200px] h-[220px] bg-[#100C16] blur-xl'></div>
-        <div id={"roller-container"} ref={rollerContainer} className={"flex opacity-0 gap-20 w-[9999999999px] h-[100px] mt-0 ml-8"}>
+        <div id={"roller-container"} ref={rollerContainer} className={"flex opacity-0 gap-20 w-[9999999999px] h-[120px] mt-0 ml-8"}>
           {
             prizes.map((prize, nftIdIndex) => (
               // <Image id={`${NFT_ID_PREFIX + nftIdIndex}`} key={nftIdIndex} src={prize.image} alt={`nft-${nftIdIndex}`} width={130} height={130} className={"aspect-square rounded-md transition-all duration-[1s]"} />
-              <div key={nftIdIndex} id={`${NFT_ID_PREFIX + nftIdIndex}`} className={"w-[100px] h-[100px] rounded-md bg-no-repeat bg-center bg-cover transition-all duration-[1s]"} style={{ backgroundImage: `url(${prize.image})` }}></div>
+              <div key={nftIdIndex} id={`${NFT_ID_PREFIX + nftIdIndex}`} className={"w-[120px] h-[120px] rounded-md bg-no-repeat bg-center bg-cover transition-all duration-[1s]"} style={{ backgroundImage: `url(${prize.image})` }}></div>
             ))
           }
         </div>
