@@ -49,7 +49,7 @@ export const PrizeItem: React.FC<PrizeItemProps> = ({ icon, title, value, rarity
 
   return (
     <div className={`flex w-full box-content rounded-[10px] bg-[#28282840] p-2 gap-5 transition-shadow duration-300 ` + getRarityBoxShadowClass()}>
-      <div className={"rounded-[5px] w-[90px] h-[90px] aspect-square " + getRarityShadowClass()}>
+      <div className={"rounded-[5px] overflow-hidden w-[90px] h-[90px] aspect-square " + getRarityShadowClass()}>
         {icon && <LazyLoadImage
           src={icon}
           height={90}
@@ -59,11 +59,11 @@ export const PrizeItem: React.FC<PrizeItemProps> = ({ icon, title, value, rarity
         />}
       </div>
       <div className="flex flex-col justify-center">
-        <p className="bg-clip-text text-transparent text-[16px] bg-gradient-card-title">{title}</p>
-        <p className={"w-fit px-1 mt-1 rounded-lg text-[11px] " + getRarityColorClass()}>{getRarityName()} {dropRate}%</p>
+        <p className="bg-clip-text font-[700] font-aber-mono leading-tight text-transparent text-[15px] bg-gradient-card-title">{title}</p>
+        <p className={"w-fit px-1.5 pt-[4px] pb-[2px] font-[700] mt-1 rounded-md text-[10px] font-aber-mono leading-tight " + getRarityColorClass()}>{getRarityName()} {dropRate}%</p>
         <div className="mt-auto flex place-items-center gap-1.5">
           <Image width={12} height={11} className="w-[12px] h-[11px]" src="/images/solana.svg" alt="solana" />
-          <p className="text-[15px]">{value !== undefined ? `${value.toLocaleString('en-us', { maximumFractionDigits: 2 })} SOL Value` : '-'}</p>
+          <p className="text-[13px] font-[700] font-aber-mono leading-tight">{value !== undefined ? `${value.toLocaleString('en-us', { maximumFractionDigits: 2 })} SOL Value` : '-'}</p>
         </div>
       </div>
     </div>

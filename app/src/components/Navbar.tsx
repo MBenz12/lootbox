@@ -23,12 +23,12 @@ export const Navbar: React.FC = () => {
 
   return (
     <>
-      <div className="flex flex-col gap-10 md:flex-row md:px-10">
-        <Link href={"/"} className={`relative transition-opacity ${!isCurrentPath("/") && "opacity-50"} duration-300 text-center`}>
+      <div className="flex flex-col text-[13px] gap-10 md:flex-row md:px-10">
+        <Link href={"/"} className={`relative transition-opacity ${!isCurrentPath("/") && "text-[#65666B]"} duration-300 text-center`}>
           LOOTBOXES
           <NavbarAnchor active={isCurrentPath("/")} />
         </Link>
-        <Link href={"/claim"} className={`relative transition-opacity ${!isCurrentPath("/claim") && "opacity-50"} duration-300 text-center`}>
+        <Link href={"/claim"} className={`relative transition-opacity ${!isCurrentPath("/claim") && "text-[#65666B]"} duration-300 text-center`}>
           CLAIM
           <NavbarAnchor active={isCurrentPath("/claim")} />
         </Link>
@@ -36,7 +36,7 @@ export const Navbar: React.FC = () => {
       <div className="flex flex-col gap-5 md:flex-row">
         <div className="flex justify-end gap-3">
           <div className="flex flex-col justify-center text-right">
-            <p className="opacity-50 text-[13px]">BALANCE</p>
+            <p className="text-[12px] text-[#65666B]">BALANCE</p>
             <p className="text-[17px]">75O ZEN</p>
           </div>
           <Image width={46} height={46} src="/images/coin.png" alt="" />

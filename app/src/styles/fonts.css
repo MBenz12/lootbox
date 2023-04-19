@@ -1,31 +1,31 @@
 @font-face {
     font-family: 'Aber Mono';
     src: url('../../public/fonts/Aber Mono/Aber-Mono-Regular.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
 }
 
 @font-face {
     font-family: 'Aber Mono';
     src: url('../../public/fonts/Aber Mono/Aber-Mono-Bold.woff2') format('woff2');
     font-weight: bold;
-    font-style: normal;
 }
 
 @font-face {
     font-family: 'Akira Expanded';
     src: url('../../public/fonts/Akira Expanded/AKIRA_EXPANDED_DEMO.OTF') format('otf');
-    font-style: normal;
 }
 
 @font-face {
     font-family: 'Space Mono';
     src: url('../../public/fonts/Space Mono/SpaceMono-Regular.ttf') format('ttf');
-    font-weight: normal;
 }
 
 @font-face {
     font-family: 'Space Mono';
     src: url('../../public/fonts/Space Mono/SpaceMono-Bold.ttf') format('ttf');
     font-weight: bold;
+}
+
+@font-face {
+    font-family: 'GT America Mono';
+    src: url('../../public/fonts/GT America Mono/GT-America-Mono-Medium-Trial.otf') format('otf');
 }

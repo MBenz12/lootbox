@@ -31,7 +31,7 @@ export const PrizeItem: React.FC<PrizeItemProps> = ({ icon, title, box, value, r
 
   return (
     <div className={"flex w-[250px] box-content rounded-[10px] bg-[#28282840] p-2 gap-5 transition-all duration-300 " + getRarityBoxShadowClass()}>
-      <div className={"rounded-[5px] w-[72px] h-[72px] " + getRarityShadowClass()}>
+      <div className={"rounded-[5px] overflow-hidden w-[72px] h-[72px] " + getRarityShadowClass()}>
         {icon && <LazyLoadImage
           src={icon}
           height={72}
@@ -40,11 +40,11 @@ export const PrizeItem: React.FC<PrizeItemProps> = ({ icon, title, box, value, r
         />}
       </div>
       <div className="flex flex-col justify-center">
-        <p className="bg-clip-text text-transparent text-[14px] bg-gradient-card-title">{title}</p>
-        <p className="opacity-50 text-[11px]">{box}</p>
+        <p className="bg-clip-text text-transparent font-[700] font-aber-mono leading-tight bg-gradient-card-title">{title}</p>
+        <p className="text-[#65666B] text-[11px]">{box}</p>
         <div className="mt-auto flex place-items-center gap-1.5">
           <Image width={12} height={11} className="w-[12px] h-[11px] mt-[-3px]" src="/images/solana.svg" alt="solana" />
-          <p className="text-[12px]">{value ? `${value.toLocaleString('en-us', { maximumFractionDigits: 2 })} SOL Value` : '-'}</p>
+          <p className="text-[13px] font-[700] font-aber-mono leading-tight">{value ? `${value.toLocaleString('en-us', { maximumFractionDigits: 2 })} SOL Value` : '-'}</p>
         </div>
       </div>
     </div>

@@ -58,7 +58,7 @@ const RollingBanner = ({ prizes, winnerIndex, onComplete }: { prizes: OpenedPriz
           };
           const nftItem = rollerContainer.current.children[winningPrizeIndex];
           nftItem.classList.add("scale-[1.8]");
-          nftItem.classList.add("-translate-y-[30%]");          
+          nftItem.classList.add("-translate-y-[30%]");
           // @ts-ignore
           nftItem.style.boxShadow = `0 0 20px 18px ${getRarityColor()}`;
           onComplete();
