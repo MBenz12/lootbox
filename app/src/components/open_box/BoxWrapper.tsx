@@ -85,7 +85,7 @@ const BoxWrapper = ({
     />
   )), [canvasHeight, canvasWidth]);
   return (
-    <div ref={canvasRef} className={"relative flex flex-col justify-center place-items-center w-full h-auto min-h-[300px] mb-10 overflow-hidden " + divider}>
+    <div ref={canvasRef} className={"relative flex flex-col justify-center place-items-center w-full h-auto min-h-[300px] mb-5 overflow-hidden " + divider}>
       <div className={"flex gap-2.5 font-[800] text-5xl uppercase"}>
         <p className={"font-akira"} style={{ color: boxNameColor }}>{boxName}</p>
         <p className={"font-akira"}>BOX</p>
@@ -103,10 +103,10 @@ const BoxWrapper = ({
       <div className={"flex flex-col place-items-center my-5"}>
         <Button text={opening ? "Opening..." : "Open"} handler={openButtonHandler} />
         {!!boxPrice ? <div className={"flex gap-1 place-items-center"}>
-          <Image width={18} height={18} src={TOKENS[tokenIndex].image} alt="coin" />
-          <p className={"opacity-50"}>{boxPrice / TOKENS[tokenIndex].decimals} {TOKENS[tokenIndex].symbol}</p>
+          <Image width={12} height={12} src={TOKENS[tokenIndex].image} alt="coin" />
+          <p className={"text-[#65666B] font-aber-mono text-[12px]"}>{boxPrice / TOKENS[tokenIndex].decimals} {TOKENS[tokenIndex].symbol}</p>
         </div> :
-          <p className={"opacity-50"}>Free</p>
+          <p className={"text-[#65666B] font-aber-mono text-[12px]"}>Free</p>
         }
       </div>
 

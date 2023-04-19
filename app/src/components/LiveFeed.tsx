@@ -32,7 +32,7 @@ const LiveFeed = ({ events }: { events: Array<Event> }) => {
       <div className={"relative flex cursor-pointer place-items-center justify-start gap-3 px-8 py-3 " + liveFeedDivider}
         onClick={() => setOpened(!opened)}>
         <div className={"pulsating-circle"}></div>
-        <h1>Live Feed</h1>
+        <h1 className='font-aber-mono'>Live Feed</h1>
       </div>
       <motion.div
         initial={{ height: 0 }}

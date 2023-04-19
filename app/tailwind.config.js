@@ -9,6 +9,8 @@ module.exports = {
       fontFamily: {
         "akira": ["Akira Expanded", "sans-serif"],
         "space-mono": ["Space Mono", "monospace"],
+        "aber-mono": ["Aber Mono", "monospace"],
+        "america-mono": ["GT America Mono", "monospace"],
       },
       dropShadow: () => ({
         "legendary-card": "0px 1px 6px rgba(128, 7, 185, 0.5)",

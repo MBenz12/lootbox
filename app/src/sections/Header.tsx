@@ -35,7 +35,7 @@ export const Header: React.FC = () => {
   const [showMobileMenu, setShowMobileMenu] = React.useState(false);
 
   return (
-    <header className='flex justify-center'>
+    <header className='flex justify-center bg-[#121213]/60'>
       <div className="flex w-full container place-items-center h-[100px]">
         <Link href={"/"} className="bg-gray-600 px-10 py-2 rounded-[15px]">
           <p>Logo</p>
