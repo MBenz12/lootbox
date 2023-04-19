@@ -16,16 +16,16 @@
 
 @font-face {
     font-family: 'Space Mono';
-    src: url('../../public/fonts/Space Mono/SpaceMono-Regular.ttf') format('ttf');
+    src: url('../../public/fonts/Space Mono/SpaceMono-Regular.ttf');
 }
 
 @font-face {
     font-family: 'Space Mono';
-    src: url('../../public/fonts/Space Mono/SpaceMono-Bold.ttf') format('ttf');
+    src: url('../../public/fonts/Space Mono/SpaceMono-Bold.ttf');
     font-weight: bold;
 }
 
 @font-face {
     font-family: 'GT America Mono';
-    src: url('../../public/fonts/GT America Mono/GT-America-Mono-Medium-Trial.otf') format('otf');
+    src: url('../../public/fonts/GT America Mono/GT-America-Mono-Medium-Trial.otf');
 }

@@ -8,7 +8,7 @@ export const RecentlyWonPrizes = ({ events }: { events: Array<Event> }) => {
   const { values } = useFetchValues(events);
   return (
     <div className="my-5">
-      <h1 className={"font-akira font-[800] uppercase text-xl my-5"} style={{ transform: "scaleY(75%)" }}>Recently Won Prizes</h1>
+      <h1 className={"font-akira font-[800] uppercase text-xl my-5 tracking-wider"}>Recently Won Prizes</h1>
       <Swiper freeMode={true} spaceBetween={15} slidesPerView="auto" modules={[FreeMode]} className={"prizes-wrapper"} style={{ padding: '16px' }}>
         {
           events.map((event, index) => (
