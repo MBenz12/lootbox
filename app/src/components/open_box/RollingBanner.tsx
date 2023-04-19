@@ -72,8 +72,8 @@ const RollingBanner = ({ prizes, winnerIndex, onComplete }: { prizes: OpenedPriz
     <div className={"absolute z-30 top-8 flex flex-col w-full place-items-center gap-5"}>
       <div id={"banner-wrapper"} ref={bannerWrapper} className={`relative flex place-items-center overflow-hidden h-[380px]`}>
         {/* <div className='absolute z-[100] left-8 bottom-[60px] w-20 h-[120px] bg-gradient-to-r from-[#0A0C1C] via-50%'></div> */}
-        <div className='absolute z-[100] -left-[110px] bottom-10 w-[200px] h-[300px] bg-[#120D17] blur-xl'></div>
-        <div className='absolute z-[100] -right-[110px] bottom-10 w-[200px] h-[300px] bg-[#100C16] blur-xl'></div>
+        <div className='absolute z-[100] -left-[110px] bottom-10 w-[200px] h-[300px] bg-[#0b0c1a] blur-xl'></div>
+        <div className='absolute z-[100] -right-[110px] bottom-10 w-[200px] h-[300px] bg-[#0b0c1a] blur-xl'></div>
         <div id={"roller-container"} ref={rollerContainer} className={"flex opacity-0 gap-20 w-[9999999999px] h-[120px] mt-5 ml-8"}>
           {
             prizes.map((prize, nftIdIndex) => (
