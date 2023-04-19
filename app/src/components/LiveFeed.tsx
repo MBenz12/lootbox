@@ -15,9 +15,9 @@ const LiveFeedItem = ({ name, box, img, time }: {
     <div className={"flex flex-col place-items-center relative mt-6 justify-center " + liveFeedItemDivider}>
       <img width={130} height={130} src={img} alt={name} className={"w-[130px] h-[130px] rounded-[5px]"} />
       <div className={"flex flex-col w-[130px] overflow-hidden my-2"}>
-        <p className={"opacity-50 text-[13px]"}>{box} Box</p>
-        <p className={"text-[14px]"}>{name}</p>
-        <p className={"opacity-50 text-[12px] my-2"}>{time}</p>
+        <p className={"font-aber-mono opacity-50 text-[13px]"}>{box} Box</p>
+        <p className={"font-aber-mono text-[14px]"}>{name}</p>
+        <p className={"font-aber-mono opacity-50 text-[12px] my-2"}>{time}</p>
       </div>
     </div>
   );
