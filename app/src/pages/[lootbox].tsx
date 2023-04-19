@@ -157,7 +157,7 @@ export default function Lootbox() {
     if (program) {
       const listenerId = program.addEventListener('PlayEvent', (event: PlayEvent) => {
         setReload({});
-        setTimeout(() => setEvent(event), 1000);
+        setTimeout(() => setEvent(event), 2000);
       });
       console.log('listener: ', listenerId);
     }
