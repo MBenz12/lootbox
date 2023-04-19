@@ -40,7 +40,7 @@ const BoxItem: React.FC<BoxItemProps> = ({name, nameColor, shadowColor,  opening
         <Image width={260} height={240} src="/images/box1.png" alt="box1"/>
       </div>
       <div className="px-5 text-center mt-[-110px]">
-        <p className="my-2 banner-text text-[32px] font-akira uppercase font-[800] scale-y-[0.75]"><span style={{color: nameColor}} className="banner-text font-akira uppercase font-[800] scale-y-[0.75]">{name}</span> Box</p>
+        <p className="my-2 banner-text text-[28px] font-akira uppercase font-[800]"><span style={{color: nameColor}} className="banner-text font-akira uppercase font-[800] scale-y-[0.75]">{name}</span> Box</p>
         {
           opening
             ?
