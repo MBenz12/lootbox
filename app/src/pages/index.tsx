@@ -2,12 +2,13 @@ import { Banner } from '@/sections/lootboxes/Banner'
 import { Boxes } from '@/sections/lootboxes/Boxes'
 import { RecentlyWonPrizes } from '@/sections/lootboxes/RecentlyWonPrizes'
 import Head from 'next/head'
-import { useState } from "react";
+import { useContext } from "react";
 import useFetchAllLootboxes from '@/hooks/useFetchAllLootboxes';
 import useFetchEvents from '@/hooks/useFetchEvents';
+import { ReloadContext } from '@/contexts/reload-context';
 
 export default function Home() {
-  const [reload] = useState({});
+  const { reload } = useContext(ReloadContext);
   const { lootboxes } = useFetchAllLootboxes(reload);
   const { events } = useFetchEvents(reload);
 

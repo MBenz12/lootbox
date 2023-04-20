@@ -14,7 +14,7 @@ import { OffChainItem, Rarity } from '@/lootbox-program-libs/types';
 import { BN } from '@project-serum/anchor';
 import { getMint } from '@solana/spl-token';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { TOKENS } from '@/config';
 import useFetchLootbox from '@/hooks/useFetchLootbox';
@@ -26,17 +26,16 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import ClaimsDialog from '@/components/admin/ClaimsDialog';
 import useFetchClaims from '@/hooks/useFetchClaims';
 import axios from 'axios';
+import { ReloadContext } from '@/contexts/reload-context';
 
 interface MainProps {
   name: string;
   setName: (name: string) => void;
-  reload: {};
-  setReload: (reload: {}) => void;
 }
 
 const rarityCategories = ["Common", "Uncommon", "Rare", "Legendary"];
 
-const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
+const Main: React.FC<MainProps> = ({ name, setName }) => {
   const program = useProgram();
   const { connection } = useConnection();
   const wallet = useWallet();
@@ -44,6 +43,8 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
   const [tokens, setTokens] = useState(
     TOKENS.map(token => ({ ...token, balance: 0 } as TOKEN))
   );
+
+  const { reload, setReload } = useContext(ReloadContext);
 
   const [fee, setFee] = useState(0);
   const [feeWallet, setFeeWallet] = useState("3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd");
@@ -622,12 +623,11 @@ const Main: React.FC<MainProps> = ({ name, setName, reload, setReload }) => {
       {offPrizeDialogOpen &&
         <OffChainPrizeDialog
           setOpen={setOffPrizeDialogOpen}
-          setReload={setReload}
           prizes={prizeItems.filter((prize) => !prize.isDeleted)}
         />
       }
       {claimDialogOpen &&
-        <ClaimsDialog setOpen={setClaimDialogOpen} setReload={setReload} claims={claims} prizes={prizeItems} setClaimed={handleSetClaimed} />
+        <ClaimsDialog setOpen={setClaimDialogOpen} claims={claims} prizes={prizeItems} setClaimed={handleSetClaimed} />
       }
 
       <div className={"w-full flex justify-center mt-5 gap-4"}>
