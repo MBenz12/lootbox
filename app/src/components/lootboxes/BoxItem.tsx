@@ -3,6 +3,7 @@ import React from "react";
 import {Button} from "./Button";
 import {motion} from "framer-motion";
 import Image from "next/image";
+import { TOKENS } from '@/config';
 
 interface BoxItemProps {
   name: string;
@@ -12,15 +13,16 @@ interface BoxItemProps {
   price: number;
   handleClick?: () => void;
   opening?: boolean;
+  tokenIndex: number;
 }
 
-const BoxItem: React.FC<BoxItemProps> = ({name, nameColor, shadowColor,  opening, description, price, handleClick}) => {
+const BoxItem: React.FC<BoxItemProps> = ({name, nameColor, shadowColor,  opening, description, price, tokenIndex, handleClick}) => {
   const renderButton = () => {
     if (opening) {
       return <Button text={"OPENING BOX..."}/>
     }
     if (price > 0) {
-      return <Button text={`${price} ZEN`} startIconUrl={"/images/coin.png"} handler={handleClick}/>
+      return <Button text={`${price / TOKENS[tokenIndex].decimals} ${TOKENS[tokenIndex].symbol}`} startIconUrl={TOKENS[tokenIndex].image} handler={handleClick}/>
     }
     return <Button text={"Free"} handler={handleClick}/>
   }
