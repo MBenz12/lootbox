@@ -161,5 +161,5 @@ body {
 }
 
 header * {
-    font-family: "Aber Mono", monospace;
+    @apply font-aber-mono;
 }

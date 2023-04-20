@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { motion } from "framer-motion"
 import { useRouter } from "next/router";
 import Link from 'next/link';
 import Image from 'next/image';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import useFetchBalance from '@/hooks/useFetchBalance';
+import { ReloadContext } from '@/contexts/reload-context';
 
 
 const NavbarAnchor = ({ active }: { active: boolean }) => {
@@ -20,7 +22,9 @@ const NavbarAnchor = ({ active }: { active: boolean }) => {
 export const Navbar: React.FC = () => {
   const location = useRouter();
   const isCurrentPath = (path: string) => location.pathname === path;
-
+  const { reload } = useContext(ReloadContext);
+  const { balance } = useFetchBalance(reload);
+  
   return (
     <>
       <div className="flex flex-col text-[13px] gap-10 md:flex-row md:px-10">
@@ -37,7 +41,7 @@ export const Navbar: React.FC = () => {
         <div className="flex justify-end gap-3">
           <div className="flex flex-col justify-center text-right">
             <p className="text-[12px] text-[#65666B]">BALANCE</p>
-            <p className="text-[17px]">75O ZEN</p>
+            <p className="text-[17px]">{balance.toLocaleString('en-us', { maximumFractionDigits: 1 })} ZEN</p>
           </div>
           <Image width={46} height={46} src="/images/coin.png" alt="" />
         </div>

@@ -15,6 +15,7 @@ import ModalProvider from '@/contexts/modal-context'
 import "swiper/css";
 import "swiper/css/free-mode";
 import Layout from '@/components/Layout'
+import ReloadProvider from '@/contexts/reload-context'
 
 export default function App({ Component, pageProps }: AppProps) {
   const [network] = useState(WalletAdapterNetwork.Mainnet);
@@ -38,9 +39,11 @@ export default function App({ Component, pageProps }: AppProps) {
             toastClassName={() => "bg-black text-white relative flex p-1 min-h-[50px] rounded-md justify-between overflow-hidden cursor-pointer shadow-2xl"}
           />
           <ModalProvider>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
+            <ReloadProvider>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </ReloadProvider>
           </ModalProvider>
         </WalletModalProvider>
       </WalletProvider>

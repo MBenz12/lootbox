@@ -7,12 +7,10 @@ const ClaimsDialog = ({
   claims,
   prizes,
   setOpen,
-  setReload,
   setClaimed,
 }: {
   claims: Array<Claim>,
   prizes: Array<OffChainPrize>,
-  setReload: (reload: {}) => void,
   setOpen: (open: boolean) => void,
   setClaimed: (claimId: string) => void,
 }) => {

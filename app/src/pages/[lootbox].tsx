@@ -3,7 +3,7 @@
 import { Prizes } from '@/sections/open_box/Prizes'
 import Head from 'next/head'
 import LiveFeed from "@/components/LiveFeed";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import useFetchEvents from '@/hooks/useFetchEvents';
 import { TOKENS } from '@/config';
 import useFetchNfts from '@/hooks/useFetchNfts';
@@ -21,6 +21,7 @@ import { getLootboxPda } from '@/lootbox-program-libs/utils';
 import Box from "@/components/open_box/Box";
 import BoxWrapper from "@/components/open_box/BoxWrapper";
 import { getTokenIndex } from '@/utils';
+import { ReloadContext } from '@/contexts/reload-context';
 
 export default function Lootbox() {
   const router = useRouter()
@@ -28,7 +29,7 @@ export default function Lootbox() {
 
   const program = useProgram();
   const wallet = useWallet();
-  const [reload, setReload] = useState({});
+  const { reload, setReload } = useContext(ReloadContext);
   const { lootbox } = useFetchLootbox(lootboxName as string, reload);
 
   const [event, setEvent] = useState<PlayEvent>();

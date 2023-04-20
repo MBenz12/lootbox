@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo } from 'react';
 import Heading from "../sections/claim/Heading";
 import NFTCard from "../components/claim/NFTCard";
 import CardsSection from "../sections/claim/CardsSection";
@@ -23,7 +23,7 @@ import useFetchEvents from '@/hooks/useFetchEvents';
 import useFetchUserClaims from '@/hooks/useFetchUserClaims';
 import { getCookie } from 'cookies-next'
 import axios from 'axios';
-import { PrizeItem } from '@/lootbox-program-libs/types';
+import { ReloadContext } from '@/contexts/reload-context';
 
 type PrizeCard = { prize: NftPrize | SplPrize | OffChainPrize, name: string, image: string, lootbox: string, value: number };
 
@@ -39,7 +39,7 @@ export async function getServerSideProps(context: any) {
 const Claim = ({ discordAccess }: { discordAccess: string | undefined }) => {
   const program = useProgram();
   const wallet = useWallet();
-  const [reload, setReload] = useState({});
+  const { reload, setReload } = useContext(ReloadContext);
   const { lootboxes } = useFetchAllLootboxes(reload);
   const { player } = useFetchPlayer(reload);
   const { events } = useFetchEvents(reload);

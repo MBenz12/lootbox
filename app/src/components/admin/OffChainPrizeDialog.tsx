@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import Button from './Button';
 import Input from './Input';
 import UploadImageInput from './UploadImageInput';
@@ -9,21 +9,21 @@ import axios from 'axios';
 import { OffChainPrize } from '@/types';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import Image from 'next/image';
+import { ReloadContext } from '@/contexts/reload-context';
 
 const client = new NFTStorage({ token: NFT_STORAGE_TOKEN })
 
 const OffChainPrizeDialog = ({
   setOpen,
   prizes,
-  setReload,
 }: {
-  setReload: (reload: {}) => void,
   setOpen: (open: boolean) => void,
   prizes: Array<OffChainPrize>,
 }) => {
+  const { setReload } = useContext(ReloadContext);
   const [name, setName] = useState('');
   const [image, setImage] = useState<string>();
-  const [file, setFile] = useState<File>();
+  const [file, setFile] = useState<File>();    
   const handleUpload = async () => {
     try {
       if (!file) return;
