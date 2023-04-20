@@ -141,9 +141,9 @@ export default function Lootbox() {
     );
 
     if (txn) {
-      toast.success('Played successfully');
+      toast.success('Box Opened');
     } else {
-      toast.error('Failed to play');
+      toast.error('Failed to open');
       setOpening(false);
     }
   }
