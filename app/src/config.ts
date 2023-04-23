@@ -30,7 +30,7 @@ export const TOKENS = [
     symbol: 'ZEN',
     mint: new PublicKey("ZEN5PLn2YpFCGVZobQGUocpdzS7PuZRAN4MARaX8qAz"),
     decimals: 1e9,
-    image: 'https://shdw-drive.genesysgo.net/e9T5RYnrbiQ1EsQ5xzYSLP897nYD8TAVfWsGV23pgis/ZEN5PLn2YpFCGVZobQGUocpdzS7PuZRAN4MARaX8qAz-918.json'
+    image: 'https://shdw-drive.genesysgo.net/e9T5RYnrbiQ1EsQ5xzYSLP897nYD8TAVfWsGV23pgis/426689A4-DAE8-4864-8052-E8A6B5C11D0A.png'
   },
 ];
 
