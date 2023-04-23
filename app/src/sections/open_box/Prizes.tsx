@@ -1,6 +1,7 @@
 import { WinnablePrize } from "@/types";
 import { PrizeItem } from "@/components/open_box/PrizeItem";
 import { Lootbox } from '@/lootbox-program-libs/types';
+import { isToken } from '@/utils';
 
 export const Prizes = ({ prizes, lootbox }: { prizes: Array<WinnablePrize>, lootbox: Lootbox | undefined }) => {
   return (
@@ -9,7 +10,14 @@ export const Prizes = ({ prizes, lootbox }: { prizes: Array<WinnablePrize>, loot
       <div className={"grid grid-cols-[repeat(auto-fill,_minmax(280px,_1fr))] gap-x-8 gap-y-4 w-full"}>
         {lootbox &&
           prizes.map((prize, index) => (
-            <PrizeItem key={index} rarity={prize.rarity} icon={prize.image} title={prize.name} value={prize.value} dropRate={lootbox.rarities[prize.rarity].dropPercent / 100} />
+            <PrizeItem 
+            key={index} 
+            rarity={prize.rarity} 
+            icon={prize.image} 
+            title={isToken(prize.name) ? `${prize.value.toLocaleString('en-us', { maximumFractionDigits: 2 })} ${prize.name}` : prize.name} 
+            value={isToken(prize.name) ? undefined : prize.value} 
+            dropRate={lootbox.rarities[prize.rarity].dropPercent / 100} 
+            />
           ))
         }
       </div>
