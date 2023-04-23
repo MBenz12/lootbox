@@ -14,6 +14,7 @@ const useFetchAllLootboxes = (reload: {}): { lootboxes: Array<Lootbox>, loading:
     setLoading(true);
     try {
       const allLootboxes = await program.account.lootbox.all();
+      allLootboxes.sort((a, b) => a.account.name > b.account.name ? 1 : -1);
       setLootboxes(allLootboxes.map(lootbox => lootbox.account as Lootbox));
     } catch (error) {
       console.log(error);

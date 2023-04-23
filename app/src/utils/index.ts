@@ -14,6 +14,10 @@ export const getTokenIndex = (mint: PublicKey) => {
   return TOKENS.map(token => token.mint.toString()).indexOf(mint.toString());  
 }
 
+export const isToken = (name: string) => {
+  return TOKENS.map(token => token.symbol).includes(name);
+}
+
 export const getUnselectedPrizes = (lootboxNfts: Array<NftData>, nftPrizes: Array<Array<NftPrize>>) => {
   return lootboxNfts.filter((nft, index) => {
     const allPrizes: Array<NftPrize> = [];
