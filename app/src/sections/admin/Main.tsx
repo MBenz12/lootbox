@@ -232,7 +232,6 @@ const Main = ({ name }: { name: string }) => {
     if (!wallet.publicKey || !program || !lootbox) {
       return;
     }
-
     if (lootbox.fee.toNumber() !== fee * LAMPORTS_PER_SOL ||
       lootbox.feeWallet.toString() !== feeWallet ||
       lootbox.ticketPrice.toNumber() !== ticketPrice * decimals ||
@@ -256,12 +255,10 @@ const Main = ({ name }: { name: string }) => {
       }
     }
 
-
     let box = getBox(boxes, name);
-    if (box && (box.name !== boxName || box.description !== boxDescription || box.image !== boxImage)) {
+    if (box?.name !== boxName || box?.description !== boxDescription || box?.image !== boxImage) {
       storeBox(name);
     }
-
   }
 
   const handleCloseLootbox = async () => {
