@@ -76,3 +76,10 @@ export type OpenedPrize = {
   rarity: number;
   image: string;
 }
+
+export type Box = {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+}

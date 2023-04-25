@@ -10,7 +10,7 @@ const useFetchLootbox = (name: string, reload: {}): { lootbox: Lootbox | undefin
   const [loading, setLoading] = useState(false);
 
   const fetchLootbox = useCallback(async (name: string) => {
-    if (!program || !name) return;
+    if (!program) return;
 
     setLoading(true);
     try {

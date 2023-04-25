@@ -1,7 +1,7 @@
 import { TOKENS, VERIFIED_WALLETS } from '../config'
-import { Lootbox } from '../lootbox-program-libs/types';
+import { Lootbox, Rarity } from '../lootbox-program-libs/types';
 import { getLootboxPda } from '../lootbox-program-libs/utils';
-import { Claim, NftData, NftPrize, OffChainPrize } from '../types';
+import { Box, Claim, NftData, NftPrize, OffChainPrize } from '../types';
 import { PublicKey } from '@solana/web3.js'
 
 export const getTokenSymbol = (mint: PublicKey) => {
@@ -56,4 +56,21 @@ export const isClaimed = (claims: Array<Claim>, prize: OffChainPrize) => {
 export const getRole = (key: PublicKey) => {
   // @ts-ignore
   return VERIFIED_WALLETS[key.toString()];
+}
+
+export const isRarityChanged = (a: Rarity[], b: Rarity[]) => {
+  for (let i = 0; i < a.length; i++) {
+    if (a[i].dropPercent !== b[i].dropPercent || a[i].minSpins !== b[i].minSpins) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export const getBox = (boxes: Box[], id: string) => {
+  let index = boxes.map(box => box.id).indexOf(id);
+  if (index !== -1) {
+    return boxes[index];
+  }
+  return null;
 }
