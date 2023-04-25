@@ -16,10 +16,10 @@ import { getMint } from '@solana/spl-token';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
-import { TOKENS } from '@/config';
+import { NFT_STORAGE_TOKEN, TOKENS } from '@/config';
 import useFetchLootbox from '@/hooks/useFetchLootbox';
 import { NftData, NftPrize, OffChainPrize, SplPrize, TOKEN } from '@/types';
-import { getTotalPrizeIndex, getUnselectedPrizes } from '@/utils';
+import { getBox, getTotalPrizeIndex, getUnselectedPrizes, isRarityChanged } from '@/utils';
 import useFetchPrizes from '@/hooks/useFetchPrizes';
 import useProgram from '@/hooks/useProgram';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
@@ -27,15 +27,14 @@ import ClaimsDialog from '@/components/admin/ClaimsDialog';
 import useFetchClaims from '@/hooks/useFetchClaims';
 import axios from 'axios';
 import { ReloadContext } from '@/contexts/reload-context';
+import { NFTStorage } from 'nft.storage';
+import useFetchBoxes from '@/hooks/useFetchBoxes';
 
-interface MainProps {
-  name: string;
-  setName: (name: string) => void;
-}
+const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
 
 const rarityCategories = ["Common", "Uncommon", "Rare", "Legendary"];
 
-const Main: React.FC<MainProps> = ({ name, setName }) => {
+const Main = ({ name }: { name: string }) => {
   const program = useProgram();
   const { connection } = useConnection();
   const wallet = useWallet();
@@ -45,6 +44,11 @@ const Main: React.FC<MainProps> = ({ name, setName }) => {
   );
 
   const { reload, setReload } = useContext(ReloadContext);
+
+  const [boxName, setBoxName] = useState('Free');
+  const [boxDescription, setBoxDescription] = useState('');
+  const [boxImage, setBoxImage] = useState('/images/box1.png');
+  const [boxImageFile, setBoxImageFile] = useState<File>();
 
   const [fee, setFee] = useState(0);
   const [feeWallet, setFeeWallet] = useState("3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd");
@@ -58,14 +62,15 @@ const Main: React.FC<MainProps> = ({ name, setName }) => {
     { dropPercent: 2, minSpins: 50 },
   ]);
 
-  const [minSolValues, setMinSolValues] = useState<Array<number>>(new Array(4).fill(0));
+  // const [minSolValues, setMinSolValues] = useState<Array<number>>(new Array(4).fill(0));
+  const { boxes } = useFetchBoxes(reload);
 
   const { nfts } = useFetchNfts(reload);
   const [selectedNfts, setSelectedNfts] = useState<Array<number>>([]);
 
   const [tokenAmounts, setTokenAmounts] = useState(Array(TOKENS.length).fill(0));
   const { lootbox } = useFetchLootbox(name, reload);
-  
+
   const mints: Array<PublicKey> = useMemo(() => lootbox ? lootbox.splVaults.filter(splVault =>
     splVault.isNft && splVault.mint.toString() !== PublicKey.default.toString() && splVault.amount.toNumber() > 0
   ).map((splVault) => splVault.mint) : [], [lootbox]);
@@ -172,18 +177,40 @@ const Main: React.FC<MainProps> = ({ name, setName }) => {
 
   useEffect(() => {
     fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reload, lootbox, lootboxNfts, prizeItems]);
+
+  const storeBox = async (id: string) => {
+    let image = boxImage;
+    if (boxImageFile) {
+      const { ipnft } = await client.store({
+        name: boxName,
+        image: boxImageFile,
+        description: boxDescription,
+      });
+      const url = `https://${ipnft}.ipfs.nftstorage.link/metadata.json`;
+      const { data: metadata } = await axios.get(url);
+      const list = metadata.image.split('/');
+      image = `https://${list[2]}.ipfs.nftstorage.link/${list[3]}`;
+    }
+    await axios.post('/api/storeBox', {
+      id,
+      name: boxName,
+      description: boxDescription,
+      image,
+    });
+  }
 
   const handleCreateLootbox = async () => {
     if (!wallet.publicKey || !program) {
       return;
     }
 
+    const id = `${new Date().getTime()}`;
     const txn = await createLootbox(
       program,
       wallet,
-      name,
+      id,
       new BN(fee * LAMPORTS_PER_SOL),
       new PublicKey(feeWallet),
       ticketToken.mint,
@@ -192,6 +219,8 @@ const Main: React.FC<MainProps> = ({ name, setName }) => {
     );
 
     if (txn) {
+      await storeBox(id);
+
       toast.success('Created lootbox successfully');
       setReload({});
     } else {
@@ -200,26 +229,39 @@ const Main: React.FC<MainProps> = ({ name, setName }) => {
   }
 
   const handleUpdateLootbox = async () => {
-    if (!wallet.publicKey || !program) {
+    if (!wallet.publicKey || !program || !lootbox) {
       return;
     }
 
-    const txn = await updateLootbox(
-      program,
-      wallet,
-      name,
-      new BN(fee * LAMPORTS_PER_SOL),
-      new PublicKey(feeWallet),
-      new BN(ticketPrice * decimals),
-      rarities,
-    );
+    if (lootbox.fee.toNumber() !== fee * LAMPORTS_PER_SOL ||
+      lootbox.feeWallet.toString() !== feeWallet ||
+      lootbox.ticketPrice.toNumber() !== ticketPrice * decimals ||
+      isRarityChanged(lootbox.rarities, rarities)
+    ) {
+      const txn = await updateLootbox(
+        program,
+        wallet,
+        name,
+        new BN(fee * LAMPORTS_PER_SOL),
+        new PublicKey(feeWallet),
+        new BN(ticketPrice * decimals),
+        rarities,
+      );
 
-    if (txn) {
-      toast.success('Updated lootbox successfully');
-      setReload({});
-    } else {
-      toast.error('Failed to update lootbox');
+      if (txn) {
+        toast.success('Updated lootbox successfully');
+        setReload({});
+      } else {
+        toast.error('Failed to update lootbox');
+      }
     }
+
+
+    let box = getBox(boxes, name);
+    if (box && (box.name !== boxName || box.description !== boxDescription || box.image !== boxImage)) {
+      storeBox(name);
+    }
+
   }
 
   const handleCloseLootbox = async () => {
@@ -539,22 +581,22 @@ const Main: React.FC<MainProps> = ({ name, setName }) => {
     }
   }
 
-  const handleAutoSelect = () => {
-    const unSelectedPrizes = getUnselectedPrizes(lootboxNfts, nftPrizes);
-    const newNftPrizes = nftPrizes.map((prizes) => [...prizes]);
-    for (let rarity = 0; rarity < minSolValues.length; rarity++) {
-      for (let i = 0; i < unSelectedPrizes.length; i++) {
-        let prize = unSelectedPrizes[i];
-        if (prize.floorPrice >= minSolValues[rarity] && (rarity === 3 || (rarity < 3 && prize.floorPrice <= minSolValues[rarity + 1]))) {
-          let index = lootboxNfts.map(nft => nft.mint.toString()).indexOf(prize.mint.toString());
-          newNftPrizes[rarity].push({ index, lootbox: false });
-          unSelectedPrizes.splice(i, 1);
-          i--;
-        }
-      }
-    }
-    setNftPrizes(newNftPrizes);
-  }
+  // const handleAutoSelect = () => {
+  //   const unSelectedPrizes = getUnselectedPrizes(lootboxNfts, nftPrizes);
+  //   const newNftPrizes = nftPrizes.map((prizes) => [...prizes]);
+  //   for (let rarity = 0; rarity < minSolValues.length; rarity++) {
+  //     for (let i = 0; i < unSelectedPrizes.length; i++) {
+  //       let prize = unSelectedPrizes[i];
+  //       if (prize.floorPrice >= minSolValues[rarity] && (rarity === 3 || (rarity < 3 && prize.floorPrice <= minSolValues[rarity + 1]))) {
+  //         let index = lootboxNfts.map(nft => nft.mint.toString()).indexOf(prize.mint.toString());
+  //         newNftPrizes[rarity].push({ index, lootbox: false });
+  //         unSelectedPrizes.splice(i, 1);
+  //         i--;
+  //       }
+  //     }
+  //   }
+  //   setNftPrizes(newNftPrizes);
+  // }
 
   return (
     <div className={"flex flex-wrap justify-center w-full gap-5"}>
@@ -581,14 +623,20 @@ const Main: React.FC<MainProps> = ({ name, setName }) => {
         />
       }
       <MainForm
-        name={name}
+        name={boxName}
+        description={boxDescription}
+        image={boxImage}
+        imageFile={boxImageFile}
         lootbox={lootbox}
         fee={fee}
         feeWallet={feeWallet}
         ticketPrice={ticketPrice}
         ticketToken={ticketToken}
         tokens={tokens}
-        setName={setName}
+        setName={setBoxName}
+        setDescription={setBoxDescription}
+        setImage={setBoxImage}
+        setImageFile={setBoxImageFile}
         setFee={setFee}
         setFeeWallet={setFeeWallet}
         setTicketPrice={setTicketPrice}

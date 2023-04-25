@@ -4,9 +4,13 @@ import Dropdown from "../../../components/admin/Dropdown";
 import Button from "../../../components/admin/Button";
 import { TOKEN } from '@/types';
 import { Lootbox } from '@/lootbox-program-libs/types';
+import UploadImageInput from '@/components/admin/UploadImageInput';
 
 const MainForm = ({
   name,
+  description,
+  image,
+  imageFile,
   lootbox,
   fee,
   feeWallet,
@@ -14,6 +18,9 @@ const MainForm = ({
   ticketToken,
   tokens,
   setName,
+  setDescription,
+  setImage,
+  setImageFile,
   setFee,
   setFeeWallet,
   setTicketPrice,
@@ -22,6 +29,9 @@ const MainForm = ({
   handleClickClose,
 }: {
   name: string,
+  description: string,
+  image: string,
+  imageFile: File | undefined,
   lootbox: Lootbox | undefined,
   fee: number,
   feeWallet: string,
@@ -29,6 +39,9 @@ const MainForm = ({
   ticketToken: TOKEN,
   tokens: Array<TOKEN>
   setName: (name: string) => void,
+  setDescription: (desc: string) => void,
+  setImage: (img: string) => void,
+  setImageFile: (file: File) => void,
   setFee: (fee: number) => void,
   setFeeWallet: (feeWallet: string) => void,
   setTicketPrice: (price: number) => void,
@@ -39,13 +52,9 @@ const MainForm = ({
   return (
     <div className={"flex flex-col gap-5"}>
       <p className={"text-[46px] font-bold"}>{name}</p>
-      <div className={"flex gap-10"}>
-        <div className={"flex flex-col gap-5"}>
-          {<Input size={"sm"} fullWidth onChange={(e) => setName(e.target.value)} name={"box_name"} value={name} label={"Box Name"} />}
-          <Input size={"sm"} step={0.01} type={"number"} onChange={(e) => setFee(parseFloat(e.target.value))} name={"txn_fee"} value={fee} label={"Txn Fee"}
-            desc={"SOL"} />
-        </div>
-        <div className={"flex flex-col gap-5"}>
+      <div className={"flex flex-col gap-2"}>
+        <div className='flex gap-2'>
+          <Input size={"sm"} fullWidth onChange={(e) => setName(e.target.value)} name={"box_name"} value={name} label={"Box Name"} />
           <div className={"flex gap-2"}>
             <Input size={"sm"} step={0.1} type={"number"} onChange={(e) => setTicketPrice(parseFloat(e.target.value))} value={ticketPrice} name={"box_cost"} label={"Box Cost"} />
             <div className={"mt-[18px]"}>
@@ -60,8 +69,29 @@ const MainForm = ({
               />
             </div>
           </div>
-          <Input size={"sm"} fullWidth onChange={(e) => setFeeWallet(e.target.value)} value={feeWallet} name={"fee_wallet"}
-            label={"Fee Wallet"} />
+        </div>
+        <Input size={"sm"} step={0.01} type={"number"} onChange={(e) => setFee(parseFloat(e.target.value))} name={"txn_fee"} value={fee} label={"Txn Fee"} desc={"SOL"} />
+        <Input size={"sm"} fullWidth onChange={(e) => setFeeWallet(e.target.value)} value={feeWallet} name={"fee_wallet"} label={"Fee Wallet"} />
+        <div>
+          <p className='text-[12px]'>Box Description</p>
+          <textarea rows={4} onChange={(e) => setDescription(e.target.value)} value={description} className='text-black p-2 text-[14px] w-full'></textarea>
+        </div>
+        <div>
+          <p className='text-[12px]'>Box Image</p>
+          <UploadImageInput
+            image={image}
+            handleChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              setImageFile(file);
+              const reader = new FileReader();
+              reader.onload = () => {
+                setImage(reader.result?.toString() || '');
+              }
+              reader.readAsDataURL(file || new Blob());
+            }}
+            name={`image`}
+          />
         </div>
       </div>
       <div className='flex gap-2'>
