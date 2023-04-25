@@ -61,10 +61,10 @@ export const getRole = (key: PublicKey) => {
 export const isRarityChanged = (a: Rarity[], b: Rarity[]) => {
   for (let i = 0; i < a.length; i++) {
     if (a[i].dropPercent !== b[i].dropPercent || a[i].minSpins !== b[i].minSpins) {
-      return false;
+      return true;
     }
   }
-  return true;
+  return false;
 }
 
 export const getBox = (boxes: Box[], id: string) => {
