@@ -10,8 +10,8 @@ export default async function handler(
   const { id, name, description, image } = req.body;
   await connect();
   const box = await Box.find({ id });
-  if (box) {
-    await Box.updateOne({ id }, { name, description, image });
+  if (box.length === 0) {
+    await Box.updateOne({ id }, { name, description, image })
   } else {
     await Box.create({ id, name, description, image });
   }
