@@ -64,6 +64,10 @@ const Main = ({ name }: { name: string }) => {
 
   // const [minSolValues, setMinSolValues] = useState<Array<number>>(new Array(4).fill(0));
   const { boxes } = useFetchBoxes(reload);
+  useEffect(() => {
+    let box = getBox(boxes, name);
+    setBoxName(box ? box.name : 'Free');
+  }, [boxes, name]);
 
   const { nfts } = useFetchNfts(reload);
   const [selectedNfts, setSelectedNfts] = useState<Array<number>>([]);
@@ -232,12 +236,13 @@ const Main = ({ name }: { name: string }) => {
     if (!wallet.publicKey || !program || !lootbox) {
       return;
     }
+    let txn;
     if (lootbox.fee.toNumber() !== fee * LAMPORTS_PER_SOL ||
       lootbox.feeWallet.toString() !== feeWallet ||
       lootbox.ticketPrice.toNumber() !== ticketPrice * decimals ||
       isRarityChanged(lootbox.rarities, rarities)
     ) {
-      const txn = await updateLootbox(
+      txn = await updateLootbox(
         program,
         wallet,
         name,
@@ -246,18 +251,19 @@ const Main = ({ name }: { name: string }) => {
         new BN(ticketPrice * decimals),
         rarities,
       );
-
-      if (txn) {
-        toast.success('Updated lootbox successfully');
-        setReload({});
-      } else {
-        toast.error('Failed to update lootbox');
-      }
     }
 
     let box = getBox(boxes, name);
     if (box?.name !== boxName || box?.description !== boxDescription || box?.image !== boxImage) {
       storeBox(name);
+      txn = true;
+    }
+
+    if (txn) {
+      toast.success('Updated lootbox successfully');
+      setReload({});
+    } else {
+      toast.error('Failed to update lootbox');
     }
   }
 
@@ -623,7 +629,6 @@ const Main = ({ name }: { name: string }) => {
         name={boxName}
         description={boxDescription}
         image={boxImage}
-        imageFile={boxImageFile}
         lootbox={lootbox}
         fee={fee}
         feeWallet={feeWallet}
