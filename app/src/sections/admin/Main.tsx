@@ -68,6 +68,8 @@ const Main = ({ name }: { name: string }) => {
   useEffect(() => {
     let box = getBox(boxes, name);
     setBoxName(box ? box.name : 'Free');
+    setBoxDescription(box ? box.description : '');
+    setBoxImage(box ? box.image: '');
   }, [boxes, name]);
 
   const { nfts } = useFetchNfts(reload);
