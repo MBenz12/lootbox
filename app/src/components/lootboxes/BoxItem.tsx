@@ -7,6 +7,7 @@ import { TOKENS } from '@/config';
 
 interface BoxItemProps {
   name: string;
+  image: string;
   nameColor: string;
   shadowColor?: string;
   description: string;
@@ -16,7 +17,7 @@ interface BoxItemProps {
   tokenIndex: number;
 }
 
-const BoxItem: React.FC<BoxItemProps> = ({name, nameColor, shadowColor,  opening, description, price, tokenIndex, handleClick}) => {
+const BoxItem: React.FC<BoxItemProps> = ({name, image, nameColor, shadowColor,  opening, description, price, tokenIndex, handleClick}) => {
   const renderButton = () => {
     if (opening) {
       return <Button text={"OPENING BOX..."}/>
@@ -39,7 +40,7 @@ const BoxItem: React.FC<BoxItemProps> = ({name, nameColor, shadowColor,  opening
       className="group w-[290px] h-[320px] p-[2px] rounded-[15px] backdrop-blur-[25px] bg-gradient-box-fill border-[3px] border-[rgba(255,255,255,0.15)]"
     >
       <div className="transition-all duration-300 group-hover:scale-[1.1] relative -top-20 flex justify-center">
-        <Image width={260} height={240} src="/images/box1.png" alt="box1"/>
+        <Image width={260} height={240} src={image} alt=""/>
       </div>
       <div className="px-5 text-center mt-[-110px]">
         <p className="my-2 banner-text text-[28px] font-akira uppercase font-[800]"><span style={{color: nameColor}} className="banner-text font-akira uppercase font-[800] scale-y-[0.75]">{name}</span> Box</p>

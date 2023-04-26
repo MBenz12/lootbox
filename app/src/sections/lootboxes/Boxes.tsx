@@ -18,10 +18,11 @@ export const Boxes = ({ lootboxes, }: { lootboxes: Array<Lootbox> }) => {
           return (
             <BoxItem
               key={index}
+              image={box?.image || '/images/box1.png'}
               shadowColor={'#2A6ED4'}
               nameColor={"#2A6ED4"}
               handleClick={() => router.push(`/${lootbox.name}`)}
-              name={box?.name || ''}
+              name={box?.name || 'Free'}
               description={box?.description || ''}
               price={lootbox.ticketPrice.toNumber()}
               tokenIndex={getTokenIndex(lootbox.ticketMint)}
