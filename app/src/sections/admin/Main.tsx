@@ -29,6 +29,7 @@ import axios from 'axios';
 import { ReloadContext } from '@/contexts/reload-context';
 import { NFTStorage } from 'nft.storage';
 import useFetchBoxes from '@/hooks/useFetchBoxes';
+import { getUpdateLootboxInstruction } from '@/lootbox-program-libs/instructions';
 
 const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
 
@@ -64,6 +65,10 @@ const Main = ({ name }: { name: string }) => {
 
   // const [minSolValues, setMinSolValues] = useState<Array<number>>(new Array(4).fill(0));
   const { boxes } = useFetchBoxes(reload);
+  useEffect(() => {
+    let box = getBox(boxes, name);
+    setBoxName(box ? box.name : 'Free');
+  }, [boxes, name]);
 
   const { nfts } = useFetchNfts(reload);
   const [selectedNfts, setSelectedNfts] = useState<Array<number>>([]);
@@ -232,12 +237,13 @@ const Main = ({ name }: { name: string }) => {
     if (!wallet.publicKey || !program || !lootbox) {
       return;
     }
+    let txn;
     if (lootbox.fee.toNumber() !== fee * LAMPORTS_PER_SOL ||
       lootbox.feeWallet.toString() !== feeWallet ||
       lootbox.ticketPrice.toNumber() !== ticketPrice * decimals ||
       isRarityChanged(lootbox.rarities, rarities)
     ) {
-      const txn = await updateLootbox(
+      txn = await updateLootbox(
         program,
         wallet,
         name,
@@ -246,18 +252,19 @@ const Main = ({ name }: { name: string }) => {
         new BN(ticketPrice * decimals),
         rarities,
       );
-
-      if (txn) {
-        toast.success('Updated lootbox successfully');
-        setReload({});
-      } else {
-        toast.error('Failed to update lootbox');
-      }
     }
 
     let box = getBox(boxes, name);
     if (box?.name !== boxName || box?.description !== boxDescription || box?.image !== boxImage) {
       storeBox(name);
+      txn = true;
+    }
+
+    if (txn) {
+      toast.success('Updated lootbox successfully');
+      setReload({});
+    } else {
+      toast.error('Failed to update lootbox');
     }
   }
 
@@ -377,27 +384,27 @@ const Main = ({ name }: { name: string }) => {
   }
 
   const handleAddPrizes = async () => {
-    if (!wallet.publicKey || !program) {
+    if (!wallet.publicKey || !program || !lootbox) {
       return;
     }
 
     const mints: Array<PublicKey> = [];
     const amounts: Array<BN> = [];
-    const rarities: Array<number> = [];
+    const rarityNums: Array<number> = [];
     const offChainItems: Array<OffChainItem> = [];
     for (let rarity = 0; rarity < 4; rarity++) {
       nftPrizes[rarity].forEach((item) => {
         if (!item.lootbox) {
           mints.push(lootboxNfts[item.index].mint);
           amounts.push(new BN(1));
-          rarities.push(rarity);
+          rarityNums.push(rarity);
         }
       })
       splPrizes[rarity].forEach(splItem => {
         if (!splItem.lootbox) {
           mints.push(tokens[splItem.index].mint);
           amounts.push(new BN(splItem.amount * tokens[splItem.index].decimals));
-          rarities.push(rarity);
+          rarityNums.push(rarity);
         }
       })
       offChainPrizes[rarity].forEach(prizeItem => {
@@ -411,18 +418,38 @@ const Main = ({ name }: { name: string }) => {
             unlimited: unlimited || false,
             claimed: false,
           })
-          rarities.push(rarity);
+          rarityNums.push(rarity);
         }
       })
     }
+    const instructions = [];
+    if (lootbox.fee.toNumber() !== fee * LAMPORTS_PER_SOL ||
+      lootbox.feeWallet.toString() !== feeWallet ||
+      lootbox.ticketPrice.toNumber() !== ticketPrice * decimals ||
+      isRarityChanged(lootbox.rarities, rarities)
+    ) {
+      instructions.push(
+        await getUpdateLootboxInstruction(
+          program,
+          name,
+          wallet.publicKey,
+          new BN(fee * LAMPORTS_PER_SOL),
+          new PublicKey(feeWallet),
+          new BN(ticketPrice * decimals),
+          rarities,
+        )
+      );
+    }
+
     const txn = await addItems(
       program,
       name,
       wallet,
       mints,
       amounts,
-      rarities,
+      rarityNums,
       offChainItems,
+      instructions,
     )
 
     console.log(txn)
@@ -623,7 +650,6 @@ const Main = ({ name }: { name: string }) => {
         name={boxName}
         description={boxDescription}
         image={boxImage}
-        imageFile={boxImageFile}
         lootbox={lootbox}
         fee={fee}
         feeWallet={feeWallet}

@@ -1,7 +1,7 @@
 import { Lootbox } from '@/idl/lootbox';
 import { BN, Program } from '@project-serum/anchor';
 import { WalletContextState } from '@solana/wallet-adapter-react';
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey, TransactionInstruction } from '@solana/web3.js';
 import { getAddOffChainItemInstruction, getAddOnChainItemInstruction, getClaimInstructions, getClosePdaInstruction, getCreateLootboxInstruction, getCreatePlayerInstruction, getDrainInstructions, getFundInstructions, getPlayInstructions, getSetClaimedInstruction, getUpdateLootboxInstruction, getUpdateOnChainItemInstruction } from './instructions';
 import { OffChainItem, Rarity } from './types';
 import { getLootboxPda, sendTransaction, sendTransactions } from './utils';
@@ -121,6 +121,7 @@ export const addItems = async (
   amounts: Array<BN>,
   rarities: Array<number>,
   offChainItems: Array<OffChainItem>,
+  extraInstructions: Array<TransactionInstruction>,
 ) => {
   if (!wallet.publicKey) return;
   const instructions = [];
@@ -151,7 +152,7 @@ export const addItems = async (
       )
     )
   }
-  return sendTransactions(wallet, program.provider.connection, instructions);
+  return sendTransactions(wallet, program.provider.connection, instructions.concat(...extraInstructions));
 }
 
 export const updateOnChainItem = async (

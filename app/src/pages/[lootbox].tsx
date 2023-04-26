@@ -20,17 +20,24 @@ import { PlayEvent } from '@/lootbox-program-libs/types';
 import { getLootboxPda } from '@/lootbox-program-libs/utils';
 import Box from "@/components/open_box/Box";
 import BoxWrapper from "@/components/open_box/BoxWrapper";
-import { getTokenIndex } from '@/utils';
+import { getBox, getTokenIndex } from '@/utils';
 import { ReloadContext } from '@/contexts/reload-context';
+import useFetchBoxes from '@/hooks/useFetchBoxes';
 
 export default function Lootbox() {
   const router = useRouter()
   const { lootbox: lootboxName } = router.query;
-
+  
   const program = useProgram();
   const wallet = useWallet();
   const { reload, setReload } = useContext(ReloadContext);
   const { lootbox } = useFetchLootbox(lootboxName as string, reload);
+  const { boxes }  = useFetchBoxes(reload);
+
+  const boxName = useMemo(() => {
+    let box = getBox(boxes, lootboxName as string);
+    return box ? box.name : 'Free';
+  }, [boxes, lootboxName]);
 
   const [event, setEvent] = useState<PlayEvent>();
   const { events } = useFetchEvents(reload);
@@ -219,7 +226,7 @@ export default function Lootbox() {
       </Head>
       <div className="px-5 lg:px-32">
         <BoxWrapper
-          boxName={"Free"}
+          boxName={boxName}
           boxNameColor={"#E93E67"}
           prizes={prizes}
           opening={opening}

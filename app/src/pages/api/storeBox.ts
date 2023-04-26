@@ -9,8 +9,8 @@ export default async function handler(
 ) {
   const { id, name, description, image } = req.body;
   await connect();
-  const boxes = await Box.find();
-  if (!boxes.map(box => box.id).includes(id)) {
+  const box = await Box.find({ id });
+  if (box.length) {
     await Box.updateOne({ id }, { name, description, image })
   } else {
     await Box.create({ id, name, description, image });
