@@ -37,31 +37,33 @@ const BoxItem: React.FC<BoxItemProps> = ({name, image, nameColor, shadowColor,  
         delay: 0,
         duration: 0.3,
       }}
-      className="group w-[290px] h-[320px] p-[2px] rounded-[15px] backdrop-blur-[25px] bg-gradient-box-fill border-[3px] border-[rgba(255,255,255,0.15)]"
+      className="group w-[290px] h-[320px] p-[2px] rounded-[15px] backdrop-blur-[25px] bg-gradient-box-fill border-[3px] border-[rgba(255,255,255,0.15)] relative"
     >
-      <div className="transition-all duration-300 group-hover:scale-[1.1] relative -top-20 flex justify-center">
-        <Image width={260} height={240} src={image} alt=""/>
+      <div className="transition-all duration-300 group-hover:scale-[1.1] absolute -top-[80px] left-[50%] flex justify-center translate-x-[-50%] w-[60%]">
+        <Image width={220} height={220} src={image} alt=""/>
       </div>
-      <div className="px-5 text-center mt-[-110px]">
-        <p className="my-2 banner-text text-[28px] font-akira uppercase font-[800]"><span style={{color: nameColor}} className="banner-text font-akira uppercase font-[800] scale-y-[0.75]">{name}</span> Box</p>
-        {
-          opening
-            ?
-            <div className={"flex justify-center"}>
-              <motion.div
-                animate={{rotate: 360}}
-                transition={{duration: 1.5, repeat: Infinity, ease: "linear"}}
-                className={"load-circle"}
-              ></motion.div>
-            </div>
-            :
-            <p className="text-[11px] font-aber-mono text-[#65666B]">{description}</p>
-        }
-      </div>
-      <div className="flex justify-center pt-5">
-        {
-          renderButton()
-        }
+      <div className='absolute left-[50%] bottom-5 translate-x-[-50%] w-full flex flex-col justify-between items-center h-[200px]'>
+        <div className="px-5 text-center">
+          <p className="my-2 banner-text text-[28px] font-akira uppercase font-[800]"><span style={{color: nameColor}} className="banner-text font-akira uppercase font-[800] scale-y-[0.75]">{name}</span> Box</p>
+          {
+            opening
+              ?
+              <div className={"flex justify-center"}>
+                <motion.div
+                  animate={{rotate: 360}}
+                  transition={{duration: 1.5, repeat: Infinity, ease: "linear"}}
+                  className={"load-circle"}
+                ></motion.div>
+              </div>
+              :
+              <p className="text-[11px] font-aber-mono text-[#65666B]">{description}</p>
+          }
+        </div>
+        <div className="flex justify-center pt-5">
+          {
+            renderButton()
+          }
+        </div>
       </div>
     </motion.div>
   );
