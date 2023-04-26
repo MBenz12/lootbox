@@ -69,7 +69,7 @@ const Main = ({ name }: { name: string }) => {
     let box = getBox(boxes, name);
     setBoxName(box ? box.name : 'Free');
     setBoxDescription(box ? box.description : '');
-    setBoxImage(box ? box.image: '');
+    setBoxImage(box ? box.image: '/images/box1.png');
   }, [boxes, name]);
 
   const { nfts } = useFetchNfts(reload);
