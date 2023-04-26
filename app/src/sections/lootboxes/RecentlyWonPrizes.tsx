@@ -16,7 +16,7 @@ export const RecentlyWonPrizes = ({ events }: { events: Array<Event> }) => {
               <PrizeItem
                 rarity={event.rarity}
                 icon={event.image}
-                title={event.name ? event.name : `${event.amount?.toLocaleString('en-us', { maximumFractionDigits: 2 })} ${event.symbol}`}
+                title={!event.symbol ? event.name : `${event.amount?.toLocaleString('en-us', { maximumFractionDigits: 2 })} ${event.symbol}`}
                 box={event.lootboxName}
                 value={values[index]}
               />

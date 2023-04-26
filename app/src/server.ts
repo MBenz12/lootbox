@@ -56,7 +56,7 @@ const listener = async (event: PlayEvent, slot: number, signature: string) => {
     }
   }
 
-  const playEvent = { signature, lootboxName, rarity, timestamp: timestamp.toNumber(), user: player , ...data, };
+  const playEvent = { signature, lootboxName, rarity, timestamp: timestamp.toNumber(), user: player, ...data, };
   await PlayEventModel.create(playEvent);
 }
 
@@ -79,8 +79,9 @@ const getNfts = async (mints: Array<PublicKey>) => {
       try {
         if (!nft || !nft.uri) return;
         const { data } = await axios.get(nft.uri);
-        const { image } = data;
+        const { image, name } = data;
         nfts[index].image = image;
+        nfts[index].name = name;
       } catch (error) {
         console.log(error);
       }

@@ -135,6 +135,11 @@ export default function Lootbox() {
       return;
     }
 
+    if (!prizes.filter((prize) => prize.rarity === 0).length) {
+      toast.error('There are no prizes left in the box.');
+      return;
+    }
+
     setShowPrize(false);
     setOpening(true);
 
