@@ -28,7 +28,7 @@ const LiveFeed = ({ events }: { events: Array<Event> }) => {
   const liveFeedDivider = "after:absolute after:bottom-0 after:left-0 after:right-0 after:w-[100%] after:h-[2px] after:bg-gradient-white-divider"
 
   return (
-    <div className={"fixed right-0 bottom-0 w-[200px] bg-[#191B34] z-10 rounded-tl-[15px]"}>
+    <div className={"fixed right-0 bottom-0 w-[200px] bg-[#191B34] z-[100] rounded-tl-[15px]"}>
       <div className={"relative flex cursor-pointer place-items-center justify-start gap-3 px-8 py-3 " + liveFeedDivider}
         onClick={() => setOpened(!opened)}>
         <div className={"pulsating-circle"}></div>

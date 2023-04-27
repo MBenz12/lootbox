@@ -88,7 +88,7 @@ const BoxWrapper = ({
   )), [canvasHeight, canvasWidth]);
   return (
     <div ref={canvasRef} className={"relative flex flex-col justify-center place-items-center w-full h-auto min-h-[300px] mb-5 overflow-hidden " + divider}>
-      <div className={"flex gap-2.5 font-[800] text-5xl uppercase"}>
+      <div className={"flex gap-2.5 font-[800] sm:text-5xl text-3xl uppercase"}>
         <p className={"font-akira"} style={{ color: boxNameColor }}>{boxName}</p>
         <p className={"font-akira"}>BOX</p>
       </div>
