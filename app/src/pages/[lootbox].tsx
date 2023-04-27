@@ -27,12 +27,12 @@ import useFetchBoxes from '@/hooks/useFetchBoxes';
 export default function Lootbox() {
   const router = useRouter()
   const { lootbox: lootboxName } = router.query;
-  
+
   const program = useProgram();
   const wallet = useWallet();
   const { reload, setReload } = useContext(ReloadContext);
   const { lootbox } = useFetchLootbox(lootboxName as string, reload);
-  const { boxes }  = useFetchBoxes(reload);
+  const { boxes } = useFetchBoxes(reload);
 
   const boxName = useMemo(() => {
     let box = getBox(boxes, lootboxName as string);
@@ -201,7 +201,7 @@ export default function Lootbox() {
       setRolling(true);
       setShowPrize(true);
       console.log('start rolling!');
-    } 
+    }
   }, [event, lootbox, lootboxNfts, prizeItems, wallet.publicKey]);
 
   const [showPrize, setShowPrize] = useState(false);
@@ -229,23 +229,25 @@ export default function Lootbox() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="px-5 lg:px-32">
-        <BoxWrapper
-          boxName={boxName}
-          boxNameColor={"#E93E67"}
-          prizes={prizes}
-          opening={opening}
-          openedPrize={openedPrize}
-          rolling={rolling}
-          showPrize={showPrize}
-          openButtonHandler={() => handlePlay()}
-          boxPrice={lootbox ? lootbox.ticketPrice.toNumber() : 0} tokenIndex={lootbox ? getTokenIndex(lootbox.ticketMint) : 0}
-          onComplete={onComplete}
-        >
-          <Box boxImage={"/images/opened_lootbox.png"} />
-        </BoxWrapper>
-        {<Prizes prizes={prizes} lootbox={lootbox} />}
-        <LiveFeed events={events} />
+      <div className="flex justify-center">
+        <div className='container'>
+          <BoxWrapper
+            boxName={boxName}
+            boxNameColor={"#E93E67"}
+            prizes={prizes}
+            opening={opening}
+            openedPrize={openedPrize}
+            rolling={rolling}
+            showPrize={showPrize}
+            openButtonHandler={() => handlePlay()}
+            boxPrice={lootbox ? lootbox.ticketPrice.toNumber() : 0} tokenIndex={lootbox ? getTokenIndex(lootbox.ticketMint) : 0}
+            onComplete={onComplete}
+          >
+            <Box boxImage={"/images/opened_lootbox.png"} />
+          </BoxWrapper>
+          {<Prizes prizes={prizes} lootbox={lootbox} />}
+          <LiveFeed events={events} />
+        </div>
       </div>
     </>
   )
