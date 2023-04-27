@@ -14,7 +14,7 @@ const MobileMenu = ({show}: {show: boolean}) => {
               animate={{x: 0}}
               exit={{x: "-100%"}}
               transition={{duration: 0.3}}
-              className="fixed top-0 left-0 right-0 py-10 px-5 w-2/3 h-full bg-[#0b0c1a] z-20">
+              className="fixed top-0 left-0 right-0 py-10 px-5 w-2/3 h-full bg-[#0b0c1a] z-[100]">
               <motion.div
                 initial={{x: -50, opacity: 0}}
                 animate={{x: 0, opacity: 1}}
@@ -52,6 +52,7 @@ export const Header: React.FC = () => {
             </div>
           </div>
         </nav>
+        {showMobileMenu && <div className='inset-0 fixed z-[99]' onClick={() => setShowMobileMenu(false)}></div>}
         <MobileMenu show={showMobileMenu} />
       </div>
     </header>
