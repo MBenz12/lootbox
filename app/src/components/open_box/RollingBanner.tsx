@@ -77,7 +77,7 @@ const RollingBanner = ({ prizes, winnerIndex, rolling, onComplete }: { prizes: O
   }, [prizes, winnerIndex, rolling])
 
   return (
-    <div className={"absolute z-30 top-8 flex flex-col w-full place-items-center gap-5"}>
+    <div className={"absolute z-30 top-8 flex flex-col w-full place-items-center gap-5 roller"}>
       <div id={"banner-wrapper"} ref={bannerWrapper} className={`relative flex place-items-center overflow-hidden h-[380px]`}>
         {/* <div className='absolute z-[100] left-8 bottom-[60px] w-20 h-[120px] bg-gradient-to-r from-[#0A0C1C] via-50%'></div> */}
         <div className='absolute z-[100] -left-[110px] bottom-10 w-[200px] h-[300px] bg-[#0b0c1a] blur-xl'></div>
