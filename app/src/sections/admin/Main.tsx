@@ -258,7 +258,7 @@ const Main = ({ name }: { name: string }) => {
 
     let box = getBox(boxes, name);
     if (box?.name !== boxName || box?.description !== boxDescription || box?.image !== boxImage) {
-      storeBox(name);
+      await storeBox(name);
       txn = true;
     }
 
