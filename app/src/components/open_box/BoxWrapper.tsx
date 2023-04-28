@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { OpenedPrize } from "@/types";
 import RollingBanner from "@/components/open_box/RollingBanner";
 import { TOKENS } from '@/config';
+import { Rarity } from "@/lootbox-program-libs/types";
 
 type Props = {
   children: ReactNode;
@@ -19,7 +20,8 @@ type Props = {
   boxPrice: number;
   tokenIndex: number;
   opening: boolean;
-  onComplete: () => void
+  onComplete: () => void;
+  rarities?: Rarity[]
 }
 
 const BoxWrapper = ({
@@ -35,6 +37,7 @@ const BoxWrapper = ({
   tokenIndex,
   opening,
   onComplete,
+  rarities
 }: Props) => {
   const divider = "after:absolute after:bottom-0 after:left-0 after:right-0 after:w-[100%] after:h-[2px] after:bg-gradient-purple-divider"
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -101,6 +104,7 @@ const BoxWrapper = ({
         }
         rolling={rolling}
         onComplete={onComplete}
+        rarities={rarities}
       />}
 
       <div className={"flex flex-col place-items-center my-5"}>
