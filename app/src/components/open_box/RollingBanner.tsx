@@ -1,45 +1,45 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import gsap from 'gsap';
 import { useEffect, useRef, useState } from "react";
-import { OpenedPrize } from "@/types";
+import { WinnablePrize } from "@/types";
+import { Rarity } from "@/lootbox-program-libs/types";
 
 const NFT_ID_PREFIX = "nft_item";
 
-const RollingBanner = ({ prizes, winnerIndex, rolling, onComplete }: { prizes: OpenedPrize[], winnerIndex: number, rolling: boolean, onComplete: () => void }) => {
+const RollingBanner = ({ prizes, winnerIndex, rolling, onComplete, rarities }: { prizes: WinnablePrize[], winnerIndex: number, rolling: boolean, onComplete: () => void, rarities?: Rarity[] }) => {
   if (winnerIndex >= prizes.length) throw new Error("winnerIndex must be less than prizes.length");
   const bannerWrapper = useRef<HTMLDivElement>(null);
   const rollerContainer = useRef<HTMLDivElement>(null);
-  const [rollerPrizes, setRollerPrizes] = useState<Array<OpenedPrize>>(prizes);
+  const [rollerPrizes, setRollerPrizes] = useState<Array<WinnablePrize>>(prizes);
 
-  useEffect(() => {
-    if (rolling) {
-      setRollerPrizes(prizes);
-    }
-  }, [prizes, rolling]);
+  const getRarityName = (rarity: number) => {
+    return [
+      "Common",
+      "Uncommon",
+      "Rare",
+      "Legendary"
+    ][rarity];
+  }
+
+  const getRarityColorClass = (rarity: number) => {
+    return [
+      "bg-common-card",
+      "bg-uncommon-card",
+      "bg-rare-card",
+      "bg-legendary-card"
+    ][rarity];
+  }
 
   useEffect(() => {
     if (rollerContainer.current !== null && bannerWrapper.current !== null && winnerIndex !== -1 && rolling) {
       const nftWidth = rollerContainer.current.children[0].clientWidth + 75;
       bannerWrapper.current.style.width = `${nftWidth * 3}px`;
-
-      // shuffle and duplicate prizes
-      // const shuffledPrizes = [...Array(10 * prizes.length)]
-      //   .map((_, i) => prizes[i % prizes.length])
-      //   .sort(() => Math.random() - 0.5);
-
-      const times = Math.floor(150 / prizes.length);
-      const duplicatedPrizes = Array.from({ length: prizes.length * times }, (_, i) => prizes[i % prizes.length]);
-      const winningPrizeIndex = winnerIndex + (times - 1) * prizes.length;
-      console.log(winnerIndex, prizes.length, winningPrizeIndex);
       // append duplicated prizes to roller container
-      duplicatedPrizes.forEach((prize, nftIdIndex) => {
-        const nftItem = document.createElement("div");
-        nftItem.id = NFT_ID_PREFIX + (nftIdIndex + prizes.length);
-        nftItem.className = "w-[120px] h-[120px] rounded-md bg-no-repeat bg-center bg-cover transition-all duration-[1s]";
-        nftItem.style.backgroundImage = `url(${prize.image})`;
-        // @ts-ignore
-        rollerContainer.current.appendChild(nftItem);
-      })
+      const times = Math.floor(150 / prizes.length);
+      const winningPrizeIndex = winnerIndex + (times - 1) * prizes.length;
+      const duplicatedPrizes = Array.from({ length: prizes.length * times }, (_, i) => prizes[i % prizes.length]);
+      setRollerPrizes(duplicatedPrizes);
+      console.log(winnerIndex, prizes.length, winningPrizeIndex);
 
       // animate rolling process
       const tl = gsap.timeline();
@@ -64,17 +64,25 @@ const RollingBanner = ({ prizes, winnerIndex, rolling, onComplete }: { prizes: O
               "#FF7CFA"
             ][prizes[winnerIndex]?.rarity || 0];
           };
-          const nftItem = rollerContainer.current.children[winningPrizeIndex];
-          nftItem.classList.add("scale-[1.8]");
-          nftItem.classList.add("-translate-y-[30%]");
+          const nftContainer = rollerContainer.current.children[winningPrizeIndex];
+          const nftItem = rollerContainer.current.children[winningPrizeIndex].children[0];
+          const nftName = rollerContainer.current.children[winningPrizeIndex].children[1];
+          const nftRarity = rollerContainer.current.children[winningPrizeIndex].children[2];
+          nftContainer.classList.add("scale-[1.5]");
+          nftContainer.classList.add("backdrop-blur-3xl");
+          nftContainer.classList.add("-translate-y-5");
+          nftName.classList.add("opacity-100")
+          nftRarity.classList.add("opacity-100")
           // @ts-ignore
-          nftItem.style.boxShadow = `0 0 20px 18px ${getRarityColor()}`;
+          nftContainer.style.boxShadow = `0px -2px 40px 2px ${getRarityColor()}`
+          // @ts-ignore
+          nftItem.style.boxShadow = `0px 5px 40px 10px ${getRarityColor()}`;
           onComplete();
         }
       })
 
     }
-  }, [prizes, winnerIndex, rolling])
+  }, [rolling])
 
   return (
     <div className={"absolute z-30 top-8 flex flex-col w-full place-items-center gap-5"}>
@@ -85,8 +93,11 @@ const RollingBanner = ({ prizes, winnerIndex, rolling, onComplete }: { prizes: O
         <div id={"roller-container"} ref={rollerContainer} className={"flex opacity-0 gap-20 w-[9999999999px] h-[120px] mt-5 ml-8"}>
           {
             rollerPrizes.map((prize, nftIdIndex) => (
-              // <Image id={`${NFT_ID_PREFIX + nftIdIndex}`} key={nftIdIndex} src={prize.image} alt={`nft-${nftIdIndex}`} width={130} height={130} className={"aspect-square rounded-md transition-all duration-[1s]"} />
-              <div key={nftIdIndex} id={`${NFT_ID_PREFIX + nftIdIndex}`} className={"w-[120px] h-[120px] rounded-md bg-no-repeat bg-center bg-cover transition-all duration-[1s]"} style={{ backgroundImage: `url(${prize.image})` }}></div>
+              <div id={"prize-container"} key={nftIdIndex} className={"flex flex-col place-items-center rounded-lg w-[130px] h-[170px] pt-[5px] transition-all duration-[1s]"}>
+                <div id={`${NFT_ID_PREFIX + nftIdIndex}`} className={"w-[120px] h-[120px] rounded-md bg-no-repeat bg-center bg-cover transition-all duration-[1s]"} style={{ backgroundImage: `url(${prize.image})` }}></div>
+                <p className={"opacity-0 transition-all duration-[3s] text-[11px] mt-[4px]"}>{prize.name}</p>
+                <p className={`opacity-0 transition-all duration-[3s] text-[7px] mt-1 ${getRarityColorClass(prize.rarity)} px-1.5 py-[1px] rounded-md`}>{getRarityName(prize.rarity)} {rarities && rarities[prize.rarity].dropPercent / 100}%</p>
+              </div>
             ))
           }
         </div>
