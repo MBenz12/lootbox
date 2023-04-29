@@ -1,8 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 import { AUTHORIZE_URL } from '@/config';
-import React, { useRef } from "react";
+import React, { useContext, useMemo, useRef } from "react";
 import { Button } from "../lootboxes/Button";
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import useFetchBoxes from '@/hooks/useFetchBoxes';
+import { ReloadContext } from '@/contexts/reload-context';
+import { getBox } from '@/utils';
 
 interface NftCardProps {
   name: string;
@@ -15,6 +18,11 @@ interface NftCardProps {
 
 const NftCard: React.FC<NftCardProps> = ({ name, box, image, claiming, handler, claimed }) => {
   const discordRef = useRef<any>();
+  const { reload } = useContext(ReloadContext);
+  const { boxes } = useFetchBoxes(reload);
+  const boxName = useMemo(() => {
+    return getBox(boxes, box || '')?.name || 'Free';
+  }, [boxes, box]);
 
   return (
     <div className='w-full flex justify-center'>
@@ -38,7 +46,7 @@ const NftCard: React.FC<NftCardProps> = ({ name, box, image, claiming, handler, 
             <>
               <div className={"flex flex-col place-items-center mt-2"}>
                 <p className={"text-[14px] truncate w-[150px] text-center"}>{name}</p>
-                <p className={"opacity-50 text-[12px]"}>{box}</p>
+                <p className={"opacity-50 text-[12px]"}>{boxName}</p>
               </div>
               {!claimed ?
                 <div className={"w-full"}>
