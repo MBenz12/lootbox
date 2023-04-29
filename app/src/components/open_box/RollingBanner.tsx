@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
 import gsap from 'gsap';
 import { useEffect, useRef, useState } from "react";
@@ -68,11 +69,13 @@ const RollingBanner = ({ prizes, winnerIndex, rolling, onComplete, rarities }: {
           const nftItem = rollerContainer.current.children[winningPrizeIndex].children[0];
           const nftName = rollerContainer.current.children[winningPrizeIndex].children[1];
           const nftRarity = rollerContainer.current.children[winningPrizeIndex].children[2];
+          const nftPrize = rollerContainer.current.children[winningPrizeIndex].children[3];
           nftContainer.classList.add("scale-[1.5]");
           nftContainer.classList.add("backdrop-blur-3xl");
           nftContainer.classList.add("-translate-y-5");
           nftName.classList.add("opacity-100")
           nftRarity.classList.add("opacity-100")
+          nftPrize.classList.add("opacity-100")
           // @ts-ignore
           nftContainer.style.boxShadow = `0px -2px 40px 2px ${getRarityColor()}`
           // @ts-ignore
@@ -97,6 +100,10 @@ const RollingBanner = ({ prizes, winnerIndex, rolling, onComplete, rarities }: {
                 <div id={`${NFT_ID_PREFIX + nftIdIndex}`} className={"w-[120px] h-[120px] rounded-md bg-no-repeat bg-center bg-cover transition-all duration-[1s]"} style={{ backgroundImage: `url(${prize.image})` }}></div>
                 <p className={"opacity-0 transition-all duration-[3s] text-[11px] mt-[4px]"}>{prize.name}</p>
                 <p className={`opacity-0 transition-all duration-[3s] text-[7px] mt-1 ${getRarityColorClass(prize.rarity)} px-1.5 py-[1px] rounded-md`}>{getRarityName(prize.rarity)} {rarities && rarities[prize.rarity].dropPercent / 100}%</p>
+                <div className={"absolute right-2 top-2 opacity-0 transition-all duration-[3s] bg-[#C8C8C8] rounded-[4px] py-[2px] px-[4px] flex justify-items-center gap-[2px]"}>
+                  <img src="/images/solana.svg" alt='' />
+                  <p className='text-black text-[8px] font-bold'>{prize.value} SOL</p>
+                </div>
               </div>
             ))
           }

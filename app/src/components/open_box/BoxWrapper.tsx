@@ -3,7 +3,7 @@ import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/open_box/Button";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { OpenedPrize } from "@/types";
+import { OpenedPrize, WinnablePrize } from "@/types";
 import RollingBanner from "@/components/open_box/RollingBanner";
 import { TOKENS } from '@/config';
 import { Rarity } from "@/lootbox-program-libs/types";
@@ -12,7 +12,7 @@ type Props = {
   children: ReactNode;
   boxName: string;
   boxNameColor?: string;
-  prizes: OpenedPrize[];
+  prizes: WinnablePrize[];
   openedPrize?: OpenedPrize;
   rolling: boolean;
   showPrize: boolean;

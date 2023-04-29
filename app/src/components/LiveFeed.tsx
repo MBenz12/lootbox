@@ -41,7 +41,7 @@ const LiveFeed = ({ events }: { events: Array<Event> }) => {
         className={"flex flex-col my-3 place-items-center justify-center gap-3"}>
         <div className={"max-h-[75vh] w-full overflow-y-auto"}>
           {events.map((item, index) => (
-            <LiveFeedItem key={index} name={item.name || item.symbol || ''} box={item.lootboxName} img={item.image} time={moment(new Date(item.timestamp * 1000)).fromNow()} />
+            <LiveFeedItem key={index} name={item.name || `${item.amount?.toLocaleString('en-us', { maximumFractionDigits: 3 })} ${item.symbol}` || ''} box={item.lootboxName} img={item.image} time={moment(new Date(item.timestamp * 1000)).fromNow()} />
           ))}
         </div>
       </motion.div>
