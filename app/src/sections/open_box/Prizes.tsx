@@ -14,8 +14,8 @@ export const Prizes = ({ prizes, lootbox }: { prizes: Array<WinnablePrize>, loot
             key={index} 
             rarity={prize.rarity} 
             icon={prize.image} 
-            title={isToken(prize.name) ? `${prize.value.toLocaleString('en-us', { maximumFractionDigits: 2 })} ${prize.name}` : prize.name} 
-            value={isToken(prize.name) ? undefined : prize.value} 
+            title={isToken(prize.name) ? `${prize.value.toLocaleString('en-us', { maximumFractionDigits: 3 })} ${prize.name}` : prize.name} 
+            value={(isToken(prize.name) && prize.name !== 'SOL') ? undefined : prize.value} 
             dropRate={lootbox.rarities[prize.rarity].dropPercent / 100} 
             />
           ))

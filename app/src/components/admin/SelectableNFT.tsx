@@ -20,7 +20,7 @@ const SelectableNft: React.FC<SelectableNftProps> = ({ image, handleSelect, sele
         />
         {selected && <div className={"absolute w-[20px] h-[20px] rounded-full border border-[rgba(0,0,0,.5)] top-2 right-2 bg-[#9945FF]"} />}
       </div>
-      <div className='text-white text-center w-[150px]'>{floorPrice !== undefined ? `${floorPrice.toLocaleString('en-us', { maximumFractionDigits: 2 })} SOL` : ''}</div>
+      <div className='text-white text-center w-[150px]'>{floorPrice !== undefined ? `${floorPrice.toLocaleString('en-us', { maximumFractionDigits: 3 })} SOL` : ''}</div>
     </div>
   );
 };
