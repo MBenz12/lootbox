@@ -21,7 +21,8 @@ type Props = {
   tokenIndex: number;
   opening: boolean;
   onComplete: () => void;
-  rarities?: Rarity[]
+  rarities?: Rarity[],
+  loading: boolean,
 }
 
 const BoxWrapper = ({
@@ -37,7 +38,8 @@ const BoxWrapper = ({
   tokenIndex,
   opening,
   onComplete,
-  rarities
+  rarities,
+  loading
 }: Props) => {
   const divider = "after:absolute after:bottom-0 after:left-0 after:right-0 after:w-[100%] after:h-[2px] after:bg-gradient-purple-divider"
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -108,7 +110,7 @@ const BoxWrapper = ({
       />}
 
       <div className={"flex flex-col place-items-center my-5"}>
-        <Button text={opening ? "Opening..." : "Open"} handler={openButtonHandler} />
+        <Button text={loading ? "Loading..." : (opening ? "Opening..." : "Open")} handler={(loading || opening) ? undefined : openButtonHandler} />
         {!!boxPrice ? <div className={"flex gap-1 place-items-center"}>
           <Image width={12} height={12} src={TOKENS[tokenIndex].image} alt="coin" />
           <p className={"text-[#65666B] font-aber-mono text-[12px]"}>{boxPrice / TOKENS[tokenIndex].decimals} {TOKENS[tokenIndex].symbol}</p>

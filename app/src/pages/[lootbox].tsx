@@ -47,7 +47,7 @@ export default function Lootbox() {
     splVault.isNft && splVault.mint.toString() !== PublicKey.default.toString()
   ).map((splVault) => splVault.mint) : [], [lootbox]);
 
-  const { nfts: lootboxNfts } = useFetchNfts(reload, mints);
+  const { nfts: lootboxNfts, loading } = useFetchNfts(reload, mints);
   const { nftPrizes, splPrizes, offChainPrizes } = useMemo(() => {
     const nftPrizes: Array<Array<NftPrize>> = new Array(4).fill([]).map(() => []);
     const splPrizes: Array<Array<SplPrize>> = new Array(4).fill([]).map(() => []);
@@ -236,6 +236,7 @@ export default function Lootbox() {
             boxNameColor={"#E93E67"}
             prizes={prizes}
             opening={opening}
+            loading={loading}
             openedPrize={openedPrize}
             rolling={rolling}
             showPrize={showPrize}
