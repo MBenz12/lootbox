@@ -355,12 +355,14 @@ pub mod lootbox {
 
         let prize_item = lootbox.prize_items[prize_index];
         if let Some(on_chain_item) = prize_item.on_chain_item {
-            lootbox.prize_items.remove(prize_index);
+            let spl_index = on_chain_item.spl_index as usize;
+            if lootbox.spl_vaults[spl_index].amount < on_chain_item.amount * 2 {
+                lootbox.prize_items.remove(prize_index);
+            }
             player.lootboxes[lootbox_index]
                 .on_chain_prizes
                 .push(on_chain_item);
-            let spl_index = on_chain_item.spl_index as usize;
-            lootbox.spl_vaults[spl_index].amount = 0;
+            lootbox.spl_vaults[spl_index].amount = lootbox.spl_vaults[spl_index].amount.checked_sub(on_chain_item.amount).unwrap();
         }
         if let Some(mut off_chain_item) = prize_item.off_chain_item {
             player.lootboxes[lootbox_index]
