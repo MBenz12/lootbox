@@ -143,9 +143,6 @@ export default function Lootbox() {
     setShowPrize(false);
     setOpening(true);
 
-    const sound = new Audio("../sounds/mixkit-extra-bonus-in-a-video-game-2045.wav");
-    sound.play();
-
     const txn = await play(
       program,
       lootbox.name,
@@ -157,6 +154,8 @@ export default function Lootbox() {
 
     if (txn) {
       toast.success('Box Opened');
+      const sound = new Audio("../sounds/mixkit-extra-bonus-in-a-video-game-2045.wav");
+      sound.play();
     } else {
       toast.error('Failed to open');
       setOpening(false);
@@ -212,7 +211,7 @@ export default function Lootbox() {
 
   const handlePlay2 = () => {
     setOpening(true);
-    setOpenedPrize(prizes[1]);
+    setOpenedPrize(prizes[0]);
     setRolling(true);
     setShowPrize(false);
     setTimeout(() => setShowPrize(true), 1000);
@@ -248,7 +247,8 @@ export default function Lootbox() {
             rolling={rolling}
             showPrize={showPrize}
             openButtonHandler={() => handlePlay()}
-            boxPrice={lootbox ? lootbox.ticketPrice.toNumber() : 0} tokenIndex={lootbox ? getTokenIndex(lootbox.ticketMint) : 0}
+            boxPrice={lootbox ? lootbox.ticketPrice.toNumber() : 0} 
+            tokenIndex={lootbox ? getTokenIndex(lootbox.ticketMint) : 0}
             onComplete={onComplete}
             rarities={lootbox?.rarities}
           >

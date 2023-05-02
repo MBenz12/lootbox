@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { useEffect, useRef, useState } from "react";
 import { WinnablePrize } from "@/types";
 import { Rarity } from "@/lootbox-program-libs/types";
+import { isToken } from '@/utils';
 
 const NFT_ID_PREFIX = "nft_item";
 
@@ -98,11 +99,11 @@ const RollingBanner = ({ prizes, winnerIndex, rolling, onComplete, rarities }: {
             rollerPrizes.map((prize, nftIdIndex) => (
               <div id={"prize-container"} key={nftIdIndex} className={"flex flex-col place-items-center rounded-lg w-[130px] h-[170px] pt-[5px] transition-all duration-[1s]"}>
                 <div id={`${NFT_ID_PREFIX + nftIdIndex}`} className={"w-[120px] h-[120px] rounded-md bg-no-repeat bg-center bg-cover transition-all duration-[1s]"} style={{ backgroundImage: `url(${prize.image})` }}></div>
-                <p className={"opacity-0 transition-all duration-[3s] text-[11px] mt-[4px]"}>{prize.name}</p>
+                <p className={"opacity-0 transition-all duration-[3s] text-[11px] mt-[4px]"}>{isToken(prize.name) ? `${prize.value} ` : ''}{prize.name}</p>
                 <p className={`opacity-0 transition-all duration-[3s] text-[7px] mt-1 ${getRarityColorClass(prize.rarity)} px-1.5 py-[1px] rounded-md`}>{getRarityName(prize.rarity)} {rarities && rarities[prize.rarity].dropPercent / 100}%</p>
                 <div className={"absolute right-2 top-2 opacity-0 transition-all duration-[3s] bg-[#C8C8C8] rounded-[4px] py-[2px] px-[4px] flex justify-items-center gap-[2px]"}>
                   <img src="/images/solana.svg" alt='' />
-                  <p className='text-black text-[8px] font-bold'>{prize.value} SOL</p>
+                  <p className='text-black text-[8px] font-bold'>{(isToken(prize.name) && prize.name !== 'SOL') ? '-' : prize.value} SOL</p>
                 </div>
               </div>
             ))
