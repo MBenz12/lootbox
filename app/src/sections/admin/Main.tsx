@@ -9,7 +9,7 @@ import SelectNftsDialog from "../../components/admin/SelectNftsDialog";
 import OffChainPrizeDialog from '../../components/admin/OffChainPrizeDialog';
 
 import useFetchNfts from '@/hooks/useFetchNfts';
-import { addItems, closeLootbox, closePdas, createLootbox, drain, fund, setClaimed, updateLootbox, updateOffChainItem, updateOnChainItem } from '@/lootbox-program-libs/methods';
+import { addItems, closeLootbox, closePda, closePdas, createLootbox, drain, fund, setClaimed, updateLootbox, updateOffChainItem, updateOnChainItem } from '@/lootbox-program-libs/methods';
 import { OffChainItem, Rarity } from '@/lootbox-program-libs/types';
 import { BN } from '@project-serum/anchor';
 import { getMint } from '@solana/spl-token';
@@ -30,6 +30,7 @@ import { ReloadContext } from '@/contexts/reload-context';
 import { NFTStorage } from 'nft.storage';
 import useFetchBoxes from '@/hooks/useFetchBoxes';
 import { getUpdateLootboxInstruction } from '@/lootbox-program-libs/instructions';
+import { getPlayerPda } from '@/lootbox-program-libs/utils';
 
 const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
 
@@ -83,6 +84,20 @@ const Main = ({ name }: { name: string }) => {
   ).map((splVault) => splVault.mint) : [], [lootbox]);
 
   const { nfts: lootboxNfts } = useFetchNfts(reload, mints);
+  const drainableLootboxNfts = useMemo(() => {
+    if (!lootbox) return [];
+    const mints: Array<string> = [];
+    lootbox.prizeItems.forEach(prize => {
+      if (prize.onChainItem) {
+        const { splIndex } = prize.onChainItem;
+        const splVault = lootbox.splVaults[splIndex];
+        if (splVault.isNft) {
+          mints.push(splVault.mint.toString());
+        }
+      }
+    });
+    return lootboxNfts.filter(nft => !mints.includes(nft.mint.toString()));
+  }, [lootboxNfts, lootbox]);
   const [selectedLootboxNfts, setSelectedLootboxNfts] = useState<Array<number>>([]);
 
   const [nftPrizes, setNftPrizes] = useState<Array<Array<NftPrize>>>(new Array(4).fill([]).map(() => []));
@@ -367,7 +382,7 @@ const Main = ({ name }: { name: string }) => {
       return;
     }
 
-    const mints = selectedLootboxNfts.map(index => lootboxNfts[index].mint);
+    const mints = selectedLootboxNfts.map(index => drainableLootboxNfts[index].mint);
     const amounts = Array(selectedLootboxNfts.length).fill(new BN(1));
     const txn = await drain(
       program,
@@ -482,6 +497,27 @@ const Main = ({ name }: { name: string }) => {
       setReload({});
     } else {
       toast.error('Failed to close all pdas');
+    }
+  }
+
+  const handleCloseUser = async () => {
+    console.log(program);
+    if (!wallet.publicKey || !program) {
+      return;
+    }
+
+    const [user] = getPlayerPda(wallet.publicKey);
+    const txn = await closePda(
+      program,
+      wallet,
+      user,
+    );
+
+    if (txn) {
+      toast.success('Closed my account successfully');
+      setReload({});
+    } else {
+      toast.error('Failed to close my account');
     }
   }
 
@@ -640,7 +676,7 @@ const Main = ({ name }: { name: string }) => {
       {drainDialogOpen &&
         <SelectNftsDialog
           setOpen={() => setDrainDialogOpen(false)}
-          nfts={lootboxNfts}
+          nfts={drainableLootboxNfts}
           selectedNfts={selectedLootboxNfts}
           setSelectedNfts={setSelectedLootboxNfts}
           label="Drain NFTs"
@@ -823,6 +859,9 @@ const Main = ({ name }: { name: string }) => {
       </div>
       <div className={"hidden w-full justify-center mt-5 gap-4"}>
         <Button onClick={() => handleCloseAllPda()} text={"Close All Pda"} />
+      </div>
+      <div className={"w-full justify-center mt-5 gap-4"}>
+        <Button onClick={() => handleCloseUser()} text={"Close My Account"} />
       </div>
     </div>
   );
