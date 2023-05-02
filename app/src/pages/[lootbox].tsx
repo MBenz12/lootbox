@@ -143,6 +143,9 @@ export default function Lootbox() {
     setShowPrize(false);
     setOpening(true);
 
+    const sound = new Audio("../sounds/mixkit-extra-bonus-in-a-video-game-2045.wav");
+    sound.play();
+
     const txn = await play(
       program,
       lootbox.name,
