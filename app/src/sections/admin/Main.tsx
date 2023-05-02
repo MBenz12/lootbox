@@ -133,7 +133,7 @@ const Main = ({ name }: { name: string }) => {
         setRarities(lootbox.rarities);
 
         let splMints = TOKENS.map(token => token.mint.toString());
-        const newTokens = [...tokens.map(token => ({ ...token }))];
+        const newTokens = [...tokens.map(token => ({ ...token, balance: 0 }))];
         lootbox.splVaults.filter(splVault => splMints.includes(splVault.mint.toString())).map(splVault => {
           let index = splMints.indexOf(splVault.mint.toString());
           if (index !== -1) {
@@ -860,7 +860,7 @@ const Main = ({ name }: { name: string }) => {
       <div className={"hidden w-full justify-center mt-5 gap-4"}>
         <Button onClick={() => handleCloseAllPda()} text={"Close All Pda"} />
       </div>
-      <div className={"w-full justify-center mt-5 gap-4"}>
+      <div className={"hidden w-full justify-center mt-5 gap-4"}>
         <Button onClick={() => handleCloseUser()} text={"Close My Account"} />
       </div>
     </div>
