@@ -143,6 +143,9 @@ export default function Lootbox() {
     setShowPrize(false);
     setOpening(true);
 
+    const sound = new Audio("../sounds/mixkit-extra-bonus-in-a-video-game-2045.wav");
+    sound.play();
+
     const txn = await play(
       program,
       lootbox.name,
@@ -213,6 +216,8 @@ export default function Lootbox() {
     setRolling(true);
     setShowPrize(false);
     setTimeout(() => setShowPrize(true), 1000);
+    const sound = new Audio("../sounds/mixkit-extra-bonus-in-a-video-game-2045.wav");
+    sound.play();
   }
 
   const onComplete = () => {
@@ -220,6 +225,8 @@ export default function Lootbox() {
     setRolling(false);
     setReload({});
     setEvent(undefined);
+    const sound = new Audio("../sounds/mixkit-casino-bling-achievement-2067.wav");
+    sound.play();
   }
   return (
     <>
