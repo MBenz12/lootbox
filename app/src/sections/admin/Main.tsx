@@ -232,6 +232,7 @@ const Main = ({ name }: { name: string }) => {
         disabled: true,
       });      
       toast.success('Disabled Successfully');
+      setDisabled(true);
     } catch (error) {
       console.log(error);
       toast.error('Failed to disable');
@@ -244,10 +245,11 @@ const Main = ({ name }: { name: string }) => {
         id: name,
         disabled: false,
       });      
-      toast.success('Disabled Successfully');
+      toast.success('Enabled Successfully');
+      setDisabled(false);
     } catch (error) {
       console.log(error);
-      toast.error('Failed to disable');
+      toast.error('Failed to enable');
     }    
   }
 
@@ -723,7 +725,7 @@ const Main = ({ name }: { name: string }) => {
         ticketToken={ticketToken}
         tokens={tokens}
         disabled={disabled}
-        setDisabled={setDisabled}
+        setDisabled={(disabled) => disabled ? disable() : enable()}
         setName={setBoxName}
         setDescription={setBoxDescription}
         setImage={setBoxImage}
