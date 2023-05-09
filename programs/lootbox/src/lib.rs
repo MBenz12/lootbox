@@ -72,7 +72,11 @@ pub mod lootbox {
             };
             let mut added = false;
             for i in 0..lootbox.spl_vaults.len() {
-                let SplVault { mint, is_nft: _, amount: _ } = lootbox.spl_vaults[i];
+                let SplVault {
+                    mint,
+                    is_nft: _,
+                    amount: _,
+                } = lootbox.spl_vaults[i];
                 if mint == Pubkey::default() {
                     lootbox.spl_vaults[i] = new_spl_vault;
                     added = true;
@@ -136,7 +140,7 @@ pub mod lootbox {
                 .checked_sub(amount)
                 .unwrap();
         }
-        
+
         require!(
             lootbox
                 .prize_items
@@ -238,7 +242,7 @@ pub mod lootbox {
     }
 
     #[access_control(valid_program(&ctx.accounts.instruction_sysvar_account, *ctx.program_id))]
-    #[access_control(prevent_suffix_instruction(&ctx.accounts.instruction_sysvar_account))]
+    // #[access_control(prevent_suffix_instruction(&ctx.accounts.instruction_sysvar_account))]
     pub fn play(ctx: Context<Play>) -> Result<()> {
         let lootbox = &ctx.accounts.lootbox;
         let fee = lootbox.fee;
@@ -359,10 +363,25 @@ pub mod lootbox {
             if lootbox.spl_vaults[spl_index].amount < on_chain_item.amount * 2 {
                 lootbox.prize_items.remove(prize_index);
             }
-            player.lootboxes[lootbox_index]
+            let index = player.lootboxes[lootbox_index]
                 .on_chain_prizes
-                .push(on_chain_item);
-            lootbox.spl_vaults[spl_index].amount = lootbox.spl_vaults[spl_index].amount.checked_sub(on_chain_item.amount).unwrap();
+                .iter()
+                .position(|x| x.spl_index == spl_index as u8);
+            if let Some(index) = index {
+                player.lootboxes[lootbox_index].on_chain_prizes[index].amount =
+                    player.lootboxes[lootbox_index].on_chain_prizes[index]
+                        .amount
+                        .checked_add(on_chain_item.amount)
+                        .unwrap();
+            } else {
+                player.lootboxes[lootbox_index]
+                    .on_chain_prizes
+                    .push(on_chain_item);
+            }
+            lootbox.spl_vaults[spl_index].amount = lootbox.spl_vaults[spl_index]
+                .amount
+                .checked_sub(on_chain_item.amount)
+                .unwrap();
         }
         if let Some(mut off_chain_item) = prize_item.off_chain_item {
             player.lootboxes[lootbox_index]
@@ -382,7 +401,7 @@ pub mod lootbox {
         Ok(())
     }
 
-    #[access_control(valid_program(&ctx.accounts.instruction_sysvar_account, *ctx.program_id))]
+    // #[access_control(valid_program(&ctx.accounts.instruction_sysvar_account, *ctx.program_id))]
     pub fn claim(ctx: Context<Claim>) -> Result<()> {
         let lootbox = &ctx.accounts.lootbox;
         let player = &mut ctx.accounts.player;
@@ -429,7 +448,11 @@ pub mod lootbox {
 
         let lootbox = &mut ctx.accounts.lootbox;
         let spl_index = prize_item.spl_index as usize;
-        let SplVault { mint: _, amount: _, is_nft } = lootbox.spl_vaults[spl_index];
+        let SplVault {
+            mint: _,
+            amount: _,
+            is_nft,
+        } = lootbox.spl_vaults[spl_index];
         if is_nft {
             lootbox.spl_vaults[spl_index].mint = Pubkey::default();
         }
