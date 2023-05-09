@@ -16,6 +16,7 @@ const MainForm = ({
   ticketPrice,
   ticketToken,
   tokens,
+  disabled,
   setName,
   setDescription,
   setImage,
@@ -26,6 +27,7 @@ const MainForm = ({
   setTicketToken,
   handleClickCreate,
   handleClickClose,
+  setDisabled,
 }: {
   name: string,
   description: string,
@@ -35,7 +37,8 @@ const MainForm = ({
   feeWallet: string,
   ticketPrice: number,
   ticketToken: TOKEN,
-  tokens: Array<TOKEN>
+  tokens: Array<TOKEN>,
+  disabled: boolean,
   setName: (name: string) => void,
   setDescription: (desc: string) => void,
   setImage: (img: string) => void,
@@ -46,6 +49,7 @@ const MainForm = ({
   setTicketToken: (token: TOKEN) => void,
   handleClickCreate: () => void,
   handleClickClose: () => void,
+  setDisabled: (disabled: boolean) => void,
 }) => {
   return (
     <div className={"flex flex-col gap-5"}>
@@ -94,7 +98,12 @@ const MainForm = ({
       </div>
       <div className='flex gap-2'>
         <Button size={"md"} onClick={handleClickCreate} text={!lootbox ? "Create" : "Update"} />
-        {lootbox && <Button size={"md"} onClick={handleClickClose} text="Close" />}
+        {lootbox &&
+        <>
+         <Button size={"md"} onClick={() => setDisabled(!disabled)} text={disabled ? "Enable" : "Disable"} />
+         <Button size={"md"} onClick={handleClickClose} text="Close" />
+        </>
+         }
       </div>
     </div>
   );

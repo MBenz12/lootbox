@@ -25,6 +25,7 @@ function Carousel({ slides, interval }: { slides: Array<string>, interval: numbe
       {slides.map((slide, index) => (
         <Slide key={index} image={slide} isActive={currentSlide === index} />
       ))}
+      <img src={slides[0]} className='opacity-0' alt="" />
     </div>
   );
 }

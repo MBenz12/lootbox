@@ -34,9 +34,9 @@ export default function Lootbox() {
   const { lootbox } = useFetchLootbox(lootboxName as string, reload);
   const { boxes } = useFetchBoxes(reload);
 
-  const boxName = useMemo(() => {
+  const { boxName, disabled } = useMemo(() => {
     let box = getBox(boxes, lootboxName as string);
-    return box ? box.name : 'Free';
+    return { boxName: box ? box.name : 'Free', disabled: box ? box.disabled : false };
   }, [boxes, lootboxName]);
 
   const [event, setEvent] = useState<PlayEvent>();
@@ -238,6 +238,7 @@ export default function Lootbox() {
       <div className="flex justify-center">
         <div className='container'>
           <BoxWrapper
+            disabled={disabled}
             boxName={boxName}
             boxNameColor={"#E93E67"}
             prizes={prizes}
@@ -247,7 +248,7 @@ export default function Lootbox() {
             rolling={rolling}
             showPrize={showPrize}
             openButtonHandler={() => handlePlay()}
-            boxPrice={lootbox ? lootbox.ticketPrice.toNumber() : 0} 
+            boxPrice={lootbox ? lootbox.ticketPrice.toNumber() : 0}
             tokenIndex={lootbox ? getTokenIndex(lootbox.ticketMint) : 0}
             onComplete={onComplete}
             rarities={lootbox?.rarities}
