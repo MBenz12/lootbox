@@ -4,7 +4,9 @@ use anchor_lang::{
     solana_program::{
         serialize_utils::read_u16,
         sysvar::instructions::{
-            get_instruction_relative, load_current_index_checked, load_instruction_at_checked,
+            // get_instruction_relative,
+            load_current_index_checked,
+            load_instruction_at_checked,
         },
     },
 };
@@ -50,6 +52,9 @@ pub fn valid_program(instruction_sysvar_account: &AccountInfo, program_id: Pubke
         "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
             .parse::<Pubkey>()
             .unwrap(),
+        "ComputeBudget111111111111111111111111111111"
+            .parse::<Pubkey>()
+            .unwrap(),
     ];
     for index in 0..num_instructions {
         let instruction = load_instruction_at_checked(index as usize, &instruction_sysvar_account)?;
@@ -74,15 +79,15 @@ pub fn valid_program(instruction_sysvar_account: &AccountInfo, program_id: Pubke
 //     Ok(())
 // }
 
-pub fn prevent_suffix_instruction(instruction_sysvar_account: &AccountInfo) -> Result<()> {
-    let invalid = match get_instruction_relative(1, &instruction_sysvar_account) {
-        Ok(_) => true,
-        Err(_) => false,
-    };
-    require!(invalid == false, LootboxError::InvalidInstructionAdded);
+// pub fn prevent_suffix_instruction(instruction_sysvar_account: &AccountInfo) -> Result<()> {
+//     let invalid = match get_instruction_relative(1, &instruction_sysvar_account) {
+//         Ok(_) => true,
+//         Err(_) => false,
+//     };
+//     require!(invalid == false, LootboxError::InvalidInstructionAdded);
 
-    Ok(())
-}
+//     Ok(())
+// }
 
 pub fn update_drop_percents(lootbox: &mut Box<Account<Lootbox>>) {
     for rarity in 1..4 {
@@ -102,7 +107,8 @@ pub fn update_drop_percents(lootbox: &mut Box<Account<Lootbox>>) {
                     }
                 }
                 return false;
-            }) == false {
+            }) == false
+            {
                 let drop_percent = lootbox.rarities[index].drop_percent;
                 lootbox.rarities[index].drop_percent = 0;
                 lootbox.rarities[0].drop_percent += drop_percent;
