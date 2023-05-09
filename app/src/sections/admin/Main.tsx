@@ -723,7 +723,7 @@ const Main = ({ name }: { name: string }) => {
         ticketToken={ticketToken}
         tokens={tokens}
         disabled={disabled}
-        setDisabled={setDisabled}
+        setDisabled={(disabled) => disabled ? enable() : disable()}
         setName={setBoxName}
         setDescription={setBoxDescription}
         setImage={setBoxImage}
