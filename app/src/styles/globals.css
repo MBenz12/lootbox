@@ -18,6 +18,10 @@ body::-webkit-scrollbar {
   @apply h-1 w-0;
 }
 
+body {
+  overflow-x: hidden;
+}
+
 ::-webkit-scrollbar-track {
   background-color: #e4e4e400;
   border-radius: 100px;
@@ -109,14 +113,6 @@ body {
   }
 }
 
-.banner {
-  /* background-image: url("../../public/images/banner.png"); */
-  /* background-repeat: no-repeat; */
-  /* background-size: cover; */
-  /* background-position: center; */
-  height: 320px;
-}
-
 .banner::after {
   content: '';
   position: absolute;
@@ -124,7 +120,6 @@ body {
   width: 100%;
   border-radius: 8px;
   background: linear-gradient(to right, #8007b9 0%, rgba(255, 123, 202, 0) 100%);
-  bottom: 0;
 }
 
 .claim-heading::after {

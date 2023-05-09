@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React from "react";
 import {Navbar} from "@/components/Navbar";
 import {motion, AnimatePresence} from "framer-motion";
@@ -37,8 +38,8 @@ export const Header: React.FC = () => {
   return (
     <header className='flex justify-center bg-[#121213]/60'>
       <div className="flex w-full container place-items-center h-[100px]">
-        <Link href={"/"} className="bg-gray-600 px-10 py-2 rounded-[15px]">
-          <p>Logo</p>
+        <Link href={"/"} className="h-[30px]">
+          <img src="/images/logo.png" alt="" className="h-[30px]" />
         </Link>
         <nav className="w-full">
           <div className="hidden place-items-center justify-between gap-10 lg:flex">

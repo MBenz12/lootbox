@@ -11,6 +11,7 @@ import { Rarity } from "@/lootbox-program-libs/types";
 type Props = {
   children: ReactNode;
   boxName: string;
+  disabled: boolean;
   boxNameColor?: string;
   prizes: WinnablePrize[];
   openedPrize?: OpenedPrize;
@@ -27,6 +28,7 @@ type Props = {
 
 const BoxWrapper = ({
   children,
+  disabled,
   boxName,
   boxNameColor = "#fff",
   prizes,
@@ -110,7 +112,7 @@ const BoxWrapper = ({
       />}
 
       <div className={"flex flex-col place-items-center my-5"}>
-        <Button text={loading ? "Loading..." : (opening ? "Opening..." : "Open")} handler={(loading || opening) ? undefined : openButtonHandler} />
+        <Button text={loading ? "Loading..." : (opening ? "Opening..." : "Open")} handler={(loading || opening || disabled) ? undefined : openButtonHandler} />
         {!!boxPrice ? <div className={"flex gap-1 place-items-center"}>
           <Image width={12} height={12} src={TOKENS[tokenIndex].image} alt="coin" />
           <p className={"text-[#65666B] font-aber-mono text-[12px]"}>{boxPrice / TOKENS[tokenIndex].decimals} {TOKENS[tokenIndex].symbol}</p>

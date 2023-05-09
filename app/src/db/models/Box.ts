@@ -9,6 +9,7 @@ const boxSchema = new Schema({
   name: String,
   description: String,
   image: String,
+  disabled: Boolean,
 }, { timestamps: true });
 
 export default models.boxes || model('boxes', boxSchema);

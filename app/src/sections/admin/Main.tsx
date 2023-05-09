@@ -51,6 +51,7 @@ const Main = ({ name }: { name: string }) => {
   const [boxDescription, setBoxDescription] = useState('');
   const [boxImage, setBoxImage] = useState('/images/box1.png');
   const [boxImageFile, setBoxImageFile] = useState<File>();
+  const [disabled, setDisabled] = useState(false);
 
   const [fee, setFee] = useState(0);
   const [feeWallet, setFeeWallet] = useState("3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd");
@@ -71,6 +72,7 @@ const Main = ({ name }: { name: string }) => {
     setBoxName(box ? box.name : 'Free');
     setBoxDescription(box ? box.description : '');
     setBoxImage(box ? box.image: '/images/box1.png');
+    setDisabled(box ? box.disabled : false);
   }, [boxes, name]);
 
   const { nfts } = useFetchNfts(reload);
@@ -221,6 +223,32 @@ const Main = ({ name }: { name: string }) => {
       description: boxDescription,
       image,
     });
+  }
+
+  const disable = async () => {
+    try {
+      await axios.post('/api/storeBox', {
+        id: name,
+        disabled: true,
+      });      
+      toast.success('Disabled Successfully');
+    } catch (error) {
+      console.log(error);
+      toast.error('Failed to disable');
+    }    
+  }
+
+  const enable = async () => {
+    try {
+      await axios.post('/api/storeBox', {
+        id: name,
+        disabled: false,
+      });      
+      toast.success('Disabled Successfully');
+    } catch (error) {
+      console.log(error);
+      toast.error('Failed to disable');
+    }    
   }
 
   const handleCreateLootbox = async () => {
@@ -694,6 +722,8 @@ const Main = ({ name }: { name: string }) => {
         ticketPrice={ticketPrice}
         ticketToken={ticketToken}
         tokens={tokens}
+        disabled={disabled}
+        setDisabled={setDisabled}
         setName={setBoxName}
         setDescription={setBoxDescription}
         setImage={setBoxImage}

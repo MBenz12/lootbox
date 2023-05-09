@@ -7,13 +7,13 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<string>
 ) {
-  const { id, name, description, image } = req.body;
+  const { id, name, description, image, disabled } = req.body;
   await connect();
   const box = await Box.find({ id });
   if (box.length) {
-    await Box.updateOne({ id }, { name, description, image })
+    await Box.updateOne({ id }, { name, description, image, disabled })
   } else {
-    await Box.create({ id, name, description, image });
+    await Box.create({ id, name, description, image, disabled: false });
   }
   res.status(200).json("success");
 }
