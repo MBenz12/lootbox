@@ -32,6 +32,9 @@ const RollingBanner = ({ prizes, winnerIndex, rolling, onComplete, rarities }: {
     ][rarity];
   }
 
+  const [targetPrize, setTargetPrize] = useState<WinnablePrize>();
+  const targetRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (rollerContainer.current !== null && bannerWrapper.current !== null && winnerIndex !== -1 && rolling) {
       const nftWidth = rollerContainer.current.children[0].clientWidth + 75;
@@ -39,10 +42,10 @@ const RollingBanner = ({ prizes, winnerIndex, rolling, onComplete, rarities }: {
       // append duplicated prizes to roller container
       const times = Math.floor(150 / prizes.length);
       const winningPrizeIndex = winnerIndex + (times - 1) * prizes.length;
-      const duplicatedPrizes = Array.from({ length: prizes.length * times }, (_, i) => prizes[i % prizes.length]);
+      const duplicatedPrizes = Array.from({ length: prizes.length * (times + 1) }, (_, i) => prizes[i % prizes.length]);
       setRollerPrizes(duplicatedPrizes);
       console.log(winnerIndex, prizes.length, winningPrizeIndex);
-
+      setTargetPrize(prizes[winnerIndex]);
       // animate rolling process
       const tl = gsap.timeline();
       tl.to(rollerContainer.current, {
@@ -57,7 +60,7 @@ const RollingBanner = ({ prizes, winnerIndex, rolling, onComplete, rarities }: {
         duration: 5,
         ease: "circ.inOut",
         onComplete: () => {
-          if (rollerContainer.current === null) return;
+          if (rollerContainer.current === null || targetRef.current === null) return;
           const getRarityColor = () => {
             return [
               "#343751",
@@ -68,23 +71,18 @@ const RollingBanner = ({ prizes, winnerIndex, rolling, onComplete, rarities }: {
           };
           const nftContainer = rollerContainer.current.children[winningPrizeIndex];
           const nftItem = rollerContainer.current.children[winningPrizeIndex].children[0];
-          const nftName = rollerContainer.current.children[winningPrizeIndex].children[1];
-          const nftRarity = rollerContainer.current.children[winningPrizeIndex].children[2];
-          const nftPrize = rollerContainer.current.children[winningPrizeIndex].children[3];
           nftContainer.classList.add("scale-[1.5]");
-          nftContainer.classList.add("backdrop-blur-3xl");
+          nftContainer.classList.add("backdrop");
           nftContainer.classList.add("-translate-y-5");
-          nftName.classList.add("opacity-100")
-          nftRarity.classList.add("opacity-100")
-          nftPrize.classList.add("opacity-100")
           // @ts-ignore
           nftContainer.style.boxShadow = `0px -2px 40px 2px ${getRarityColor()}`
           // @ts-ignore
           nftItem.style.boxShadow = `0px 5px 40px 10px ${getRarityColor()}`;
+          
+          targetRef.current.classList.add("opacity-100");
           onComplete();
         }
       })
-
     }
   }, [rolling])
 
@@ -99,16 +97,20 @@ const RollingBanner = ({ prizes, winnerIndex, rolling, onComplete, rarities }: {
             rollerPrizes.map((prize, nftIdIndex) => (
               <div id={"prize-container"} key={nftIdIndex} className={"flex flex-col place-items-center rounded-lg w-[130px] h-[170px] pt-[5px] transition-all duration-[1s]"}>
                 <div id={`${NFT_ID_PREFIX + nftIdIndex}`} className={"w-[120px] h-[120px] rounded-md bg-no-repeat bg-center bg-cover transition-all duration-[1s]"} style={{ backgroundImage: `url(${prize.image})` }}></div>
-                <p className={"opacity-0 transition-all duration-[3s] text-[11px] mt-[4px] p-1 w-full truncate text-center"}>{isToken(prize.name) ? `${prize.value} ` : ''}{prize.name}</p>
-                <p className={`opacity-0 transition-all duration-[3s] text-[7px] mt-1 ${getRarityColorClass(prize.rarity)} px-1.5 py-[1px] rounded-md`}>{getRarityName(prize.rarity)} {rarities && rarities[prize.rarity].dropPercent / 100}%</p>
-                <div className={"absolute right-2 top-2 opacity-0 transition-all duration-[3s] bg-[#C8C8C8] rounded-[4px] py-[2px] px-[4px] flex justify-items-center gap-[2px]"}>
-                  <img src="/images/solana.svg" alt='' />
-                  <p className='text-black text-[8px] font-bold'>{(isToken(prize.name) && prize.name !== 'SOL') ? '-' : prize.value.toLocaleString('en-us', { maximumFractionDigits: 3 })} SOL</p>
-                </div>
               </div>
             ))
           }
         </div>
+        {targetPrize && <div ref={targetRef} className='absolute left-[50%] top-[80px] w-[190px] h-[240px] -translate-x-[50%] opacity-0 transition-all duration-[5s]'>
+          <div className='mt-[200px] flex flex-col gap-1 items-center'>
+            <p className={"transition-all duration-[3s] text-[13px] px-1 w-full truncate text-center"}>{isToken(targetPrize.name) ? `${targetPrize.value} ` : ''}{targetPrize.name}</p>
+            <p className={`transition-all duration-[3s] w-fit text-[9px] ${getRarityColorClass(targetPrize.rarity)} px-1.5 py-[1px] rounded-md`}>{getRarityName(targetPrize.rarity)} {rarities && rarities[targetPrize.rarity].dropPercent / 100}%</p>
+          </div>
+          <div className={"absolute right-3 top-3 transition-all duration-[3s] bg-[#C8C8C8] rounded-[4px] py-[2px] px-[4px] flex justify-items-center gap-[2px]"}>
+            <img src="/images/solana.svg" alt='' />
+            <p className='text-black text-[10px] font-bold'>{(isToken(targetPrize.name) && targetPrize.name !== 'SOL') ? '-' : targetPrize.value.toLocaleString('en-us', { maximumFractionDigits: 3 })} SOL</p>
+          </div>
+        </div>}
       </div>
     </div>
   );

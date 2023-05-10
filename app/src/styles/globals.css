@@ -201,3 +201,8 @@ header * {
   height: 100%;
   object-fit: cover;
 }
+
+.backdrop {
+  background: linear-gradient(244.52deg, rgba(52, 55, 81, 0.8) 1.25%, rgba(255, 181, 70, 0.4) 100%);
+  backdrop-filter: blur(25px);
+}

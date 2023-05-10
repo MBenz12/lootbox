@@ -211,7 +211,7 @@ export default function Lootbox() {
 
   const handlePlay2 = () => {
     setOpening(true);
-    setOpenedPrize(prizes[0]);
+    setOpenedPrize(prizes[Math.floor(Math.random() * prizes.length)]);
     setRolling(true);
     setShowPrize(false);
     setTimeout(() => setShowPrize(true), 1000);
@@ -247,7 +247,7 @@ export default function Lootbox() {
             openedPrize={openedPrize}
             rolling={rolling}
             showPrize={showPrize}
-            openButtonHandler={() => handlePlay()}
+            openButtonHandler={() => handlePlay2()}
             boxPrice={lootbox ? lootbox.ticketPrice.toNumber() : 0}
             tokenIndex={lootbox ? getTokenIndex(lootbox.ticketMint) : 0}
             onComplete={onComplete}
