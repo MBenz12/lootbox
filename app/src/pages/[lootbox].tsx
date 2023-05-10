@@ -247,7 +247,7 @@ export default function Lootbox() {
             openedPrize={openedPrize}
             rolling={rolling}
             showPrize={showPrize}
-            openButtonHandler={() => handlePlay2()}
+            openButtonHandler={() => handlePlay()}
             boxPrice={lootbox ? lootbox.ticketPrice.toNumber() : 0}
             tokenIndex={lootbox ? getTokenIndex(lootbox.ticketMint) : 0}
             onComplete={onComplete}
