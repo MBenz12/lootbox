@@ -211,7 +211,7 @@ export default function Lootbox() {
 
   const handlePlay2 = () => {
     setOpening(true);
-    setOpenedPrize(prizes[0]);
+    setOpenedPrize(prizes[Math.floor(Math.random() * prizes.length)]);
     setRolling(true);
     setShowPrize(false);
     setTimeout(() => setShowPrize(true), 1000);
