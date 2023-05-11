@@ -258,48 +258,46 @@ const Claim = ({ discordAccess }: { discordAccess: string | undefined }) => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="flex justify-center">
-        <div className='container'>
-          <Heading handleClaimAll={handleClaimAll} />
-          <div className={"my-5"}>
-            <p className={"font-bold font-space-mono text-[18px] my-5"}>TOKENS</p>
-            {splCards.map((card, index) => (
-              <div className={"flex place-items-center gap-2"} key={"token" + index}>
-                <img width={16} height={16} className={"w-[16px] h-[16px]"} src={card.image} alt="" />
-                <p className={"font-space-mono"}>{card.value} {card.name}</p>
-                <Button handler={() => handleClaimSpl(card.prize as SplPrize)} text={"CLAIM"} />
-              </div>
-            ))}
-          </div>
-          <CardsSection sectionName={'NFTs'}>
-            {
-              nftCards.map((card, index) => {
-                return (
-                  <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} handler={() => {
-                    handleClaimNft(card.prize as NftPrize);
-                  }} />
-                )
-              })
-            }
-          </CardsSection>
-          <CardsSection sectionName={'Other Prizes'}>
-            {
-              offChainCards.map((card, index) => {
-                return (
-                  <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} claimed={isClaimed(claims, card.prize as OffChainPrize)} handler={() => {
-                    if (!discordAccess) {
-                      showModal(
-                        <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming />
-                      )
-                    } else {
-                      handleClaimPrize(card.prize as OffChainPrize);
-                    }
-                  }} />
-                )
-              })
-            }
-          </CardsSection>
+      <div className='container'>
+        <Heading handleClaimAll={handleClaimAll} />
+        <div className={"my-5"}>
+          <p className={"font-bold font-space-mono text-[18px] my-5"}>TOKENS</p>
+          {splCards.map((card, index) => (
+            <div className={"flex place-items-center gap-2"} key={"token" + index}>
+              <img width={16} height={16} className={"w-[16px] h-[16px]"} src={card.image} alt="" />
+              <p className={"font-space-mono"}>{card.value} {card.name}</p>
+              <Button handler={() => handleClaimSpl(card.prize as SplPrize)} text={"CLAIM"} />
+            </div>
+          ))}
         </div>
+        <CardsSection sectionName={'NFTs'}>
+          {
+            nftCards.map((card, index) => {
+              return (
+                <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} handler={() => {
+                  handleClaimNft(card.prize as NftPrize);
+                }} />
+              )
+            })
+          }
+        </CardsSection>
+        <CardsSection sectionName={'Other Prizes'}>
+          {
+            offChainCards.map((card, index) => {
+              return (
+                <NFTCard key={index} name={card.name} box={card.lootbox} image={card.image} claimed={isClaimed(claims, card.prize as OffChainPrize)} handler={() => {
+                  if (!discordAccess) {
+                    showModal(
+                      <NFTCard key={`modal${index}`} image={card.image} name={card.name} claiming />
+                    )
+                  } else {
+                    handleClaimPrize(card.prize as OffChainPrize);
+                  }
+                }} />
+              )
+            })
+          }
+        </CardsSection>
       </div>
       <LiveFeed events={events} />
     </>

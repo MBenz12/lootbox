@@ -235,29 +235,27 @@ export default function Lootbox() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="flex justify-center">
-        <div className='container'>
-          <BoxWrapper
-            disabled={disabled}
-            boxName={boxName}
-            boxNameColor={"#E93E67"}
-            prizes={prizes}
-            opening={opening}
-            loading={loading}
-            openedPrize={openedPrize}
-            rolling={rolling}
-            showPrize={showPrize}
-            openButtonHandler={() => handlePlay()}
-            boxPrice={lootbox ? lootbox.ticketPrice.toNumber() : 0}
-            tokenIndex={lootbox ? getTokenIndex(lootbox.ticketMint) : 0}
-            onComplete={onComplete}
-            rarities={lootbox?.rarities}
-          >
-            <Box boxImage={"/images/opened_lootbox.png"} />
-          </BoxWrapper>
-          {<Prizes prizes={prizes} lootbox={lootbox} />}
-          <LiveFeed events={events} />
-        </div>
+      <div className='container'>
+        <BoxWrapper
+          disabled={disabled}
+          boxName={boxName}
+          boxNameColor={"#E93E67"}
+          prizes={prizes}
+          opening={opening}
+          loading={loading}
+          openedPrize={openedPrize}
+          rolling={rolling}
+          showPrize={showPrize}
+          openButtonHandler={() => handlePlay()}
+          boxPrice={lootbox ? lootbox.ticketPrice.toNumber() : 0}
+          tokenIndex={lootbox ? getTokenIndex(lootbox.ticketMint) : 0}
+          onComplete={onComplete}
+          rarities={lootbox?.rarities}
+        >
+          <Box boxImage={"/images/opened_lootbox.png"} />
+        </BoxWrapper>
+        {<Prizes prizes={prizes} lootbox={lootbox} />}
+        <LiveFeed events={events} />
       </div>
     </>
   )
