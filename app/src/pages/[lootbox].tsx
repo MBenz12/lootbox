@@ -131,7 +131,12 @@ export default function Lootbox() {
   const [opening, setOpening] = useState(false);
 
   const handlePlay = async () => {
-    if (!wallet.publicKey || !program || !lootbox) {
+    if (!program || !lootbox) {
+      return;
+    }
+
+    if (!wallet.publicKey) {
+      toast.error("Connect wallet to open the box");
       return;
     }
 
