@@ -36,8 +36,8 @@ export const Header: React.FC = () => {
   const [showMobileMenu, setShowMobileMenu] = React.useState(false);
 
   return (
-    <header className='container bg-[#121213]/60'>
-      <div className="flex w-full place-items-center h-[100px]">
+    <header className='bg-[#121213]/60'>
+      <div className="container flex w-full place-items-center h-[100px]">
         <Link href={"/"} className="w-[127px]">
           <img src="/images/logo.png" alt="" className="w-full" />
         </Link>

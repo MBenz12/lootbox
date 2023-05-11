@@ -92,7 +92,7 @@ const MainForm = ({
               }
               reader.readAsDataURL(file || new Blob());
             }}
-            name={`image`}
+            name={`box-image`}
           />
         </div>
       </div>

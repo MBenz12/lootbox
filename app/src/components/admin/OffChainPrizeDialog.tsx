@@ -74,7 +74,7 @@ const OffChainPrizeDialog = ({
               }
               reader.readAsDataURL(file || new Blob());
             }}
-            name={`image`}
+            name={`prize-image`}
           />
           <Button text='Upload' onClick={handleUpload} />
         </div>
