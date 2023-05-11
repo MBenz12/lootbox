@@ -131,14 +131,14 @@ export default function Lootbox() {
   const [opening, setOpening] = useState(false);
 
   const handlePlay = async () => {
-    if (!program || !lootbox) {
-      return;
-    }
-
     if (!wallet.publicKey) {
       toast.error("Connect wallet to open the box");
       return;
     }
+    if (!program || !lootbox) {
+      return;
+    }
+
 
     if (!prizes.filter((prize) => prize.rarity === 0).length) {
       toast.error('There are no prizes left in the box');
